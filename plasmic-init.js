@@ -26,12 +26,12 @@ PLASMIC.registerComponent(LanderScene, {
     position: {
       type: "object",
       displayName: "Camera Position",
-      defaultValue: [0, .35, 1],
+      defaultValue: [0, 0, 2],
     },
     fov: {
       type: "number",
       displayName: "Field of View",
-      defaultValue: 90,
+      defaultValue: 25,
     },
   },
 });
