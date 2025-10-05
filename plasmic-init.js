@@ -29,7 +29,10 @@ import LanderScene from "./components/three/scenes/Lander"
 
 registerComponent(LanderScene, {
   name: "LanderScene",
-  importPath: "./three/scenes/Lander"
+  importPath: "./three/scenes/Lander",
+  props: {
+    
+  }
 })
 
 registerComponent(Button, {
