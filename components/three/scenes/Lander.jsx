@@ -45,10 +45,6 @@ export function LanderScene({
           <Environment
             files="https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/potsdamer_platz_1k.hdr"
           />
-          <mesh>
-            <boxGeometry args={[1, 1, 1]}/>
-            <MeshBasicMaterial color={"black"}/>
-          </mesh>
         </OrbitalRig>
       </Canvas>
     </div>
