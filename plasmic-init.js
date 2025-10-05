@@ -25,6 +25,12 @@ export const PLASMIC = initPlasmicLoader({
 // PLASMIC.registerComponent(...);
 import { registerComponent } from "@plasmicapp/host";
 import Button from "./components/MyButton";
+import LanderScene from "./components/three/scenes/Lander"
+
+registerComponent(LanderScene, {
+  name: "Lander Scene",
+  importPath: "./three/scenes/Lander"
+})
 
 registerComponent(Button, {
   name: "Custom Button",
