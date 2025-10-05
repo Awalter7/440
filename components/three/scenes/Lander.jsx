@@ -38,8 +38,6 @@ export function LanderScene({
           height: "100%",
         }}
         gl={{ preserveDrawingBuffer: true }}
-        eventSource={containerRef}
-        eventPrefix="client"
       >
         <fog attach="fog" color="black" near={1} far={3.5} />
         <OrbitalRig>
