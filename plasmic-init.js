@@ -23,3 +23,45 @@ export const PLASMIC = initPlasmicLoader({
 // https://docs.plasmic.app/learn/app-hosting/#set-a-plasmic-project-to-use-your-app-host
 
 // PLASMIC.registerComponent(...);
+import { registerComponent } from "@plasmicapp/host";
+import Button from "./Button";
+
+registerComponent(Button, {
+  name: "Button",
+  importPath: "./Button",
+  props: {
+    children: {
+      type: "slot",
+      defaultValue: "Click me",
+    },
+    variant: {
+      type: "choice",
+      options: ["primary", "secondary", "ghost", "danger"],
+      defaultValue: "primary",
+    },
+    size: {
+      type: "choice",
+      options: ["sm", "md", "lg"],
+      defaultValue: "md",
+    },
+    isLoading: {
+      type: "boolean",
+      defaultValue: false,
+    },
+    leftIcon: {
+      type: "slot",
+    },
+    rightIcon: {
+      type: "slot",
+    },
+    href: {
+      type: "string",
+    },
+    className: {
+      type: "string",
+    },
+    ariaLabel: {
+      type: "string",
+    },
+  },
+});
