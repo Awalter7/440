@@ -15,6 +15,8 @@ export default function Guitar({rotation, position, opacity = 1}) {
       >
         {nodes.Sketchfab_model.children[0].children[0].children.map((child, i) => (
           child.children.map((mesh, j) => (
+            child.name !== "Cube027" && child.name !== "Cube024" && child.name !== "BezierCurve001"
+            &&
             <mesh
               key={`mesh-${i}-${j}`}
               castShadow

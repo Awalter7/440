@@ -1,25 +1,21 @@
-'use client'
 import { Vector3 } from 'three'
 import { useEffect, useRef } from 'react'
 import {useFrame, useThree} from '@react-three/fiber'
 import {SpotLight} from '@react-three/drei'
+import { state } from '../store'
 
 export function MovingSpot({ vec = new Vector3(), move = true, inverse = false, lookAt = [0, 1, 0], ...props }) {
   const light = useRef()
   const viewport = useThree((state) => state.viewport)
-
   useFrame((state, delta) => {
     if(move === true){
       let mouseX = state.mouse.x
+      let mouseY = state.mouse.y
       const vpWidth = viewport.width;
       const vpHeight = viewport.height;
 
-      // console.log(mouseX)
-      // console.log(mouseX > -.50 && mouseX < .50)
-      // if(mouseX > -.25 && mouseX < .25){
-        light.current.target.position.lerp(vec.set(inverse ? -(mouseX  * vpWidth) / 2 : (mouseX * vpWidth) / 2, inverse ? -(mouseX * vpHeight) / 2 : (mouseX * vpHeight) / 2, 0), 0.1)
-        light.current.target.updateMatrixWorld()
-      // }
+      light.current.target.position.lerp(vec.set(inverse ? -(mouseX  * vpWidth) / 2 : (mouseX * vpWidth) / 2, inverse ? -(mouseY * vpHeight) / 2 : (mouseY * vpHeight) / 2, 0), 0.1)
+      light.current.target.updateMatrixWorld()
     }
   })
 

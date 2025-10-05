@@ -1,4 +1,4 @@
-'use client'
+// Custom hook to get window scroll position
 import { useDepthBuffer } from '@react-three/drei'
 import Backdrop from '../objects/Backdrop'
 import Guitar from '../objects/Guitar'
@@ -9,15 +9,11 @@ export default function GuitarSpotLight({ position = [0, 0, 0], fov = 25 }){
 
     return(
         <>
-            <MovingSpot depthBuffer={depthBuffer} color="#2b63ff" position={[.50, 1.5, .2]} lookAt={[0, .25, 0]}  attenuation={1.09} anglePower={10} intensity={25} distance={10} move={false}/>
-            <MovingSpot depthBuffer={depthBuffer} color="#ffffff" position={[0, 1, 1]} lookAt={[0, .25, 0]} attenuation={1.5} angle={.35} anglePower={30} intensity={10} move={false}/>
-            <MovingSpot depthBuffer={depthBuffer} color="#ff0000" position={[-.50, 1.5, 0]} lookAt={[0, .25, 0]} attenuation={1} anglePower={10} intensity={25} distance={10} inverse={true}  move={false}/>
+            <MovingSpot depthBuffer={depthBuffer} color="#2b63ff" position={[.50, 1.5, 1]} lookAt={[0, .25, 0]}  attenuation={1.09} anglePower={10} intensity={25} distance={10} move={false}/>
+            <MovingSpot depthBuffer={depthBuffer} color="#ffffff" position={[0, 1, 1]} lookAt={[0, .25, 0]} attenuation={1.5} angle={.35} anglePower={30} intensity={10}/>
+            <MovingSpot depthBuffer={depthBuffer} color="#ff0000" position={[-.50, 1.5, 1]} lookAt={[0, .25, 0]} attenuation={1} anglePower={10} intensity={25} distance={10} inverse={true}  move={false}/>
             <Guitar position={[0, 0, 0]}/>
-            <Backdrop position={[0, .01, 0]}/>
-            <mesh castShadow receiveShadow scale={200} rotation={[-Math.PI / 2, 0, 0]}>
-                <planeGeometry args={[1, 1, 1]}/>
-                <meshPhysicalMaterial color={"black"} />
-            </mesh>
+            <Backdrop position={[0, 0, .20]} rotation={[Math.PI / 2.2, Math.PI / 2, 0]}/>
         </>
     )
 }
