@@ -34,7 +34,16 @@ export default function PlasmicLoaderPage(props) {
 export const getStaticProps = async (context) => {
   const { catchall } = context.params ?? {};
   const plasmicPath = typeof catchall === 'string' ? catchall : Array.isArray(catchall) ? `/${catchall.join('/')}` : '/';
-  const plasmicData = await PLASMIC.maybeFetchComponentData(plasmicPath);
+  let plasmicData;
+  try {
+    plasmicData = await PLASMIC.maybeFetchComponentData(plasmicPath);
+  } catch (err) {
+    // If the Plasmic API is unavailable or timing out during build, fail
+    // gracefully so the Next build can continue. At runtime the page will
+    // still be able to fetch from Plasmic when the host is reachable.
+    console.error("Plasmic maybeFetchComponentData failed:", err);
+    return { props: {} };
+  }
   if (!plasmicData) {
     // non-Plasmic catch-all
     return { props: {} };
@@ -56,13 +65,21 @@ export const getStaticProps = async (context) => {
 }
 
 export const getStaticPaths = async () => {
-  const pageModules = await PLASMIC.fetchPages();
-  return {
-    paths: pageModules.map((mod) => ({
-      params: {
-        catchall: mod.path.substring(1).split("/"),
-      },
-    })),
-    fallback: "blocking",
-  };
+  try {
+    const pageModules = await PLASMIC.fetchPages();
+    return {
+      paths: pageModules.map((mod) => ({
+        params: {
+          catchall: mod.path.substring(1).split("/"),
+        },
+      })),
+      fallback: "blocking",
+    };
+  } catch (err) {
+    // If Plasmic can't be reached during build, return a permissive
+    // fallback so the pages can be generated at request time instead of
+    // failing the build.
+    console.error("Plasmic.fetchPages failed during build:", err);
+    return { paths: [], fallback: "blocking" };
+  }
 }
