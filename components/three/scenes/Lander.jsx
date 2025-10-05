@@ -1,11 +1,11 @@
+// Lander.jsx
 "use client"
-import React, { useRef } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import { Canvas } from "@react-three/fiber";
 import { Environment } from "@react-three/drei";
 import OrbitalRig from "../rigs/OrbitalRig";
 import Backdrop from "../objects/Backdrop";
 import Guitar from "../objects/Guitar";
-import { MeshBasicMaterial } from "three";
 
 export function LanderScene({
   position = [0, 0, 2],
@@ -13,9 +13,35 @@ export function LanderScene({
   className,
   style,
 }) {
+  const [isClient, setIsClient] = useState(false);
   const containerRef = useRef(null);
-  console.log("here")
-  
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  // Don't render anything until we're on the client
+  if (!isClient) {
+    return (
+      <div
+        className={className}
+        style={{
+          position: "relative",
+          width: "100%",
+          height: "100%",
+          background: "#000",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          color: "white",
+          ...style,
+        }}
+      >
+        Loading 3D Scene...
+      </div>
+    );
+  }
+
   return (
     <div
       ref={containerRef}
