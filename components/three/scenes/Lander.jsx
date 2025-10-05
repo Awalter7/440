@@ -17,7 +17,7 @@ export function LanderScene({
   style,
 }) {
   const containerRef = useRef(null);
-
+console.log("here")
   return (
     <div
       ref={containerRef}

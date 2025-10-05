@@ -25,12 +25,14 @@ export const PLASMIC = initPlasmicLoader({
 // PLASMIC.registerComponent(...);
 import { registerComponent } from "@plasmicapp/host";
 import Button from "./components/MyButton";
-import LanderScene from "./components/three/scenes/Lander"
+import LanderSceneClient from "./components/three/scenes/LanderClient"
+
+
 
 
 registerComponent(LanderScene, {
   name: "LanderScene",
-  importPath: "./three/scenes/Lander",
+  importPath: "./three/scenes/LanderClient",
   props: {
     position: {
       type: "object",

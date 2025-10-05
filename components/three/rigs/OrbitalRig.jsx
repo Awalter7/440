@@ -1,3 +1,4 @@
+`use client`
 // Custom hook to get window scroll position
 import { useRef} from 'react'
 import { useFrame } from '@react-three/fiber'

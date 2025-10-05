@@ -1,3 +1,4 @@
+`use client`
 // Custom hook to get window scroll position
 import { useGLTF, useTexture, Html } from '@react-three/drei'
 import Floor from './Floor';
