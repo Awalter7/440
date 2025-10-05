@@ -31,9 +31,27 @@ registerComponent(LanderScene, {
   name: "LanderScene",
   importPath: "./three/scenes/Lander",
   props: {
-    
-  }
-})
+    className: {
+      type: "class",
+      displayName: "Container class",
+    },
+    style: {
+      type: "style",
+      displayName: "Container style",
+    },
+    position: {
+      type: "object",
+      displayName: "Camera Position",
+      defaultValue: [0, 0, 2],
+    },
+    fov: {
+      type: "number",
+      displayName: "Field of View",
+      defaultValue: 25,
+    },
+  },
+});
+
 
 registerComponent(Button, {
   name: "CustomButton",
