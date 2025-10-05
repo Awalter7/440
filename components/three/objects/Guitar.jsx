@@ -1,22 +1,15 @@
-`use client`
-// Custom hook to get window scroll position
-import { useGLTF, useTexture, Html } from '@react-three/drei'
-import Floor from './Floor';
 
-
+import { useGLTF, useTexture} from '@react-three/drei'
 
 export default function Guitar({rotation, position, opacity = 1}) {
-  const baseUrl = typeof window !== "undefined" ? window.location.origin : "";
-  const { nodes } = useGLTF(`${baseUrl}/objects/gibson_les_paul_and_marshall_amp.glb`);
+  const {nodes} = useGLTF('/gibson_les_paul_and_marshall_amp.glb');
 
-  console.log(nodes)
   return (
     <>
       <group
-        scale={15}
-        position={position || [-.25, -.25, 0]}
-        rotation={[0, -Math.PI / 4, 0]}
-        // rotation={[-Math.PI / 2, 0, Math.PI / 2]}
+        scale={20}
+        position={position || [0, 0, 0]}
+        rotation={[0, 0, 0]}
         dispose={null}
       >
         {nodes.Sketchfab_model.children[0].children[0].children.map((child, i) => (
@@ -35,12 +28,10 @@ export default function Guitar({rotation, position, opacity = 1}) {
             />
           ))
         ))}
-        <Floor />
       </group>
     </>
   );
 }
 
-const baseUrl = typeof window !== "undefined" ? window.location.origin : "";
-useGLTF.preload(`${baseUrl}/objects/gibson_les_paul_and_marshall_amp.glb`);
+useGLTF.preload('/gibson_les_paul_and_marshall_amp.glb')
 ;['/react.png', '/three2.png', '/pmndrs.png'].forEach(useTexture.preload)

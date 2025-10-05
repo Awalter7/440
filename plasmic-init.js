@@ -16,12 +16,12 @@ export const PLASMIC = initPlasmicLoader({
 
 // Import your components
 import Button from "./components/MyButton";
-import { LanderScene } from "./components/three/scenes/Lander"; // Import the actual component
+import { LanderScene } from "./components/three/canvas/Lander"; // Import the actual component
 
 // Use PLASMIC.registerComponent instead of registerComponent
 PLASMIC.registerComponent(LanderScene, {
   name: "LanderScene",
-  importPath: "./components/three/scenes/Lander",
+  importPath: "./components/three/canvas/Lander",
   props: {
     position: {
       type: "object",
