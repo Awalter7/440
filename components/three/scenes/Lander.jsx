@@ -1,4 +1,4 @@
-`use client`
+"use client"
 import React, { useRef } from "react";
 import { Canvas } from "@react-three/fiber";
 import { Environment } from "@react-three/drei";
@@ -6,10 +6,6 @@ import OrbitalRig from "../rigs/OrbitalRig";
 import Backdrop from "../objects/Backdrop";
 import Guitar from "../objects/Guitar";
 
-/**
- * Plasmic-compatible 3D scene component.
- * You can drop this into a Plasmic project and control its container size.
- */
 export function LanderScene({
   position = [0, 0, 2],
   fov = 25,
@@ -17,7 +13,8 @@ export function LanderScene({
   style,
 }) {
   const containerRef = useRef(null);
-console.log("here")
+  console.log("here")
+  
   return (
     <div
       ref={containerRef}

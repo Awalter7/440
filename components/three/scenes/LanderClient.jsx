@@ -1,9 +1,9 @@
-import LanderScene from "./Lander";
+// LanderClient.js
 import dynamic from "next/dynamic";
 
-// Dynamically import to disable SSR
 const LanderSceneClient = dynamic(() => import("./Lander"), {
   ssr: false,
+  loading: () => <div style={{ width: "100%", height: "100%", background: "#000" }}>Loading 3D scene...</div>
 });
 
 export default LanderSceneClient;
