@@ -33,7 +33,7 @@ registerComponent(LanderScene, {
 })
 
 registerComponent(Button, {
-  name: "Custom Button",
+  name: "CustomButton",
   importPath: "./Button",
   props: {
     children: {
