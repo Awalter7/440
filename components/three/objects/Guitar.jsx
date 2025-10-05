@@ -2,7 +2,8 @@
 import { useGLTF, useTexture} from '@react-three/drei'
 
 export default function Guitar({rotation, position, opacity = 1}) {
-  const {nodes} = useGLTF('/gibson_les_paul_and_marshall_amp.glb');
+  const baseUrl = typeof window !== "undefined" ? window.location.origin : "";
+  const { nodes } = useGLTF(`${baseUrl}/objects/gibson_les_paul_and_marshall_amp.glb`);
 
   return (
     <>
@@ -33,5 +34,6 @@ export default function Guitar({rotation, position, opacity = 1}) {
   );
 }
 
-useGLTF.preload('/gibson_les_paul_and_marshall_amp.glb')
+const baseUrl = typeof window !== "undefined" ? window.location.origin : "";
+useGLTF.preload(`${baseUrl}/objects/gibson_les_paul_and_marshall_amp.glb`)
 ;['/react.png', '/three2.png', '/pmndrs.png'].forEach(useTexture.preload)
