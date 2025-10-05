@@ -27,6 +27,12 @@ import { registerComponent } from "@plasmicapp/host";
 import Button from "./components/MyButton";
 import LanderScene from "./components/three/scenes/Lander"
 
+// Dynamically import to disable SSR
+const LanderScene = dynamic(() => import("./components/three/scenes/Lander"), {
+  ssr: false,
+});
+
+
 registerComponent(LanderScene, {
   name: "LanderScene",
   importPath: "./three/scenes/Lander",
