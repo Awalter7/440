@@ -28,7 +28,7 @@ import Button from "./components/MyButton";
 import LanderScene from "./components/three/scenes/Lander"
 
 registerComponent(LanderScene, {
-  name: "Lander Scene",
+  name: "LanderScene",
   importPath: "./three/scenes/Lander"
 })
 
