@@ -27,7 +27,7 @@ import { registerComponent } from "@plasmicapp/host";
 import Button from "./components/MyButton";
 
 registerComponent(Button, {
-  name: "Button",
+  name: "Custom Button",
   importPath: "./Button",
   props: {
     children: {
