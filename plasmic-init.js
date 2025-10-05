@@ -24,7 +24,7 @@ export const PLASMIC = initPlasmicLoader({
 
 // PLASMIC.registerComponent(...);
 import { registerComponent } from "@plasmicapp/host";
-import Button from "./Button";
+import Button from "./components/MyButton";
 
 registerComponent(Button, {
   name: "Button",
