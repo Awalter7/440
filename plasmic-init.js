@@ -31,7 +31,7 @@ PLASMIC.registerComponent(LanderScene, {
     fov: {
       type: "number",
       displayName: "Field of View",
-      defaultValue: 25,
+      defaultValue: 90,
     },
   },
 });
