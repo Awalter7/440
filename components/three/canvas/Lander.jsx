@@ -54,7 +54,7 @@ export function LanderScene({
       }}
     >
       <Canvas shadows camera={{ position, fov }}  style={{backgroundColor: "transparent", height: "100vh", width: "100vw", zIndex: 2}} gl={{ preserveDrawingBuffer: true}} eventSource={document.getElementById('root')} eventPrefix="client">
-        <fog attach="fog" color="black" near={1} far={3.5} />
+        <fog attach="fog" color="black" near={1} far={5} />
         <Environment environmentIntensity={.5} files="https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/potsdamer_platz_1k.hdr" />
         <OrbitalRig >
           <GuitarSpotLight />
