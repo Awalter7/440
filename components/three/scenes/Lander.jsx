@@ -5,6 +5,7 @@ import { Environment } from "@react-three/drei";
 import OrbitalRig from "../rigs/OrbitalRig";
 import Backdrop from "../objects/Backdrop";
 import Guitar from "../objects/Guitar";
+import { MeshBasicMaterial } from "three";
 
 export function LanderScene({
   position = [0, 0, 2],
@@ -44,6 +45,10 @@ export function LanderScene({
           <Environment
             files="https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/potsdamer_platz_1k.hdr"
           />
+          <mesh>
+            <boxGeometry args={[1, 1, 1]}/>
+            <MeshBasicMaterial color={"black"}/>
+          </mesh>
         </OrbitalRig>
       </Canvas>
     </div>
