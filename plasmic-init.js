@@ -30,7 +30,7 @@ import LanderSceneClient from "./components/three/scenes/LanderClient"
 
 
 
-registerComponent(LanderScene, {
+registerComponent(LanderSceneClient, {
   name: "LanderScene",
   importPath: "./three/scenes/LanderClient",
   props: {

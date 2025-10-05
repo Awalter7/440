@@ -1,6 +1,9 @@
 import LanderScene from "./Lander";
+import dynamic from "next/dynamic";
 
 // Dynamically import to disable SSR
-export default LanderSceneClient = dynamic(() => import("./components/three/scenes/Lander"), {
+const LanderSceneClient = dynamic(() => import("./Lander"), {
   ssr: false,
 });
+
+export default LanderSceneClient;
