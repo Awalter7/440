@@ -2,7 +2,7 @@
 import { useGLTF, useTexture, Html } from '@react-three/drei'
 
 export default function Floor({rotation, position, opacity = 1}) {
-  const {nodes} = useGLTF('/public/objects/floor.glb');
+  const {nodes} = useGLTF('/objects/floor.glb');
 
   console.log(nodes)
   return (
@@ -35,5 +35,5 @@ export default function Floor({rotation, position, opacity = 1}) {
   );
 }
 
-useGLTF.preload('/public/objects/floor.glb')
+useGLTF.preload('/objects/floor.glb')
 ;['/react.png', '/three2.png', '/pmndrs.png'].forEach(useTexture.preload)

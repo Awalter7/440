@@ -5,7 +5,7 @@ import Floor from './Floor';
 
 
 export default function Guitar({rotation, position, opacity = 1}) {
-  const {nodes} = useGLTF('/public/objects/gibson_les_paul_and_marshall_amp.glb');
+  const {nodes} = useGLTF('/objects/gibson_les_paul_and_marshall_amp.glb');
 
   console.log(nodes)
   return (
@@ -39,5 +39,5 @@ export default function Guitar({rotation, position, opacity = 1}) {
   );
 }
 
-useGLTF.preload('/public/objects/gibson_les_paul_and_marshall_amp.glb')
+useGLTF.preload('/objects/gibson_les_paul_and_marshall_amp.glb')
 ;['/react.png', '/three2.png', '/pmndrs.png'].forEach(useTexture.preload)
