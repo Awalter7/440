@@ -31,14 +31,6 @@ registerComponent(LanderScene, {
   name: "LanderScene",
   importPath: "./three/scenes/Lander",
   props: {
-    className: {
-      type: "class",
-      displayName: "Container class",
-    },
-    style: {
-      type: "style",
-      displayName: "Container style",
-    },
     position: {
       type: "object",
       displayName: "Camera Position",
@@ -51,7 +43,6 @@ registerComponent(LanderScene, {
     },
   },
 });
-
 
 registerComponent(Button, {
   name: "CustomButton",
