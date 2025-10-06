@@ -1,6 +1,7 @@
 // plasmic-init.js
 import { initPlasmicLoader } from "@plasmicapp/loader-nextjs";
 
+
 export const PLASMIC = initPlasmicLoader({
   projects: [
     {
@@ -14,6 +15,7 @@ export const PLASMIC = initPlasmicLoader({
 // Import your components
 import Button from "./components/MyButton";
 import { LanderScene } from "./components/three/canvas/Lander";
+import { CustomScroll } from "./components/effects/CustomScroll"
 
 // Use PLASMIC.registerComponent instead of registerComponent
 PLASMIC.registerComponent(LanderScene, {
@@ -64,42 +66,100 @@ PLASMIC.registerComponent(LanderScene, {
   ],
 });
 
-PLASMIC.registerComponent(Button, {
-  name: "CustomButton",
-  importPath: "./components/MyButton",
+PLASMIC.registerComponent(CustomScroll, {
+  name: "CustomScroll",
+  displayName: "Custom Scroll Effect",
+  description: "Animate position and opacity based on scroll position",
   props: {
     children: {
       type: "slot",
-      defaultValue: "Click me",
+      defaultValue: {
+        type: "text",
+        value: "Scroll to animate",
+      },
     },
-    variant: {
+    positionType: {
       type: "choice",
-      options: ["primary", "secondary", "ghost", "danger"],
-      defaultValue: "primary",
+      options: ["fixed", "absolute"],
+      defaultValue: "fixed",
+      displayName: "Position Type",
+      description: "Position type (only applies on frontend, stays relative in studio)",
     },
-    size: {
-      type: "choice",
-      options: ["sm", "md", "lg"],
-      defaultValue: "md",
+    startTop: {
+      type: "number",
+      displayName: "Start Top (px)",
+      description: "Initial top position in pixels",
     },
-    isLoading: {
-      type: "boolean",
-      defaultValue: false,
+    startLeft: {
+      type: "number",
+      displayName: "Start Left (px)",
+      description: "Initial left position in pixels",
     },
-    leftIcon: {
-      type: "slot",
+    startRight: {
+      type: "number",
+      displayName: "Start Right (px)",
+      description: "Initial right position in pixels",
     },
-    rightIcon: {
-      type: "slot",
+    startBottom: {
+      type: "number",
+      displayName: "Start Bottom (px)",
+      description: "Initial bottom position in pixels",
     },
-    href: {
-      type: "string",
+    endTop: {
+      type: "number",
+      displayName: "End Top (px)",
+      description: "Final top position in pixels",
     },
-    className: {
-      type: "string",
+    endLeft: {
+      type: "number",
+      displayName: "End Left (px)",
+      description: "Final left position in pixels",
     },
-    ariaLabel: {
-      type: "string",
+    endRight: {
+      type: "number",
+      displayName: "End Right (px)",
+      description: "Final right position in pixels",
+    },
+    endBottom: {
+      type: "number",
+      displayName: "End Bottom (px)",
+      description: "Final bottom position in pixels",
+    },
+    scrollStart: {
+      type: "number",
+      defaultValue: 0,
+      displayName: "Scroll Start (px)",
+      description: "Scroll position (from top) where animation begins",
+    },
+    scrollEnd: {
+      type: "number",
+      defaultValue: 1000,
+      displayName: "Scroll End (px)",
+      description: "Scroll position (from top) where animation completes",
+    },
+    startOpacity: {
+      type: "number",
+      defaultValue: 1,
+      min: 0,
+      max: 1,
+      displayName: "Start Opacity",
+      description: "Initial opacity (0-1)",
+    },
+    endOpacity: {
+      type: "number",
+      defaultValue: 1,
+      min: 0,
+      max: 1,
+      displayName: "End Opacity",
+      description: "Final opacity (0-1)",
+    },
+    zIndex: {
+      type: "number",
+      defaultValue: 1000,
+      displayName: "Z-Index",
+      description: "Stacking order",
     },
   },
+  importPath: "./CustomScroll",
+  isDefaultExport: false,
 });

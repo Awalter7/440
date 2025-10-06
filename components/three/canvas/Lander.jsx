@@ -2,7 +2,8 @@
 "use client"
 import React, { useRef, useEffect, useState } from "react";
 import { Canvas } from "@react-three/fiber";
-import { Environment, PerspectiveCamera } from "@react-three/drei";
+import { Environment, OrbitControls, PerspectiveCamera } from "@react-three/drei";
+import Paper from "../objects/Paper";
 import OrbitalRig from "../rigs/OrbitalRig";
 import GuitarSpotLight from "../scenes/GuitarSpotLight";
 
@@ -17,7 +18,13 @@ export function LanderScene({
 
   useEffect(() => {
     setIsClient(true);
-  }, []);
+
+    if(!containerRef.current) return;
+
+    containerRef.current.addEventListener('wheel', (event) => {
+      event.preventDefault(); // This stops the scroll from reaching the page
+    });
+  }, [containerRef]);
 
   // Don't render anything until we're on the client
   if (!isClient) {
@@ -48,11 +55,13 @@ export function LanderScene({
       style={style}
     >
       <Canvas shadows camera={{ position, fov }}  style={{backgroundColor: "transparent", height: "100vh", width: "100vw", zIndex: 2}} gl={{ preserveDrawingBuffer: true}} eventSource={document.getElementById('root')} eventPrefix="client">
-        <fog attach="fog" color="black" near={1} far={5} />
+        {/* <fog attach="fog" color="black" near={1} far={5} /> */}
         <Environment environmentIntensity={.5} files="https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/potsdamer_platz_1k.hdr" />
-        {/* <OrbitalRig > */}
+        <OrbitalRig >
           <GuitarSpotLight />
-        {/* </OrbitalRig> */}
+        </OrbitalRig>
+        {/* <Paper /> */}
+        {/* <OrbitControls enablePan enableZoom/> */}
         {/* <PerspectiveCamera position={[0, 1, 0]}/> */}
       </Canvas>
     </div>
