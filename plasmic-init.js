@@ -20,7 +20,7 @@ import { CustomScroll } from "./components/effects/CustomScroll";
 PLASMIC.registerComponent(ThreeCanvas, {
   name: "TheeCanvas",
   displayName: "Three.js Scroll Effect",
-  description: "Animate Guitar object position in 3D scene based on scroll",
+  description: "Animate Guitar and Floor objects in 3D scene based on scroll",
 props: {
     cameraPosition: {
       type: "object",
@@ -48,76 +48,150 @@ props: {
       description: "Animation duration in milliseconds (only for duration mode)",
       hidden: (props) => props.animationMode !== "duration",
     },
-    startX: {
+    // Guitar Properties Section
+    guitarStartX: {
       type: "number",
-      displayName: "Start X Position",
-      defaultValue: 0.1,
+      displayName: "Guitar - Start X Position",
+      defaultValue: 0,
       description: "Initial X position of Guitar",
     },
-    startY: {
+    guitarStartY: {
       type: "number",
-      displayName: "Start Y Position",
+      displayName: "Guitar - Start Y Position",
       defaultValue: 0,
       description: "Initial Y position of Guitar",
     },
-    startZ: {
+    guitarStartZ: {
       type: "number",
-      displayName: "Start Z Position",
+      displayName: "Guitar - Start Z Position",
       defaultValue: 0,
       description: "Initial Z position of Guitar",
     },
-    endX: {
+    guitarEndX: {
       type: "number",
-      displayName: "End X Position",
+      displayName: "Guitar - End X Position",
       defaultValue: .2,
       description: "Final X position of Guitar",
     },
-    endY: {
+    guitarEndY: {
       type: "number",
-      displayName: "End Y Position",
+      displayName: "Guitar - End Y Position",
       defaultValue: -0.2,
       description: "Final Y position of Guitar",
     },
-    endZ: {
+    guitarEndZ: {
       type: "number",
-      displayName: "End Z Position",
+      displayName: "Guitar - End Z Position",
       defaultValue: -1,
       description: "Final Z position of Guitar",
     },
-    startRotationX: {
+    guitarStartRotationX: {
       type: "number",
-      displayName: "Start Rotation X",
-      defaultValue: -5 / Math.PI,
+      displayName: "Guitar - Start Rotation X",
+      defaultValue: -2 / Math.PI,
       description: "Initial X rotation (in radians)",
     },
-    startRotationY: {
+    guitarStartRotationY: {
       type: "number",
-      displayName: "Start Rotation Y",
+      displayName: "Guitar - Start Rotation Y",
       defaultValue: 1.5 / Math.PI,
       description: "Initial Y rotation (in radians)",
     },
-    startRotationZ: {
+    guitarStartRotationZ: {
       type: "number",
-      displayName: "Start Rotation Z",
+      displayName: "Guitar - Start Rotation Z",
       defaultValue: -6.9 / Math.PI,
       description: "Initial Z rotation (in radians)",
     },
-    endRotationX: {
+    guitarEndRotationX: {
       type: "number",
-      displayName: "End Rotation X",
+      displayName: "Guitar - End Rotation X",
       defaultValue: Math.PI / 2,
       description: "Final X rotation (in radians)",
     },
-    endRotationY: {
+    guitarEndRotationY: {
       type: "number",
-      displayName: "End Rotation Y",
+      displayName: "Guitar - End Rotation Y",
       defaultValue: Math.PI ,
       description: "Final Y rotation (in radians)",
     },
-    endRotationZ: {
+    guitarEndRotationZ: {
       type: "number",
-      displayName: "End Rotation Z",
+      displayName: "Guitar - End Rotation Z",
       defaultValue: Math.PI / 2,
+      description: "Final Z rotation (in radians)",
+    },
+    // Floor Properties Section
+    floorStartX: {
+      type: "number",
+      displayName: "Floor - Start X Position",
+      defaultValue: 0,
+      description: "Initial X position of Floor",
+    },
+    floorStartY: {
+      type: "number",
+      displayName: "Floor - Start Y Position",
+      defaultValue: -0.2,
+      description: "Initial Y position of Floor",
+    },
+    floorStartZ: {
+      type: "number",
+      displayName: "Floor - Start Z Position",
+      defaultValue: 0,
+      description: "Initial Z position of Floor",
+    },
+    floorEndX: {
+      type: "number",
+      displayName: "Floor - End X Position",
+      defaultValue: 0,
+      description: "Final X position of Floor",
+    },
+    floorEndY: {
+      type: "number",
+      displayName: "Floor - End Y Position",
+      defaultValue: -0.2,
+      description: "Final Y position of Floor",
+    },
+    floorEndZ: {
+      type: "number",
+      displayName: "Floor - End Z Position",
+      defaultValue: 0,
+      description: "Final Z position of Floor",
+    },
+    floorStartRotationX: {
+      type: "number",
+      displayName: "Floor - Start Rotation X",
+      defaultValue: -Math.PI / 2,
+      description: "Initial X rotation (in radians)",
+    },
+    floorStartRotationY: {
+      type: "number",
+      displayName: "Floor - Start Rotation Y",
+      defaultValue: 0,
+      description: "Initial Y rotation (in radians)",
+    },
+    floorStartRotationZ: {
+      type: "number",
+      displayName: "Floor - Start Rotation Z",
+      defaultValue: 0,
+      description: "Initial Z rotation (in radians)",
+    },
+    floorEndRotationX: {
+      type: "number",
+      displayName: "Floor - End Rotation X",
+      defaultValue: -Math.PI / 2,
+      description: "Final X rotation (in radians)",
+    },
+    floorEndRotationY: {
+      type: "number",
+      displayName: "Floor - End Rotation Y",
+      defaultValue: 0,
+      description: "Final Y rotation (in radians)",
+    },
+    floorEndRotationZ: {
+      type: "number",
+      displayName: "Floor - End Rotation Z",
+      defaultValue: 0,
       description: "Final Z rotation (in radians)",
     },
     scrollStart: {

@@ -10,8 +10,9 @@ export default function OrbitalRig({ children, initialPosition }) {
   const snap = useSnapshot(state)
 
   useFrame((state, delta) => {
-    easing.damp3(state.camera.position, [snap.intro ? -state.viewport.width / 100 + .15: 0, 2, 1.3 ], 0.25, delta)
-    easing.dampE(group.current.rotation, [-Math.PI / 6, -state.pointer.x / 5, 0], 0.25, delta)
+    easing.damp3(state.camera.position, [snap.intro ? -state.viewport.width / 100 + .15: 0, .5, 2.2 ], 0.25, delta)
+    state.camera.lookAt(0, .5, 0)
+    easing.dampE(group.current.rotation, [-Math.PI / 5, -state.pointer.x / 5, 0], 0.25, delta)
   })
 
   return <group ref={group}>{children}</group>
