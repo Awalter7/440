@@ -67,6 +67,7 @@ PLASMIC.registerComponent(LanderScene, {
 });
 
 // Plasmic Registration
+// Plasmic Registration
 PLASMIC.registerComponent(CustomScroll, {
   name: "CustomScroll",
   displayName: "Custom Scroll Effect",
@@ -90,41 +91,49 @@ PLASMIC.registerComponent(CustomScroll, {
       type: "string",
       displayName: "Start Top",
       description: "Initial top position (e.g., '100px', '50vh', '10%')",
+      defaultValueHint: "0px",
     },
     startLeft: {
       type: "string",
       displayName: "Start Left",
       description: "Initial left position (e.g., '0px', '25vw')",
+      defaultValueHint: "0px",
     },
     startRight: {
       type: "string",
       displayName: "Start Right",
       description: "Initial right position (e.g., '0px', '10vw')",
+      defaultValueHint: "0px",
     },
     startBottom: {
       type: "string",
       displayName: "Start Bottom",
       description: "Initial bottom position (e.g., '20px', '5vh')",
+      defaultValueHint: "0px",
     },
     endTop: {
       type: "string",
       displayName: "End Top",
       description: "Final top position (e.g., '500px', '80vh')",
+      defaultValueHint: "0px",
     },
     endLeft: {
       type: "string",
       displayName: "End Left",
       description: "Final left position (e.g., '100px', '50vw')",
+      defaultValueHint: "0px",
     },
     endRight: {
       type: "string",
       displayName: "End Right",
       description: "Final right position (e.g., '100px', '20vw')",
+      defaultValueHint: "0px",
     },
     endBottom: {
       type: "string",
       displayName: "End Bottom",
       description: "Final bottom position (e.g., '100px', '10vh')",
+      defaultValueHint: "0px",
     },
     scrollStart: {
       type: "number",
@@ -161,6 +170,6 @@ PLASMIC.registerComponent(CustomScroll, {
       description: "Stacking order",
     },
   },
-  importPath: "./CustomScroll",
+  importPath: "./components/effects/CustomScroll",
   isDefaultExport: false,
 });
