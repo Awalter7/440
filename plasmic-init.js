@@ -69,6 +69,7 @@ PLASMIC.registerComponent(LanderScene, {
 // Plasmic Registration
 // Plasmic Registration
 // Plasmic Registration
+// Plasmic Registration
 PLASMIC.registerComponent(CustomScroll, {
   name: "CustomScroll",
   displayName: "Custom Scroll Effect",
@@ -83,10 +84,10 @@ PLASMIC.registerComponent(CustomScroll, {
     },
     positionType: {
       type: "choice",
-      options: ["fixed", "absolute"],
-      defaultValue: "fixed",
+      options: ["fixed", "absolute", "relative"],
+      defaultValue: "relative",
       displayName: "Position Type",
-      description: "Position type (only applies on frontend, stays relative in studio)",
+      description: "Position type (fixed, absolute, or relative. In studio, always shows as relative)",
     },
     animationMode: {
       type: "choice",
