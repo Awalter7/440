@@ -2,12 +2,12 @@
 "use client"
 import React, { useRef, useEffect, useState } from "react";
 import { Canvas } from "@react-three/fiber";
-import { Environment } from "@react-three/drei";
+import { Environment, PerspectiveCamera } from "@react-three/drei";
 import OrbitalRig from "../rigs/OrbitalRig";
 import GuitarSpotLight from "../scenes/GuitarSpotLight";
 
 export function LanderScene({
-  position = [0, 0, 2],
+  position = [0, 1, 1],
   fov = 25,
   className,
   style,
@@ -45,20 +45,15 @@ export function LanderScene({
     <div
       ref={containerRef}
       className={className}
-      style={{
-        position: "relative",
-        width: "100%",
-        height: "100%",
-        background: "transparent",
-        ...style,
-      }}
+      style={style}
     >
       <Canvas shadows camera={{ position, fov }}  style={{backgroundColor: "transparent", height: "100vh", width: "100vw", zIndex: 2}} gl={{ preserveDrawingBuffer: true}} eventSource={document.getElementById('root')} eventPrefix="client">
         <fog attach="fog" color="black" near={1} far={5} />
         <Environment environmentIntensity={.5} files="https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/potsdamer_platz_1k.hdr" />
-        <OrbitalRig >
+        {/* <OrbitalRig > */}
           <GuitarSpotLight />
-        </OrbitalRig>
+        {/* </OrbitalRig> */}
+        {/* <PerspectiveCamera position={[0, 1, 0]}/> */}
       </Canvas>
     </div>
   );

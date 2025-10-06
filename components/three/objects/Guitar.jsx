@@ -5,15 +5,17 @@ export default function Guitar({rotation, position, opacity = 1}) {
   const baseUrl = typeof window !== "undefined" ? window.location.origin : "";
   const { nodes } = useGLTF(`${baseUrl}/objects/gibson_les_paul_and_marshall_amp.glb`);
 
+  console.log(nodes)
   return (
     <>
       <group
         scale={20}
         position={position || [0, 0, 0]}
-        rotation={[0, 0, 0]}
+        rotation={rotation || [0, 0, 0]}
         dispose={null}
       >
         {nodes.Sketchfab_model.children[0].children[0].children.map((child, i) => (
+          child.name !== "Cube024" && child.name !== "Cube027" && child.name !== "BezierCurve001" &&
           child.children.map((mesh, j) => (
             <mesh
               key={`mesh-${i}-${j}`}

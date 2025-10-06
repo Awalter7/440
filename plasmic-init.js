@@ -11,12 +11,9 @@ export const PLASMIC = initPlasmicLoader({
   preview: true,
 });
 
-// Remove this line:
-// import { registerComponent } from "@plasmicapp/host";
-
 // Import your components
 import Button from "./components/MyButton";
-import { LanderScene } from "./components/three/canvas/Lander"; // Import the actual component
+import { LanderScene } from "./components/three/canvas/Lander";
 
 // Use PLASMIC.registerComponent instead of registerComponent
 PLASMIC.registerComponent(LanderScene, {
@@ -33,7 +30,38 @@ PLASMIC.registerComponent(LanderScene, {
       displayName: "Field of View",
       defaultValue: 25,
     },
+    className: {
+      type: "class",
+      displayName: "CSS Class",
+    },
   },
+  styleProps: [
+    "width",
+    "height",
+    "minWidth",
+    "maxWidth", 
+    "minHeight",
+    "maxHeight",
+    "position",
+    "top",
+    "left",
+    "right",
+    "bottom",
+    "zIndex",
+    "display",
+    "flexDirection",
+    "flexWrap",
+    "justifyContent",
+    "alignItems",
+    "gap",
+    "padding",
+    "margin",
+    "background",
+    "backgroundColor",
+    "border",
+    "borderRadius",
+    "overflow",
+  ],
 });
 
 PLASMIC.registerComponent(Button, {
