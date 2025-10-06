@@ -26,16 +26,24 @@ export default function Floor({ animatedPosition, animatedRotation, animatedOpac
     }
   });
 
+  
+
   return (
     <mesh
       ref={meshRef}
       rotation={[animatedRotation[0], animatedRotation[1], animatedRotation[2]]}
       position={[animatedPosition[0], animatedPosition[1], animatedPosition[2]]}
+      renderOrder={0} // Floor renders first
       castShadow
       receiveShadow
     >
       <planeGeometry args={[100, 100, 1]} />
-      <meshBasicMaterial color="white" transparent opacity={animatedOpacity} />
+        <meshPhysicalMaterial
+            color="#000000"
+            transparent={animatedOpacity === 1 ? false : true}
+            opacity={animatedOpacity}
+            depthWrite={true}  // <== Add this
+        />
     </mesh>
   );
 }

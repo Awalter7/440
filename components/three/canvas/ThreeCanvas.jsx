@@ -177,19 +177,23 @@ export default function ThreeCanvas({
         gl={{ preserveDrawingBuffer: true}} 
         eventPrefix="client"
       >
-        <Environment environmentIntensity={.5} files="https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/potsdamer_platz_1k.hdr" />
-        <OrbitalRig>
-          <GuitarScene 
-            guitarAnimatedPosition={guitarAnimatedPosition} 
-            guitarAnimatedRotation={guitarAnimatedRotation}
-            guitarAnimatedOpacity={guitarAnimatedOpacity}
-          />
-        </OrbitalRig>
+        <ambientLight intensity={1 - scrollProgress + .5 }/>
+        <fog attach="fog" color="black" near={1} far={10} />
         <Floor 
           animatedPosition={floorAnimatedPosition} 
           animatedRotation={floorAnimatedRotation}
           animatedOpacity={floorAnimatedOpacity}
         />
+        {/* <Environment intensity={0.005} files="https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/potsdamer_platz_1k.hdr" /> */}
+        <OrbitalRig scrollProgress={scrollProgress}>
+          <GuitarScene 
+            guitarAnimatedPosition={guitarAnimatedPosition} 
+            guitarAnimatedRotation={guitarAnimatedRotation}
+            guitarAnimatedOpacity={guitarAnimatedOpacity}
+            scrollProgress={scrollProgress}
+          />
+        </OrbitalRig>
+
         {/* <OrbitControls enablePan enableZoom/> */}
       </Canvas>
     </div>
