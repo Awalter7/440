@@ -51,25 +51,25 @@ props: {
     startX: {
       type: "number",
       displayName: "Start X Position",
-      defaultValue: 0.2,
+      defaultValue: 0.1,
       description: "Initial X position of Guitar",
     },
     startY: {
       type: "number",
       displayName: "Start Y Position",
-      defaultValue: -0.2,
+      defaultValue: 0,
       description: "Initial Y position of Guitar",
     },
     startZ: {
       type: "number",
       displayName: "Start Z Position",
-      defaultValue: -1,
+      defaultValue: 0,
       description: "Initial Z position of Guitar",
     },
     endX: {
       type: "number",
       displayName: "End X Position",
-      defaultValue: 0.2,
+      defaultValue: .2,
       description: "Final X position of Guitar",
     },
     endY: {
@@ -87,19 +87,19 @@ props: {
     startRotationX: {
       type: "number",
       displayName: "Start Rotation X",
-      defaultValue: Math.PI / 2,
+      defaultValue: -5 / Math.PI,
       description: "Initial X rotation (in radians)",
     },
     startRotationY: {
       type: "number",
       displayName: "Start Rotation Y",
-      defaultValue: Math.PI,
+      defaultValue: 1.5 / Math.PI,
       description: "Initial Y rotation (in radians)",
     },
     startRotationZ: {
       type: "number",
       displayName: "Start Rotation Z",
-      defaultValue: Math.PI / 2,
+      defaultValue: -6.9 / Math.PI,
       description: "Initial Z rotation (in radians)",
     },
     endRotationX: {
@@ -111,7 +111,7 @@ props: {
     endRotationY: {
       type: "number",
       displayName: "End Rotation Y",
-      defaultValue: Math.PI,
+      defaultValue: Math.PI ,
       description: "Final Y rotation (in radians)",
     },
     endRotationZ: {
@@ -166,7 +166,7 @@ props: {
     "overflow",
   ],
   importPath: "../components/three/canvas/TheeCanvas",
-  isDefaultExport: false,
+  isDefaultExport: true,
 });
 
 // Plasmic Registration

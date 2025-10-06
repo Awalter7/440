@@ -123,7 +123,7 @@ export default function ThreeCanvas({
     setAnimatedPosition([x, y, z]);
     setAnimatedRotation([rotX, rotY, rotZ]);
   }, [scrollProgress, animationProgress, animationMode, startX, startY, startZ, endX, endY, endZ, startRotationX, startRotationY, startRotationZ, endRotationX, endRotationY, endRotationZ]);
-  
+
   return (
     <div
       ref={containerRef}
@@ -135,7 +135,6 @@ export default function ThreeCanvas({
         camera={{ position: cameraPosition, fov: cameraFov }}
         style={{backgroundColor: "transparent", height: "100vh", width: "100vw", zIndex: 2}} 
         gl={{ preserveDrawingBuffer: true}} 
-        eventSource={document.getElementById('root')} 
         eventPrefix="client"
       >
         <Environment environmentIntensity={.5} files="https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/potsdamer_platz_1k.hdr" />

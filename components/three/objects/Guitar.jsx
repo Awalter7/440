@@ -1,5 +1,7 @@
 
+import { useRef } from 'react';
 import { useGLTF, useTexture} from '@react-three/drei'
+import { useFrame } from '@react-three/fiber';
 
 export default function Guitar({ animatedPosition, animatedRotation }) {
   const baseUrl = typeof window !== "undefined" ? window.location.origin : "";
@@ -28,9 +30,9 @@ export default function Guitar({ animatedPosition, animatedRotation }) {
   return (
     <group
       ref={groupRef}
-      rotation={[Math.PI / 2, Math.PI, Math.PI / 2]}
+      rotation={[animatedRotation[0], animatedRotation[1], animatedRotation[2]]}
       scale={0.21}
-      position={[.2, -0.2, -1]}
+      position={[animatedPosition[0], animatedPosition[1], animatedPosition[2]]}
       dispose={null}
     >
       {
