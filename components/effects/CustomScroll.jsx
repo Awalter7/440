@@ -1,4 +1,3 @@
-
 import * as React from "react";
 
 export function CustomScroll({
@@ -50,10 +49,35 @@ export function CustomScroll({
     return () => window.removeEventListener("scroll", handleScroll);
   }, [scrollStart, scrollEnd]);
 
-  // Interpolate position values
+  // Parse value with unit (e.g., "100px", "50vw", "20vh")
+  const parseValue = (value) => {
+    if (value === undefined || value === null || value === "") return null;
+    
+    const str = String(value).trim();
+    const match = str.match(/^(-?[\d.]+)(px|vw|vh|%|em|rem)?$/);
+    
+    if (!match) return null;
+    
+    return {
+      number: parseFloat(match[1]),
+      unit: match[2] || "px"
+    };
+  };
+
+  // Interpolate between two values with units
   const interpolate = (start, end) => {
-    if (start === undefined || end === undefined) return undefined;
-    return start + (end - start) * scrollProgress;
+    const startParsed = parseValue(start);
+    const endParsed = parseValue(end);
+    
+    if (!startParsed || !endParsed) return undefined;
+    
+    // If units don't match, we can't interpolate
+    if (startParsed.unit !== endParsed.unit) {
+      console.warn(`Unit mismatch: ${start} vs ${end}. Using start value unit.`);
+    }
+    
+    const interpolatedNumber = startParsed.number + (endParsed.number - startParsed.number) * scrollProgress;
+    return `${interpolatedNumber}${startParsed.unit}`;
   };
 
   const currentTop = interpolate(startTop, endTop);
@@ -67,13 +91,13 @@ export function CustomScroll({
 
   const style = {
     position,
-    ...(currentTop !== undefined && { top: `${currentTop}px` }),
-    ...(currentLeft !== undefined && { left: `${currentLeft}px` }),
-    ...(currentRight !== undefined && { right: `${currentRight}px` }),
-    ...(currentBottom !== undefined && { bottom: `${currentBottom}px` }),
+    ...(currentTop !== undefined && { top: currentTop }),
+    ...(currentLeft !== undefined && { left: currentLeft }),
+    ...(currentRight !== undefined && { right: currentRight }),
+    ...(currentBottom !== undefined && { bottom: currentBottom }),
     opacity: currentOpacity,
     zIndex,
-    transition: "none", // Remove any transitions for smooth scroll-based animation
+    transition: "none",
   };
 
   return (

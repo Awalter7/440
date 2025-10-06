@@ -66,10 +66,11 @@ PLASMIC.registerComponent(LanderScene, {
   ],
 });
 
+// Plasmic Registration
 PLASMIC.registerComponent(CustomScroll, {
   name: "CustomScroll",
   displayName: "Custom Scroll Effect",
-  description: "Animate position and opacity based on scroll position",
+  description: "Animate position and opacity based on scroll position (supports px, vw, vh, %, em, rem)",
   props: {
     children: {
       type: "slot",
@@ -86,44 +87,44 @@ PLASMIC.registerComponent(CustomScroll, {
       description: "Position type (only applies on frontend, stays relative in studio)",
     },
     startTop: {
-      type: "number",
-      displayName: "Start Top (px)",
-      description: "Initial top position in pixels",
+      type: "string",
+      displayName: "Start Top",
+      description: "Initial top position (e.g., '100px', '50vh', '10%')",
     },
     startLeft: {
-      type: "number",
-      displayName: "Start Left (px)",
-      description: "Initial left position in pixels",
+      type: "string",
+      displayName: "Start Left",
+      description: "Initial left position (e.g., '0px', '25vw')",
     },
     startRight: {
-      type: "number",
-      displayName: "Start Right (px)",
-      description: "Initial right position in pixels",
+      type: "string",
+      displayName: "Start Right",
+      description: "Initial right position (e.g., '0px', '10vw')",
     },
     startBottom: {
-      type: "number",
-      displayName: "Start Bottom (px)",
-      description: "Initial bottom position in pixels",
+      type: "string",
+      displayName: "Start Bottom",
+      description: "Initial bottom position (e.g., '20px', '5vh')",
     },
     endTop: {
-      type: "number",
-      displayName: "End Top (px)",
-      description: "Final top position in pixels",
+      type: "string",
+      displayName: "End Top",
+      description: "Final top position (e.g., '500px', '80vh')",
     },
     endLeft: {
-      type: "number",
-      displayName: "End Left (px)",
-      description: "Final left position in pixels",
+      type: "string",
+      displayName: "End Left",
+      description: "Final left position (e.g., '100px', '50vw')",
     },
     endRight: {
-      type: "number",
-      displayName: "End Right (px)",
-      description: "Final right position in pixels",
+      type: "string",
+      displayName: "End Right",
+      description: "Final right position (e.g., '100px', '20vw')",
     },
     endBottom: {
-      type: "number",
-      displayName: "End Bottom (px)",
-      description: "Final bottom position in pixels",
+      type: "string",
+      displayName: "End Bottom",
+      description: "Final bottom position (e.g., '100px', '10vh')",
     },
     scrollStart: {
       type: "number",
