@@ -14,23 +14,124 @@ export const PLASMIC = initPlasmicLoader({
 
 // Import your components
 import Button from "./components/MyButton";
-import { LanderScene } from "./components/three/canvas/Lander";
-import { CustomScroll } from "./components/effects/CustomScroll"
+import ThreeCanvas from "./components/three/canvas/ThreeCanvas"
+import { CustomScroll } from "./components/effects/CustomScroll";
 
-// Use PLASMIC.registerComponent instead of registerComponent
-PLASMIC.registerComponent(LanderScene, {
-  name: "LanderScene",
-  importPath: "./components/three/canvas/Lander",
-  props: {
-    position: {
+PLASMIC.registerComponent(ThreeCanvas, {
+  name: "TheeCanvas",
+  displayName: "Three.js Scroll Effect",
+  description: "Animate Guitar object position in 3D scene based on scroll",
+props: {
+    cameraPosition: {
       type: "object",
       displayName: "Camera Position",
-      defaultValue: [0, 0, 2],
+      defaultValue: [0, 1, 1],
+      description: "Camera position [x, y, z]",
     },
-    fov: {
+    cameraFov: {
       type: "number",
-      displayName: "Field of View",
+      displayName: "Camera FOV",
       defaultValue: 25,
+      description: "Camera field of view",
+    },
+    animationMode: {
+      type: "choice",
+      options: ["interpolation", "duration"],
+      defaultValue: "interpolation",
+      displayName: "Animation Mode",
+      description: "Interpolation: moves with scroll | Duration: animates over time when triggered",
+    },
+    duration: {
+      type: "number",
+      defaultValue: 1000,
+      displayName: "Duration (ms)",
+      description: "Animation duration in milliseconds (only for duration mode)",
+      hidden: (props) => props.animationMode !== "duration",
+    },
+    startX: {
+      type: "number",
+      displayName: "Start X Position",
+      defaultValue: 0.2,
+      description: "Initial X position of Guitar",
+    },
+    startY: {
+      type: "number",
+      displayName: "Start Y Position",
+      defaultValue: -0.2,
+      description: "Initial Y position of Guitar",
+    },
+    startZ: {
+      type: "number",
+      displayName: "Start Z Position",
+      defaultValue: -1,
+      description: "Initial Z position of Guitar",
+    },
+    endX: {
+      type: "number",
+      displayName: "End X Position",
+      defaultValue: 0.2,
+      description: "Final X position of Guitar",
+    },
+    endY: {
+      type: "number",
+      displayName: "End Y Position",
+      defaultValue: -0.2,
+      description: "Final Y position of Guitar",
+    },
+    endZ: {
+      type: "number",
+      displayName: "End Z Position",
+      defaultValue: -1,
+      description: "Final Z position of Guitar",
+    },
+    startRotationX: {
+      type: "number",
+      displayName: "Start Rotation X",
+      defaultValue: Math.PI / 2,
+      description: "Initial X rotation (in radians)",
+    },
+    startRotationY: {
+      type: "number",
+      displayName: "Start Rotation Y",
+      defaultValue: Math.PI,
+      description: "Initial Y rotation (in radians)",
+    },
+    startRotationZ: {
+      type: "number",
+      displayName: "Start Rotation Z",
+      defaultValue: Math.PI / 2,
+      description: "Initial Z rotation (in radians)",
+    },
+    endRotationX: {
+      type: "number",
+      displayName: "End Rotation X",
+      defaultValue: Math.PI / 2,
+      description: "Final X rotation (in radians)",
+    },
+    endRotationY: {
+      type: "number",
+      displayName: "End Rotation Y",
+      defaultValue: Math.PI,
+      description: "Final Y rotation (in radians)",
+    },
+    endRotationZ: {
+      type: "number",
+      displayName: "End Rotation Z",
+      defaultValue: Math.PI / 2,
+      description: "Final Z rotation (in radians)",
+    },
+    scrollStart: {
+      type: "number",
+      defaultValue: 0,
+      displayName: "Scroll Start (px)",
+      description: "Interpolation: animation start | Duration: trigger point",
+    },
+    scrollEnd: {
+      type: "number",
+      defaultValue: 1000,
+      displayName: "Scroll End (px)",
+      description: "Scroll position where interpolation completes (interpolation mode only)",
+      hidden: (props) => props.animationMode !== "interpolation",
     },
     className: {
       type: "class",
@@ -64,6 +165,8 @@ PLASMIC.registerComponent(LanderScene, {
     "borderRadius",
     "overflow",
   ],
+  importPath: "../components/three/canvas/TheeCanvas",
+  isDefaultExport: false,
 });
 
 // Plasmic Registration
