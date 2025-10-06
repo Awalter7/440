@@ -68,10 +68,11 @@ PLASMIC.registerComponent(LanderScene, {
 
 // Plasmic Registration
 // Plasmic Registration
+// Plasmic Registration
 PLASMIC.registerComponent(CustomScroll, {
   name: "CustomScroll",
   displayName: "Custom Scroll Effect",
-  description: "Animate position and opacity based on scroll position (supports px, vw, vh, %, em, rem)",
+  description: "Animate position and opacity based on scroll (interpolation or duration-based)",
   props: {
     children: {
       type: "slot",
@@ -86,6 +87,20 @@ PLASMIC.registerComponent(CustomScroll, {
       defaultValue: "fixed",
       displayName: "Position Type",
       description: "Position type (only applies on frontend, stays relative in studio)",
+    },
+    animationMode: {
+      type: "choice",
+      options: ["interpolation", "duration"],
+      defaultValue: "interpolation",
+      displayName: "Animation Mode",
+      description: "Interpolation: moves with scroll | Duration: animates over time when triggered",
+    },
+    duration: {
+      type: "number",
+      defaultValue: 1000,
+      displayName: "Duration (ms)",
+      description: "Animation duration in milliseconds (only for duration mode)",
+      hidden: (props) => props.animationMode !== "duration",
     },
     startTop: {
       type: "string",
@@ -139,13 +154,14 @@ PLASMIC.registerComponent(CustomScroll, {
       type: "number",
       defaultValue: 0,
       displayName: "Scroll Start (px)",
-      description: "Scroll position (from top) where animation begins",
+      description: "Interpolation: animation start | Duration: trigger point",
     },
     scrollEnd: {
       type: "number",
       defaultValue: 1000,
       displayName: "Scroll End (px)",
-      description: "Scroll position (from top) where animation completes",
+      description: "Scroll position where interpolation completes (interpolation mode only)",
+      hidden: (props) => props.animationMode !== "interpolation",
     },
     startOpacity: {
       type: "number",
