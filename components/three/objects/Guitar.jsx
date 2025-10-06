@@ -1,9 +1,8 @@
-
 import { useRef } from 'react';
 import { useGLTF, useTexture} from '@react-three/drei'
 import { useFrame } from '@react-three/fiber';
 
-export default function Guitar({ animatedPosition, animatedRotation }) {
+export default function Guitar({ animatedPosition, animatedRotation, animatedOpacity }) {
   const baseUrl = typeof window !== "undefined" ? window.location.origin : "";
   const { nodes } = useGLTF(`${baseUrl}/objects/flying-v_guitar.glb`);
   const groupRef = useRef();
@@ -23,6 +22,15 @@ export default function Guitar({ animatedPosition, animatedRotation }) {
           animatedRotation[1],
           animatedRotation[2]
         );
+      }
+      // Update opacity for all children meshes
+      if (animatedOpacity !== undefined) {
+        groupRef.current.traverse((child) => {
+          if (child.isMesh && child.material) {
+            child.material.transparent = true;
+            child.material.opacity = animatedOpacity;
+          }
+        });
       }
     }
   });
@@ -50,6 +58,8 @@ export default function Guitar({ animatedPosition, animatedRotation }) {
                 rotation={[0, 4.933 / Math.PI , 0]}
                 dispose={null}
                 material-roughness={1}
+                material-transparent={true}
+                material-opacity={animatedOpacity}
               />
             );
           } else if (index === 2) {
@@ -64,6 +74,8 @@ export default function Guitar({ animatedPosition, animatedRotation }) {
                 material={mesh.children[0].material}
                 dispose={null}
                 material-roughness={1}
+                material-transparent={true}
+                material-opacity={animatedOpacity}
               />
             );
           }

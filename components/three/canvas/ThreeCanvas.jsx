@@ -5,6 +5,7 @@ import { Canvas } from "@react-three/fiber";
 import { Environment, OrbitControls, PerspectiveCamera } from "@react-three/drei";
 import OrbitalRig from "../rigs/OrbitalRig";
 import GuitarScene from "../scenes/GuitarScene";
+import Floor from "../objects/Floor";
 import { AxesHelper } from "three";
 
 export default function ThreeCanvas({
@@ -27,6 +28,8 @@ export default function ThreeCanvas({
   guitarEndRotationX = Math.PI / 2,
   guitarEndRotationY = Math.PI,
   guitarEndRotationZ = Math.PI / 2,
+  guitarStartOpacity = 1,
+  guitarEndOpacity = 1,
   // Floor props
   floorStartX = 0,
   floorStartY = -0.2,
@@ -40,6 +43,8 @@ export default function ThreeCanvas({
   floorEndRotationX = -Math.PI / 2,
   floorEndRotationY = 0,
   floorEndRotationZ = 0,
+  floorStartOpacity = 1,
+  floorEndOpacity = 1,
   scrollStart = 0,
   scrollEnd = 1000,
 }) {
@@ -49,8 +54,10 @@ export default function ThreeCanvas({
   const [animationProgress, setAnimationProgress] = useState(0);
   const [guitarAnimatedPosition, setGuitarAnimatedPosition] = useState([guitarStartX, guitarStartY, guitarStartZ]);
   const [guitarAnimatedRotation, setGuitarAnimatedRotation] = useState([guitarStartRotationX, guitarStartRotationY, guitarStartRotationZ]);
+  const [guitarAnimatedOpacity, setGuitarAnimatedOpacity] = useState(guitarStartOpacity);
   const [floorAnimatedPosition, setFloorAnimatedPosition] = useState([floorStartX, floorStartY, floorStartZ]);
   const [floorAnimatedRotation, setFloorAnimatedRotation] = useState([floorStartRotationX, floorStartRotationY, floorStartRotationZ]);
+  const [floorAnimatedOpacity, setFloorAnimatedOpacity] = useState(floorStartOpacity);
   const containerRef = useRef(null);
   const animationStartTime = useRef(null);
   const animationFrameId = useRef(null);
@@ -131,9 +138,12 @@ export default function ThreeCanvas({
     const rotY = guitarStartRotationY + (guitarEndRotationY - guitarStartRotationY) * progress;
     const rotZ = guitarStartRotationZ + (guitarEndRotationZ - guitarStartRotationZ) * progress;
     
+    const opacity = guitarStartOpacity + (guitarEndOpacity - guitarStartOpacity) * progress;
+    
     setGuitarAnimatedPosition([x, y, z]);
     setGuitarAnimatedRotation([rotX, rotY, rotZ]);
-  }, [scrollProgress, animationProgress, animationMode, guitarStartX, guitarStartY, guitarStartZ, guitarEndX, guitarEndY, guitarEndZ, guitarStartRotationX, guitarStartRotationY, guitarStartRotationZ, guitarEndRotationX, guitarEndRotationY, guitarEndRotationZ]);
+    setGuitarAnimatedOpacity(opacity);
+  }, [scrollProgress, animationProgress, animationMode, guitarStartX, guitarStartY, guitarStartZ, guitarEndX, guitarEndY, guitarEndZ, guitarStartRotationX, guitarStartRotationY, guitarStartRotationZ, guitarEndRotationX, guitarEndRotationY, guitarEndRotationZ, guitarStartOpacity, guitarEndOpacity]);
 
   // Update animated position and rotation for Floor
   useEffect(() => {
@@ -147,9 +157,12 @@ export default function ThreeCanvas({
     const rotY = floorStartRotationY + (floorEndRotationY - floorStartRotationY) * progress;
     const rotZ = floorStartRotationZ + (floorEndRotationZ - floorStartRotationZ) * progress;
     
+    const opacity = floorStartOpacity + (floorEndOpacity - floorStartOpacity) * progress;
+    
     setFloorAnimatedPosition([x, y, z]);
     setFloorAnimatedRotation([rotX, rotY, rotZ]);
-  }, [scrollProgress, animationProgress, animationMode, floorStartX, floorStartY, floorStartZ, floorEndX, floorEndY, floorEndZ, floorStartRotationX, floorStartRotationY, floorStartRotationZ, floorEndRotationX, floorEndRotationY, floorEndRotationZ]);
+    setFloorAnimatedOpacity(opacity);
+  }, [scrollProgress, animationProgress, animationMode, floorStartX, floorStartY, floorStartZ, floorEndX, floorEndY, floorEndZ, floorStartRotationX, floorStartRotationY, floorStartRotationZ, floorEndRotationX, floorEndRotationY, floorEndRotationZ, floorStartOpacity, floorEndOpacity]);
 
   return (
     <div
@@ -169,10 +182,14 @@ export default function ThreeCanvas({
           <GuitarScene 
             guitarAnimatedPosition={guitarAnimatedPosition} 
             guitarAnimatedRotation={guitarAnimatedRotation}
-            floorAnimatedPosition={floorAnimatedPosition}
-            floorAnimatedRotation={floorAnimatedRotation}
+            guitarAnimatedOpacity={guitarAnimatedOpacity}
           />
         </OrbitalRig>
+        <Floor 
+          animatedPosition={floorAnimatedPosition} 
+          animatedRotation={floorAnimatedRotation}
+          animatedOpacity={floorAnimatedOpacity}
+        />
         {/* <OrbitControls enablePan enableZoom/> */}
       </Canvas>
     </div>

@@ -12,8 +12,6 @@ export const PLASMIC = initPlasmicLoader({
   preview: true,
 });
 
-// Import your components
-import Button from "./components/MyButton";
 import ThreeCanvas from "./components/three/canvas/ThreeCanvas"
 import { CustomScroll } from "./components/effects/CustomScroll";
 
@@ -121,6 +119,22 @@ props: {
       defaultValue: Math.PI / 2,
       description: "Final Z rotation (in radians)",
     },
+    guitarStartOpacity: {
+      type: "number",
+      displayName: "Guitar - Start Opacity",
+      defaultValue: 1,
+      min: 0,
+      max: 1,
+      description: "Initial opacity (0-1)",
+    },
+    guitarEndOpacity: {
+      type: "number",
+      displayName: "Guitar - End Opacity",
+      defaultValue: 1,
+      min: 0,
+      max: 1,
+      description: "Final opacity (0-1)",
+    },
     // Floor Properties Section
     floorStartX: {
       type: "number",
@@ -193,6 +207,22 @@ props: {
       displayName: "Floor - End Rotation Z",
       defaultValue: 0,
       description: "Final Z rotation (in radians)",
+    },
+    floorStartOpacity: {
+      type: "number",
+      displayName: "Floor - Start Opacity",
+      defaultValue: 0,
+      min: 0,
+      max: 1,
+      description: "Initial opacity (0-1)",
+    },
+    floorEndOpacity: {
+      type: "number",
+      displayName: "Floor - End Opacity",
+      defaultValue: 1,
+      min: 0,
+      max: 1,
+      description: "Final opacity (0-1)",
     },
     scrollStart: {
       type: "number",

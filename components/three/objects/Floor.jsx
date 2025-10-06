@@ -1,7 +1,7 @@
 import { useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 
-export default function Floor({ animatedPosition, animatedRotation }) {
+export default function Floor({ animatedPosition, animatedRotation, animatedOpacity }) {
   const meshRef = useRef();
 
   useFrame(() => {
@@ -20,6 +20,9 @@ export default function Floor({ animatedPosition, animatedRotation }) {
           animatedRotation[2]
         );
       }
+      if (animatedOpacity !== undefined && meshRef.current.material) {
+        meshRef.current.material.opacity = animatedOpacity;
+      }
     }
   });
 
@@ -32,7 +35,7 @@ export default function Floor({ animatedPosition, animatedRotation }) {
       receiveShadow
     >
       <planeGeometry args={[100, 100, 1]} />
-      <meshBasicMaterial color="white" />
+      <meshBasicMaterial color="white" transparent opacity={animatedOpacity} />
     </mesh>
   );
 }
