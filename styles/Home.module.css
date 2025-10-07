@@ -163,3 +163,13 @@ a.secondary {
     filter: invert();
   }
 }
+
+
+.clip-text{
+  -webkit-background-clip: text!important; /* For WebKit browsers (Chrome, Safari, Edge) */
+  background-clip: text!important;
+
+  /* Make the text transparent so the background shows through */
+  color: transparent!important;
+  -webkit-text-fill-color: transparent!important; /* For older WebKit browsers */
+}
