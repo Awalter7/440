@@ -5,6 +5,7 @@ import { Canvas } from "@react-three/fiber";
 import { Environment, OrbitControls, PerspectiveCamera } from "@react-three/drei";
 import OrbitalRig from "../rigs/OrbitalRig";
 import GuitarScene from "../scenes/GuitarScene";
+import DrumScene from "../scenes/DrumScene"
 import Floor from "../objects/Floor";
 import { AxesHelper } from "three";
 
@@ -192,6 +193,7 @@ export default function ThreeCanvas({
             guitarAnimatedOpacity={guitarAnimatedOpacity}
             scrollProgress={scrollProgress}
           />
+          {/* <DrumScene scrollProgress={scrollProgress}/> */}
         </OrbitalRig>
 
         {/* <OrbitControls enablePan enableZoom/> */}

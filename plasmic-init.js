@@ -280,7 +280,7 @@ props: {
 PLASMIC.registerComponent(CustomScroll, {
   name: "CustomScroll",
   displayName: "Custom Scroll Effect",
-  description: "Animate position and opacity based on scroll (interpolation or duration-based)",
+  description: "Animate position, size, border radius, and opacity based on scroll",
   props: {
     children: {
       type: "slot",
@@ -386,6 +386,42 @@ PLASMIC.registerComponent(CustomScroll, {
       max: 1,
       displayName: "End Opacity",
       description: "Final opacity (0-1)",
+    },
+    startBorderRadius: {
+      type: "string",
+      displayName: "Start Border Radius",
+      description: "Initial border radius (e.g., '0px', '50%', '20px')",
+      defaultValueHint: "0px",
+    },
+    endBorderRadius: {
+      type: "string",
+      displayName: "End Border Radius",
+      description: "Final border radius (e.g., '50%', '100px', '0px')",
+      defaultValueHint: "0px",
+    },
+    startWidth: {
+      type: "string",
+      displayName: "Start Width",
+      description: "Initial width (e.g., '100px', '50vw', '100%')",
+      defaultValueHint: "auto",
+    },
+    endWidth: {
+      type: "string",
+      displayName: "End Width",
+      description: "Final width (e.g., '200px', '80vw', '50%')",
+      defaultValueHint: "auto",
+    },
+    startHeight: {
+      type: "string",
+      displayName: "Start Height",
+      description: "Initial height (e.g., '100px', '50vh', '100%')",
+      defaultValueHint: "auto",
+    },
+    endHeight: {
+      type: "string",
+      displayName: "End Height",
+      description: "Final height (e.g., '200px', '80vh', '50%')",
+      defaultValueHint: "auto",
     },
     zIndex: {
       type: "number",

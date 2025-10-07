@@ -1,4 +1,3 @@
-
 import * as React from "react";
 
 export function CustomScroll({
@@ -19,6 +18,12 @@ export function CustomScroll({
   scrollEnd = 1000,
   startOpacity = 1,
   endOpacity = 1,
+  startBorderRadius,
+  endBorderRadius,
+  startWidth,
+  endWidth,
+  startHeight,
+  endHeight,
   zIndex = 1000,
 }) {
   const [scrollProgress, setScrollProgress] = React.useState(0);
@@ -133,6 +138,9 @@ export function CustomScroll({
   const currentLeft = interpolate(startLeft, endLeft);
   const currentRight = interpolate(startRight, endRight);
   const currentBottom = interpolate(startBottom, endBottom);
+  const currentBorderRadius = interpolate(startBorderRadius, endBorderRadius);
+  const currentWidth = interpolate(startWidth, endWidth);
+  const currentHeight = interpolate(startHeight, endHeight);
   
   // Use the appropriate progress for opacity
   const progress = animationMode === "duration" ? animationProgress : scrollProgress;
@@ -147,6 +155,9 @@ export function CustomScroll({
     ...(currentLeft !== undefined && { left: currentLeft }),
     ...(currentRight !== undefined && { right: currentRight }),
     ...(currentBottom !== undefined && { bottom: currentBottom }),
+    ...(currentBorderRadius !== undefined && { borderRadius: currentBorderRadius }),
+    ...(currentWidth !== undefined && { width: currentWidth }),
+    ...(currentHeight !== undefined && { height: currentHeight }),
     opacity: currentOpacity,
     zIndex,
     transition: "none",
