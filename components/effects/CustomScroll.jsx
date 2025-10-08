@@ -37,6 +37,8 @@ export function CustomScroll({
   endHeight,
   // New multi-breakpoint prop
   breakpoints = [],
+  // New click-triggered effects
+  clickEffects = [],
   zIndex = 1000,
 }) {
   const [scrollProgress, setScrollProgress] = React.useState(0);
@@ -44,8 +46,15 @@ export function CustomScroll({
   const [isAnimating, setIsAnimating] = React.useState(false);
   const [animationProgress, setAnimationProgress] = React.useState(0);
   const [currentBreakpointIndex, setCurrentBreakpointIndex] = React.useState(0);
+  
+  // New state for click effects
+  const [activeClickEffects, setActiveClickEffects] = React.useState([]);
+  const [clickEffectProgress, setClickEffectProgress] = React.useState({});
+  const [completedClickEffects, setCompletedClickEffects] = React.useState([]);
+  
   const animationStartTime = React.useRef(null);
   const animationFrameId = React.useRef(null);
+  const clickEffectAnimationFrames = React.useRef({});
 
   // Build breakpoints array from legacy props or use new breakpoints prop
   const effectiveBreakpoints = React.useMemo(() => {
@@ -98,19 +107,46 @@ export function CustomScroll({
     startWidth, endWidth, startHeight, endHeight
   ]);
 
-  // Handle click trigger for duration mode
+  // Handle click triggers for click effects
+  React.useEffect(() => {
+    if (!clickEffects || clickEffects.length === 0) return;
+
+    const handleClick = (e) => {
+      let element = e.target;
+      while (element) {
+        // Check each click effect to see if this element triggers it
+        clickEffects.forEach((effect, index) => {
+          if (effect.triggerId && element.id === effect.triggerId) {
+            const effectId = `effect_${index}`;
+            
+            // Don't retrigger if already animating
+            if (activeClickEffects.includes(effectId)) return;
+            
+            // Add to active effects
+            setActiveClickEffects(prev => [...prev, effectId]);
+            setClickEffectProgress(prev => ({ ...prev, [effectId]: 0 }));
+          }
+        });
+        element = element.parentElement;
+      }
+    };
+
+    document.addEventListener("click", handleClick);
+    
+    return () => document.removeEventListener("click", handleClick);
+  }, [clickEffects, activeClickEffects]);
+
+  // Handle legacy click trigger for duration mode
   React.useEffect(() => {
     if (animationMode !== "duration" || !triggerId) return;
 
     const handleClick = (e) => {
-      // Check if the clicked element or any of its parents has the trigger ID
       let element = e.target;
       while (element) {
         if (element.id === triggerId) {
-          // Find the next breakpoint to animate to
           const nextIndex = currentBreakpointIndex < effectiveBreakpoints.length - 1 
             ? currentBreakpointIndex + 1 
-            : 0; // Loop back to start
+            : 0;
           
           setCurrentBreakpointIndex(nextIndex);
           setIsAnimating(true);
@@ -166,7 +202,7 @@ export function CustomScroll({
           }
         }
       } else if (!triggerId) {
-        // Duration mode with scroll trigger (no click trigger): check all breakpoints for trigger
+        // Duration mode with scroll trigger
         for (let i = 0; i < effectiveBreakpoints.length; i++) {
           const bp = effectiveBreakpoints[i];
           const bpStart = bp.scrollStart || 0;
@@ -188,7 +224,7 @@ export function CustomScroll({
     return () => window.removeEventListener("scroll", handleScroll);
   }, [effectiveBreakpoints, animationMode, currentBreakpointIndex, triggerId]);
 
-  // Duration-based animation loop
+  // Duration-based animation loop for legacy duration mode
   React.useEffect(() => {
     if (!isAnimating || animationMode !== "duration") return;
 
@@ -218,6 +254,47 @@ export function CustomScroll({
       }
     };
   }, [isAnimating, duration, animationMode]);
+
+  // Animation loops for click effects
+  React.useEffect(() => {
+    activeClickEffects.forEach((effectId) => {
+      const effectIndex = parseInt(effectId.split('_')[1]);
+      const effect = clickEffects[effectIndex];
+      
+      if (!effect || clickEffectAnimationFrames.current[effectId]) return;
+
+      const startTime = { current: null };
+      const effectDuration = effect.duration || 1000;
+
+      const animate = (currentTime) => {
+        if (!startTime.current) {
+          startTime.current = currentTime;
+        }
+
+        const elapsed = currentTime - startTime.current;
+        const progress = Math.min(elapsed / effectDuration, 1);
+
+        setClickEffectProgress(prev => ({ ...prev, [effectId]: progress }));
+
+        if (progress < 1) {
+          clickEffectAnimationFrames.current[effectId] = requestAnimationFrame(animate);
+        } else {
+          // Animation complete
+          delete clickEffectAnimationFrames.current[effectId];
+          setActiveClickEffects(prev => prev.filter(id => id !== effectId));
+          setCompletedClickEffects(prev => [...prev, effectId]);
+        }
+      };
+
+      clickEffectAnimationFrames.current[effectId] = requestAnimationFrame(animate);
+    });
+
+    return () => {
+      Object.values(clickEffectAnimationFrames.current).forEach(frameId => {
+        if (frameId) cancelAnimationFrame(frameId);
+      });
+    };
+  }, [activeClickEffects, clickEffects]);
 
   const parseValue = (value, property) => {
     if (value === undefined || value === null || value === "") return null;
@@ -271,26 +348,23 @@ export function CustomScroll({
     return startParsed.unit ? `${interpolatedNumber}${startParsed.unit}` : interpolatedNumber;
   };
 
-  // Get current styles based on active breakpoint
-  const getCurrentStyles = () => {
+  // Get base styles from interpolation/duration mode
+  const getBaseStyles = () => {
     const bp = effectiveBreakpoints[currentBreakpointIndex] || effectiveBreakpoints[0];
     if (!bp) return {};
     
     const progress = animationMode === "duration" ? animationProgress : scrollProgress;
     const styles = bp.styles || [];
     
-    // Get easing function for this breakpoint (or fall back to global/default)
     const easingName = bp.easingFunction || easingFunction || "linear";
     const easing = easingFunctions[easingName] || easingFunctions.linear;
     
     const currentStyles = {};
     const transformValues = [];
     
-    // Transform properties that need to be combined into a single transform string
     const transformProps = ['scale', 'scaleX', 'scaleY', 'scaleZ', 'rotate', 'rotateX', 'rotateY', 'rotateZ', 
                             'translateX', 'translateY', 'translateZ', 'skewX', 'skewY'];
     
-    // Interpolate each style property
     styles.forEach(styleItem => {
       const { property, startValue, endValue } = styleItem;
       
@@ -299,23 +373,100 @@ export function CustomScroll({
       const interpolated = interpolate(startValue, endValue, progress, easing, property);
       
       if (interpolated !== undefined) {
-        // Handle transform properties specially
         if (transformProps.includes(property)) {
-          // Add parentheses for transform functions
           transformValues.push(`${property}(${interpolated})`);
         } else {
-          // Regular CSS properties
           currentStyles[property] = interpolated;
         }
       }
     });
     
-    // Combine all transform properties into a single transform string
     if (transformValues.length > 0) {
       currentStyles.transform = transformValues.join(' ');
     }
     
     return currentStyles;
+  };
+
+  // Get current styles including click effects
+  const getCurrentStyles = () => {
+    const baseStyles = getBaseStyles();
+    
+    // If no click effects, return base styles
+    if (!clickEffects || clickEffects.length === 0) {
+      return baseStyles;
+    }
+    
+    // Apply click effects on top of base styles
+    const finalStyles = { ...baseStyles };
+    const transformValues = [];
+    const transformProps = ['scale', 'scaleX', 'scaleY', 'scaleZ', 'rotate', 'rotateX', 'rotateY', 'rotateZ', 
+                            'translateX', 'translateY', 'translateZ', 'skewX', 'skewY'];
+    
+    // Extract existing transform from base styles
+    if (baseStyles.transform) {
+      transformValues.push(baseStyles.transform);
+      delete finalStyles.transform;
+    }
+    
+    // Process each click effect in order
+    clickEffects.forEach((effect, index) => {
+      const effectId = `effect_${index}`;
+      const isActive = activeClickEffects.includes(effectId);
+      const isCompleted = completedClickEffects.includes(effectId);
+      const progress = clickEffectProgress[effectId] || 0;
+      
+      if (!effect.styles) return;
+      
+      const easingName = effect.easingFunction || "linear";
+      const easing = easingFunctions[easingName] || easingFunctions.linear;
+      
+      effect.styles.forEach(styleItem => {
+        const { property, startValue, endValue } = styleItem;
+        if (!property) return;
+        
+        let currentValue;
+        
+        if (isCompleted) {
+          // Use end value for completed effects
+          currentValue = endValue;
+        } else if (isActive) {
+          // Interpolate from start to end based on current progress
+          const interpolated = interpolate(startValue, endValue, progress, easing, property);
+          if (interpolated !== undefined) {
+            currentValue = interpolated;
+          }
+        } else {
+          // Use start value for not-yet-triggered effects
+          currentValue = startValue;
+        }
+        
+        if (currentValue !== undefined) {
+          if (transformProps.includes(property)) {
+            // For transform properties, add to transform array
+            const existingTransformIndex = transformValues.findIndex(t => t.startsWith(`${property}(`));
+            const newTransform = `${property}(${currentValue})`;
+            
+            if (existingTransformIndex >= 0) {
+              // Replace existing transform of same type
+              transformValues[existingTransformIndex] = newTransform;
+            } else {
+              transformValues.push(newTransform);
+            }
+          } else {
+            // Regular CSS properties
+            finalStyles[property] = currentValue;
+          }
+        }
+      });
+    });
+    
+    // Combine all transform properties
+    if (transformValues.length > 0) {
+      finalStyles.transform = transformValues.join(' ');
+    }
+    
+    return finalStyles;
   };
 
   const currentStyles = getCurrentStyles();
