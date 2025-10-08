@@ -244,9 +244,6 @@ PLASMIC.registerComponent(ThreeCanvas, {
 });
 
 // Plasmic Registration
-// Plasmic Registration
-// Plasmic Registration
-// Plasmic Registration
 PLASMIC.registerComponent(CustomScroll, {
   name: "CustomScroll",
   displayName: "Custom Scroll Effect",
@@ -280,6 +277,12 @@ PLASMIC.registerComponent(CustomScroll, {
       description: "Animation duration in milliseconds (only for duration mode)",
       hidden: (props) => props.animationMode !== "duration",
     },
+    triggerId: {
+      type: "string",
+      displayName: "Trigger Element ID",
+      description: "ID of element to click to trigger animation (duration mode only)",
+      hidden: (props) => props.animationMode !== "duration",
+    }
     easingFunction: {
       type: "choice",
       options: [

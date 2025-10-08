@@ -15,6 +15,7 @@ export function CustomScroll({
   animationMode = "interpolation",
   duration = 1000,
   easingFunction = "linear",
+  triggerId,
   // Legacy single breakpoint props (for backwards compatibility)
   startTop,
   startLeft,
@@ -97,6 +98,35 @@ export function CustomScroll({
     startWidth, endWidth, startHeight, endHeight
   ]);
 
+  // Handle click trigger for duration mode
+  React.useEffect(() => {
+    if (animationMode !== "duration" || !triggerId) return;
+
+    const handleClick = (e) => {
+      // Check if the clicked element or any of its parents has the trigger ID
+      let element = e.target;
+      while (element) {
+        if (element.id === triggerId) {
+          // Find the next breakpoint to animate to
+          const nextIndex = currentBreakpointIndex < effectiveBreakpoints.length - 1 
+            ? currentBreakpointIndex + 1 
+            : 0; // Loop back to start
+          
+          setCurrentBreakpointIndex(nextIndex);
+          setIsAnimating(true);
+          setAnimationProgress(0);
+          animationStartTime.current = null;
+          break;
+        }
+        element = element.parentElement;
+      }
+    };
+
+    document.addEventListener("click", handleClick);
+    
+    return () => document.removeEventListener("click", handleClick);
+  }, [animationMode, triggerId, currentBreakpointIndex, effectiveBreakpoints.length]);
+
   React.useEffect(() => {
     const inStudio = window.location.href.includes("studio.plasmic.app") || 
                      window.location.href.includes("host.plasmic.app") ||
@@ -135,8 +165,8 @@ export function CustomScroll({
             setCurrentBreakpointIndex(effectiveBreakpoints.length - 1);
           }
         }
-      } else {
-        // Duration mode: check all breakpoints for trigger
+      } else if (!triggerId) {
+        // Duration mode with scroll trigger (no click trigger): check all breakpoints for trigger
         for (let i = 0; i < effectiveBreakpoints.length; i++) {
           const bp = effectiveBreakpoints[i];
           const bpStart = bp.scrollStart || 0;
@@ -156,7 +186,7 @@ export function CustomScroll({
     window.addEventListener("scroll", handleScroll, { passive: true });
     
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [effectiveBreakpoints, animationMode, currentBreakpointIndex]);
+  }, [effectiveBreakpoints, animationMode, currentBreakpointIndex, triggerId]);
 
   // Duration-based animation loop
   React.useEffect(() => {

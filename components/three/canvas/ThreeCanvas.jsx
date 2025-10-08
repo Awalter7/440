@@ -238,7 +238,7 @@ export default function ThreeCanvas({
         resize={{ scroll: false, debounce: 0 }}
       >
         <ambientLight intensity={6}/>
-        <fog attach="fog" color="#0029ff" near={1} far={3} />
+        <fog attach="fog" color="#0029ff" near={1} far={10} />
         <PerspectiveCamera 
           makeDefault 
           position={currentCameraValues.position} 
@@ -246,11 +246,9 @@ export default function ThreeCanvas({
           rotation={currentCameraValues.rotation}
         />
         <Environment files="https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/potsdamer_platz_1k.hdr" />
-
         <LanderScene 
           scrollProgress={scrollProgress}
         />
-
         <mesh 
           position={[0, 1, 0]} 
           rotation={[0, 0, 0]}       
@@ -258,9 +256,8 @@ export default function ThreeCanvas({
           receiveShadow
         >
           <boxGeometry args={[2, 1, 10]} />
-          <meshBasicMaterial color={"#362986"} side={THREE.BackSide}/>
+          <meshBasicMaterial color={"#201855"} side={THREE.BackSide}/>
         </mesh>
-        
       </Canvas>
     </div>
   );
