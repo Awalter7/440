@@ -282,7 +282,7 @@ PLASMIC.registerComponent(CustomScroll, {
       displayName: "Trigger Element ID",
       description: "ID of element to click to trigger animation (duration mode only)",
       hidden: (props) => props.animationMode !== "duration",
-    }
+    },
     easingFunction: {
       type: "choice",
       options: [
