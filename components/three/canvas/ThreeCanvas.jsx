@@ -4,68 +4,54 @@ import React, { useRef, useEffect, useState } from "react";
 import { Canvas } from "@react-three/fiber";
 import { Environment, OrbitControls, PerspectiveCamera } from "@react-three/drei";
 import OrbitalRig from "../rigs/OrbitalRig";
-import GuitarScene from "../scenes/GuitarScene";
-import DrumScene from "../scenes/DrumScene"
-import Floor from "../objects/Floor";
-import { AxesHelper } from "three";
+import LanderScene from "../scenes/LanderScene";
+import * as THREE from 'three'
+import easingFunctions from "@/components/utils/easingFunctions";
+
 
 export default function ThreeCanvas({
   className,
   style,
+  // Legacy single breakpoint props
   cameraPosition = [0, 1, 1],
+  cameraRotation = [0, 0, 0],
   cameraFov = 25,
   animationMode = "interpolation",
+  easingFunction = "linear",
   duration = 1000,
-  // Guitar props
-  guitarStartX = 0.2,
-  guitarStartY = -0.2,
-  guitarStartZ = -1,
-  guitarEndX = 0.2,
-  guitarEndY = -0.2,
-  guitarEndZ = -1,
-  guitarStartRotationX = Math.PI / 2,
-  guitarStartRotationY = Math.PI,
-  guitarStartRotationZ = Math.PI / 2,
-  guitarEndRotationX = Math.PI / 2,
-  guitarEndRotationY = Math.PI,
-  guitarEndRotationZ = Math.PI / 2,
-  guitarStartOpacity = 1,
-  guitarEndOpacity = 1,
-  // Floor props
-  floorStartX = 0,
-  floorStartY = -0.2,
-  floorStartZ = 0,
-  floorEndX = 0,
-  floorEndY = -0.2,
-  floorEndZ = 0,
-  floorStartRotationX = -Math.PI / 2,
-  floorStartRotationY = 0,
-  floorStartRotationZ = 0,
-  floorEndRotationX = -Math.PI / 2,
-  floorEndRotationY = 0,
-  floorEndRotationZ = 0,
-  floorStartOpacity = 1,
-  floorEndOpacity = 1,
   scrollStart = 0,
   scrollEnd = 1000,
+  // New multi-breakpoint prop
+  breakpoints = [],
 }) {
-  const [isClient, setIsClient] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
   const [animationProgress, setAnimationProgress] = useState(0);
-  const [guitarAnimatedPosition, setGuitarAnimatedPosition] = useState([guitarStartX, guitarStartY, guitarStartZ]);
-  const [guitarAnimatedRotation, setGuitarAnimatedRotation] = useState([guitarStartRotationX, guitarStartRotationY, guitarStartRotationZ]);
-  const [guitarAnimatedOpacity, setGuitarAnimatedOpacity] = useState(guitarStartOpacity);
-  const [floorAnimatedPosition, setFloorAnimatedPosition] = useState([floorStartX, floorStartY, floorStartZ]);
-  const [floorAnimatedRotation, setFloorAnimatedRotation] = useState([floorStartRotationX, floorStartRotationY, floorStartRotationZ]);
-  const [floorAnimatedOpacity, setFloorAnimatedOpacity] = useState(floorStartOpacity);
+  const [currentBreakpointIndex, setCurrentBreakpointIndex] = useState(0);
   const containerRef = useRef(null);
   const animationStartTime = useRef(null);
   const animationFrameId = useRef(null);
 
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
+  // Build breakpoints array from legacy props or use new breakpoints prop
+  const effectiveBreakpoints = React.useMemo(() => {
+    if (breakpoints && breakpoints.length > 0) {
+      return breakpoints;
+    }
+    
+    // Legacy mode: create single breakpoint from individual props
+    return [{
+      scrollStart,
+      scrollEnd,
+      easingFunction: easingFunction,
+      cameraPosition,
+      cameraRotation,
+      cameraFov,
+    }];
+  }, [
+    breakpoints,
+    scrollStart, scrollEnd, easingFunction,
+    cameraPosition, cameraRotation, cameraFov
+  ]);
 
   // Scroll handling
   useEffect(() => {
@@ -75,18 +61,45 @@ export default function ThreeCanvas({
       const scrollY = window.scrollY;
       
       if (animationMode === "interpolation") {
-        if (scrollY <= scrollStart) {
-          setScrollProgress(0);
-        } else if (scrollY >= scrollEnd) {
-          setScrollProgress(1);
-        } else {
-          const progress = (scrollY - scrollStart) / (scrollEnd - scrollStart);
-          setScrollProgress(progress);
+        // Find which breakpoint we're in
+        let found = false;
+        for (let i = 0; i < effectiveBreakpoints.length; i++) {
+          const bp = effectiveBreakpoints[i];
+          const bpStart = bp.scrollStart || 0;
+          const bpEnd = bp.scrollEnd || 1000;
+          
+          if (scrollY >= bpStart && scrollY <= bpEnd) {
+            const progress = (scrollY - bpStart) / (bpEnd - bpStart);
+            setScrollProgress(progress);
+            setCurrentBreakpointIndex(i);
+            found = true;
+            break;
+          }
+        }
+        
+        // Handle edge cases
+        if (!found) {
+          if (scrollY < (effectiveBreakpoints[0]?.scrollStart || 0)) {
+            setScrollProgress(0);
+            setCurrentBreakpointIndex(0);
+          } else {
+            setScrollProgress(1);
+            setCurrentBreakpointIndex(effectiveBreakpoints.length - 1);
+          }
         }
       } else {
-        if (scrollY >= scrollStart && !isAnimating && animationProgress < 1) {
-          setIsAnimating(true);
-          animationStartTime.current = performance.now();
+        // Duration mode: check all breakpoints for trigger
+        for (let i = 0; i < effectiveBreakpoints.length; i++) {
+          const bp = effectiveBreakpoints[i];
+          const bpStart = bp.scrollStart || 0;
+          
+          if (scrollY >= bpStart && i > currentBreakpointIndex) {
+            setCurrentBreakpointIndex(i);
+            setIsAnimating(true);
+            setAnimationProgress(0);
+            animationStartTime.current = null;
+            break;
+          }
         }
       }
     };
@@ -95,11 +108,14 @@ export default function ThreeCanvas({
     window.addEventListener("scroll", handleScroll, { passive: true });
     
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [isClient, scrollStart, scrollEnd, animationMode, isAnimating, animationProgress]);
+  }, [isClient, effectiveBreakpoints, animationMode, currentBreakpointIndex]);
 
   // Duration-based animation loop
   useEffect(() => {
     if (!isAnimating || animationMode !== "duration") return;
+
+    const currentBp = effectiveBreakpoints[currentBreakpointIndex];
+    const animDuration = currentBp?.duration || duration;
 
     const animate = (currentTime) => {
       if (!animationStartTime.current) {
@@ -107,7 +123,7 @@ export default function ThreeCanvas({
       }
 
       const elapsed = currentTime - animationStartTime.current;
-      const progress = Math.min(elapsed / duration, 1);
+      const progress = Math.min(elapsed / animDuration, 1);
 
       setAnimationProgress(progress);
 
@@ -115,6 +131,7 @@ export default function ThreeCanvas({
         animationFrameId.current = requestAnimationFrame(animate);
       } else {
         setIsAnimating(false);
+        setAnimationProgress(1);
       }
     };
 
@@ -125,45 +142,73 @@ export default function ThreeCanvas({
         cancelAnimationFrame(animationFrameId.current);
       }
     };
-  }, [isAnimating, duration, animationMode]);
+  }, [isAnimating, duration, animationMode, effectiveBreakpoints, currentBreakpointIndex]);
 
-  // Update animated position and rotation for Guitar
-  useEffect(() => {
+  // Interpolate between two arrays (for position/rotation)
+  const interpolateArray = (start, end, progress, easing) => {
+    if (!start || !end) return start || [0, 0, 0];
+    
+    const easedProgress = easing ? easing(progress) : progress;
+    
+    return start.map((startVal, i) => {
+      const endVal = end[i] || 0;
+      return startVal + (endVal - startVal) * easedProgress;
+    });
+  };
+
+  // Interpolate single number (for FOV)
+  const interpolateNumber = (start, end, progress, easing) => {
+    if (start === undefined || end === undefined) return start;
+    
+    const easedProgress = easing ? easing(progress) : progress;
+    return start + (end - start) * easedProgress;
+  };
+
+  // Get current camera state based on active breakpoint
+  const getCurrentCameraState = () => {
+    const currentBp = effectiveBreakpoints[currentBreakpointIndex];
+    
+    // If we only have one breakpoint or we're at the last one, just return its values
+    if (effectiveBreakpoints.length === 1 || currentBreakpointIndex === effectiveBreakpoints.length - 1) {
+      return {
+        position: currentBp?.cameraPosition || [0, 1, 1],
+        rotation: currentBp?.cameraRotation || [0, 0, 0],
+        fov: currentBp?.cameraFov || 25,
+      };
+    }
+
+    // Get next breakpoint for interpolation
+    const nextBp = effectiveBreakpoints[currentBreakpointIndex + 1];
+    
     const progress = animationMode === "duration" ? animationProgress : scrollProgress;
     
-    const x = guitarStartX + (guitarEndX - guitarStartX) * progress;
-    const y = guitarStartY + (guitarEndY - guitarStartY) * progress;
-    const z = guitarStartZ + (guitarEndZ - guitarStartZ) * progress;
+    // Get easing function for this breakpoint
+    const easingName = currentBp?.easingFunction || easingFunction || "linear";
+    const easing = easingFunctions[easingName] || easingFunctions.linear;
     
-    const rotX = guitarStartRotationX + (guitarEndRotationX - guitarStartRotationX) * progress;
-    const rotY = guitarStartRotationY + (guitarEndRotationY - guitarStartRotationY) * progress;
-    const rotZ = guitarStartRotationZ + (guitarEndRotationZ - guitarStartRotationZ) * progress;
-    
-    const opacity = guitarStartOpacity + (guitarEndOpacity - guitarStartOpacity) * progress;
-    
-    setGuitarAnimatedPosition([x, y, z]);
-    setGuitarAnimatedRotation([rotX, rotY, rotZ]);
-    setGuitarAnimatedOpacity(opacity);
-  }, [scrollProgress, animationProgress, animationMode, guitarStartX, guitarStartY, guitarStartZ, guitarEndX, guitarEndY, guitarEndZ, guitarStartRotationX, guitarStartRotationY, guitarStartRotationZ, guitarEndRotationX, guitarEndRotationY, guitarEndRotationZ, guitarStartOpacity, guitarEndOpacity]);
+    return {
+      position: interpolateArray(
+        currentBp?.cameraPosition || [0, 1, 1],
+        nextBp?.cameraPosition || currentBp?.cameraPosition || [0, 1, 1],
+        progress,
+        easing
+      ),
+      rotation: interpolateArray(
+        currentBp?.cameraRotation || [0, 0, 0],
+        nextBp?.cameraRotation || currentBp?.cameraRotation || [0, 0, 0],
+        progress,
+        easing
+      ),
+      fov: interpolateNumber(
+        currentBp?.cameraFov || 25,
+        nextBp?.cameraFov || currentBp?.cameraFov || 25,
+        progress,
+        easing
+      ),
+    };
+  };
 
-  // Update animated position and rotation for Floor
-  useEffect(() => {
-    const progress = animationMode === "duration" ? animationProgress : scrollProgress;
-    
-    const x = floorStartX + (floorEndX - floorStartX) * progress;
-    const y = floorStartY + (floorEndY - floorStartY) * progress;
-    const z = floorStartZ + (floorEndZ - floorStartZ) * progress;
-    
-    const rotX = floorStartRotationX + (floorEndRotationX - floorStartRotationX) * progress;
-    const rotY = floorStartRotationY + (floorEndRotationY - floorStartRotationY) * progress;
-    const rotZ = floorStartRotationZ + (floorEndRotationZ - floorStartRotationZ) * progress;
-    
-    const opacity = floorStartOpacity + (floorEndOpacity - floorStartOpacity) * progress;
-    
-    setFloorAnimatedPosition([x, y, z]);
-    setFloorAnimatedRotation([rotX, rotY, rotZ]);
-    setFloorAnimatedOpacity(opacity);
-  }, [scrollProgress, animationProgress, animationMode, floorStartX, floorStartY, floorStartZ, floorEndX, floorEndY, floorEndZ, floorStartRotationX, floorStartRotationY, floorStartRotationZ, floorEndRotationX, floorEndRotationY, floorEndRotationZ, floorStartOpacity, floorEndOpacity]);
+  const cameraState = getCurrentCameraState();
 
   return (
     <div
@@ -173,30 +218,36 @@ export default function ThreeCanvas({
     >
       <Canvas 
         shadows 
-        camera={{ position: cameraPosition, fov: cameraFov }}
-        style={{backgroundColor: "transparent", height: "100vh", width: "100vw", zIndex: 2}} 
+        style={{backgroundColor: "transparent", height: "100%", width: "100%", zIndex: 2}} 
         gl={{ preserveDrawingBuffer: true}} 
         eventPrefix="client"
+        resize={{ scroll: false, debounce: 0 }}
       >
-        <ambientLight intensity={1 - scrollProgress + .5 }/>
-        <fog attach="fog" color="black" near={1} far={10} />
-        <Floor 
-          animatedPosition={floorAnimatedPosition} 
-          animatedRotation={floorAnimatedRotation}
-          animatedOpacity={floorAnimatedOpacity}
+        <ambientLight intensity={6}/>
+        <fog attach="fog" color="#0029ff" near={1} far={3} />
+        
+        <PerspectiveCamera 
+          makeDefault 
+          position={cameraState.position} 
+          fov={cameraState.fov} 
+          rotation={cameraState.rotation}
         />
-        {/* <Environment intensity={0.005} files="https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/potsdamer_platz_1k.hdr" /> */}
-        <OrbitalRig scrollProgress={scrollProgress}>
-          <GuitarScene 
-            guitarAnimatedPosition={guitarAnimatedPosition} 
-            guitarAnimatedRotation={guitarAnimatedRotation}
-            guitarAnimatedOpacity={guitarAnimatedOpacity}
-            scrollProgress={scrollProgress}
-          />
-          {/* <DrumScene scrollProgress={scrollProgress}/> */}
-        </OrbitalRig>
+        
+        <Environment files="https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/potsdamer_platz_1k.hdr" />
 
-        {/* <OrbitControls enablePan enableZoom/> */}
+        <LanderScene 
+          scrollProgress={scrollProgress}
+        />
+
+        <mesh 
+          position={[0, 1, 0]} 
+          rotation={[0, 0, 0]}       
+          castShadow
+          receiveShadow
+        >
+          <boxGeometry args={[2, 1, 10]} />
+          <meshBasicMaterial color={"#362986"} side={THREE.BackSide}/>
+        </mesh>
       </Canvas>
     </div>
   );

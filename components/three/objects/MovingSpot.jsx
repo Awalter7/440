@@ -35,7 +35,7 @@ export function MovingSpot({
               : (state.mouse.x * viewport.width) / 2,
             inverse
               ? -(state.mouse.y * viewport.height) / 2
-              : (state.mouse.y * viewport.height) / 2,
+              : (state.mouse.y * viewport.height) / .5,
             0
           )
         : vec.set(...lookAt)

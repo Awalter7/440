@@ -2,22 +2,56 @@ import { useRef } from 'react';
 import { useGLTF, useTexture} from '@react-three/drei'
 import { useFrame } from '@react-three/fiber';
 
-export default function Drums({ animatedPosition, animatedRotation, animatedOpacity }) {
+export default function DrumStand({ position, rotation }) {
   const baseUrl = typeof window !== "undefined" ? window.location.origin : "";
-  const { nodes } = useGLTF(`${baseUrl}/objects/drum-set.glb`);
+  const { nodes } = useGLTF(`${baseUrl}/objects/drum-stand.glb`);
   const groupRef = useRef();
 
 
-  console.log(nodes)
+  console.log(nodes.Scene.children[0].children[0])
   return (
     <group
       ref={groupRef}
-      rotation={[animatedRotation[0], animatedRotation[1], animatedRotation[2]]}
-      scale={0.21}
-      position={[animatedPosition[0], animatedPosition[1], animatedPosition[2]]}
+      rotation={[rotation[0], rotation[1], rotation[2]]}
+      scale={.09}
+      position={[position[0], position[1], position[2]]}
       dispose={null}
     >
-      {
+      <mesh
+        castShadow
+        receiveShadow
+        geometry={nodes.Scene.children[0].children[0].geometry}
+        material={nodes.Scene.children[0].children[0].material}
+        scale={-.0059}
+        position={[0, 0, 0]}
+        rotation={[0, 0, 0]}
+        dispose={null}
+        material-roughness={1}
+      />
+      <mesh
+        castShadow
+        receiveShadow
+        geometry={nodes.Scene.children[0].children[1].geometry}
+        material={nodes.Scene.children[0].children[1].material}
+        scale={-.0059}
+        position={[0, 0, 0]}
+        rotation={[0, 0, 0]}
+        dispose={null}
+        material-color={"#0029ff"}
+        material-roughness={2}
+      />
+      <mesh
+        castShadow
+        receiveShadow
+        geometry={nodes.Scene.children[0].children[2].geometry}
+        material={nodes.Scene.children[0].children[2].material}
+        scale={-.0059}
+        position={[0, 0, 0]}
+        rotation={[0, 0, 0]}
+        dispose={null}
+        material-roughness={1}
+      />
+      {/* {
         nodes.Sketchfab_model.children[0].children.map((mesh, index) => {
           if (index === 1 || index === 0) {
             return (
@@ -54,7 +88,7 @@ export default function Drums({ animatedPosition, animatedRotation, animatedOpac
             );
           }
         })
-      }
+      } */}
     </group>
   );
 }

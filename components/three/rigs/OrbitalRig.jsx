@@ -12,7 +12,7 @@ export default function OrbitalRig({ children, initialPosition, scrollProgress }
   useFrame((state, delta) => {
     if(scrollProgress < .9){
         easing.damp3(state.camera.position, [snap.intro ? -state.viewport.width / 100 + .15: 0, .5, 2.2 ], 0.25, delta)
-        easing.dampE(group.current.rotation, [-Math.PI / 5, -state.pointer.x / 5, 0], 0.25, delta)
+        easing.dampE(group.current.rotation, [-Math.PI / 3, -state.pointer.x / 4, 0], 0.25, delta)
     }else{
         easing.damp3(state.camera.position, [0, .5, 2.2 ], 0.25, delta)
         easing.dampE(group.current.rotation, [-Math.PI / 5, 0, 0], 0.25, delta)

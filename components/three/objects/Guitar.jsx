@@ -2,85 +2,57 @@ import { useRef } from 'react';
 import { useGLTF, useTexture} from '@react-three/drei'
 import { useFrame } from '@react-three/fiber';
 
-export default function Guitar({ animatedPosition, animatedRotation, animatedOpacity }) {
+export default function Guitar({ position, rotation, ref }) {
   const baseUrl = typeof window !== "undefined" ? window.location.origin : "";
-  const { nodes } = useGLTF(`${baseUrl}/objects/flying-v_guitar.glb`);
-  const groupRef = useRef();
+  const { nodes } = useGLTF(`${baseUrl}/objects/flying-v_guitar_1.glb`);
 
-  useFrame(() => {
-    if (groupRef.current) {
-      if (animatedPosition) {
-        groupRef.current.position.set(
-          animatedPosition[0],
-          animatedPosition[1],
-          animatedPosition[2]
-        );
-      }
-      if (animatedRotation) {
-        groupRef.current.rotation.set(
-          animatedRotation[0],
-          animatedRotation[1],
-          animatedRotation[2]
-        );
-      }
-      // Update opacity for all children meshes
-      if (animatedOpacity !== undefined) {
-        groupRef.current.traverse((child) => {
-          if (child.isMesh && child.material) {
-            child.material.transparent = true;
-            child.material.opacity = animatedOpacity;
-          }
-        });
-      }
-    }
-  });
+
 
   return (
     <group
-      ref={groupRef}
-      rotation={[animatedRotation[0], animatedRotation[1], animatedRotation[2]]}
-      scale={0.21}
-      position={[animatedPosition[0], animatedPosition[1], animatedPosition[2]]}
+      ref={ref}
+      rotation={[rotation[0], rotation[1], rotation[2]]}
+      scale={-1}
+      position={[position[0], position[1], position[2]]}
       dispose={null}
     >
-      {
-        nodes.Sketchfab_model.children[0].children.map((mesh, index) => {
-          if (index === 1 || index === 0) {
-            return (
-              <mesh
-                key={index}
-                castShadow
-                receiveShadow
-                geometry={mesh.children[0].geometry}
-                material={mesh.children[0].material}
-                scale={-.0059}
-                position={[.02, .76, .51]}
-                rotation={[0, 4.933 / Math.PI , 0]}
-                dispose={null}
-                material-roughness={1}
-                material-transparent={true}
-                material-opacity={animatedOpacity}
-              />
-            );
-          } else if (index === 2) {
-            return null;
-          } else {
-            return (
-              <mesh
-                key={index}
-                castShadow
-                receiveShadow
-                geometry={mesh.children[0].geometry}
-                material={mesh.children[0].material}
-                dispose={null}
-                material-roughness={1}
-                material-transparent={true}
-                material-opacity={animatedOpacity}
-              />
-            );
-          }
-        })
-      }
+      <mesh
+        castShadow
+        receiveShadow
+        geometry={nodes.Scene.children[0].children[0].geometry}
+        material={nodes.Scene.children[0].children[0].material}
+        scale={-.0059}
+        position={[.02, .76, .51]}
+        rotation={[0, 4.933 / Math.PI , 0]}
+        dispose={null}
+        material-color="#0029ff"
+        material-roughness={1}
+      >
+      </mesh>
+      <mesh
+        castShadow
+        receiveShadow
+        geometry={nodes.Scene.children[0].children[1].geometry}
+        material={nodes.Scene.children[0].children[1].material}
+        scale={-.0059}
+        position={[.02, .76, .51]}
+        rotation={[0, 4.933 / Math.PI , 0]}
+        dispose={null}
+        material-roughness={1}
+      >
+      </mesh>
+      <mesh
+        castShadow
+        receiveShadow
+        geometry={nodes.Scene.children[0].children[2].geometry}
+        material={nodes.Scene.children[0].children[2].material}
+        scale={-.0059}
+        position={[.02, .76, .51]}
+        rotation={[0, 4.933 / Math.PI , 0]}
+        dispose={null}
+        material-roughness={1}
+      >
+      </mesh>
     </group>
   );
 }
