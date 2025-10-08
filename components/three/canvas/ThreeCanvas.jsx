@@ -1,24 +1,23 @@
-// Lander.jsx
+// ThreeCanvas.jsx
 "use client"
 import React, { useRef, useEffect, useState } from "react";
 import { Canvas } from "@react-three/fiber";
-import { Environment, OrbitControls, PerspectiveCamera } from "@react-three/drei";
+import { Environment, PerspectiveCamera } from "@react-three/drei";
 import OrbitalRig from "../rigs/OrbitalRig";
 import LanderScene from "../scenes/LanderScene";
-import * as THREE from 'three'
-import easingFunctions from "@/components/utils/easingFunctions";
-
+import * as THREE from 'three';
+import easingFunctions from "../../utils/easingFunctions";
 
 export default function ThreeCanvas({
   className,
   style,
-  // Legacy single breakpoint props
+  // Legacy props for backwards compatibility
   cameraPosition = [0, 1, 1],
-  cameraRotation = [0, 0, 0],
   cameraFov = 25,
+  cameraRotation = [0, 0, 0],
   animationMode = "interpolation",
-  easingFunction = "linear",
   duration = 1000,
+  easingFunction = "linear",
   scrollStart = 0,
   scrollEnd = 1000,
   // New multi-breakpoint prop
@@ -43,20 +42,22 @@ export default function ThreeCanvas({
       scrollStart,
       scrollEnd,
       easingFunction: easingFunction,
-      cameraPosition,
-      cameraRotation,
-      cameraFov,
+      cameraPosition: cameraPosition,
+      cameraRotation: cameraRotation,
+      cameraFov: cameraFov,
     }];
   }, [
     breakpoints,
-    scrollStart, scrollEnd, easingFunction,
-    cameraPosition, cameraRotation, cameraFov
+    scrollStart, 
+    scrollEnd, 
+    easingFunction,
+    cameraPosition,
+    cameraRotation,
+    cameraFov
   ]);
 
   // Scroll handling
   useEffect(() => {
-    if (!isClient) return;
-
     const handleScroll = () => {
       const scrollY = window.scrollY;
       
@@ -108,14 +109,11 @@ export default function ThreeCanvas({
     window.addEventListener("scroll", handleScroll, { passive: true });
     
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [isClient, effectiveBreakpoints, animationMode, currentBreakpointIndex]);
+  }, [effectiveBreakpoints, animationMode, currentBreakpointIndex]);
 
   // Duration-based animation loop
   useEffect(() => {
     if (!isAnimating || animationMode !== "duration") return;
-
-    const currentBp = effectiveBreakpoints[currentBreakpointIndex];
-    const animDuration = currentBp?.duration || duration;
 
     const animate = (currentTime) => {
       if (!animationStartTime.current) {
@@ -123,7 +121,7 @@ export default function ThreeCanvas({
       }
 
       const elapsed = currentTime - animationStartTime.current;
-      const progress = Math.min(elapsed / animDuration, 1);
+      const progress = Math.min(elapsed / duration, 1);
 
       setAnimationProgress(progress);
 
@@ -142,73 +140,88 @@ export default function ThreeCanvas({
         cancelAnimationFrame(animationFrameId.current);
       }
     };
-  }, [isAnimating, duration, animationMode, effectiveBreakpoints, currentBreakpointIndex]);
+  }, [isAnimating, duration, animationMode]);
 
-  // Interpolate between two arrays (for position/rotation)
-  const interpolateArray = (start, end, progress, easing) => {
-    if (!start || !end) return start || [0, 0, 0];
-    
-    const easedProgress = easing ? easing(progress) : progress;
-    
-    return start.map((startVal, i) => {
-      const endVal = end[i] || 0;
-      return startVal + (endVal - startVal) * easedProgress;
-    });
-  };
-
-  // Interpolate single number (for FOV)
-  const interpolateNumber = (start, end, progress, easing) => {
-    if (start === undefined || end === undefined) return start;
-    
+  // Interpolate between two values
+  const interpolateValue = (start, end, progress, easing) => {
     const easedProgress = easing ? easing(progress) : progress;
     return start + (end - start) * easedProgress;
   };
 
-  // Get current camera state based on active breakpoint
-  const getCurrentCameraState = () => {
+  // Interpolate arrays (for position/rotation)
+  const interpolateArray = (startArray, endArray, progress, easing) => {
+    if (!startArray || !endArray) return startArray || [0, 0, 0];
+    return startArray.map((start, i) => 
+      interpolateValue(start, endArray[i] || 0, progress, easing)
+    );
+  };
+
+  // Get current camera values based on active breakpoint
+  const getCurrentCameraValues = () => {
     const currentBp = effectiveBreakpoints[currentBreakpointIndex];
+    const nextBpIndex = currentBreakpointIndex + 1;
     
-    // If we only have one breakpoint or we're at the last one, just return its values
-    if (effectiveBreakpoints.length === 1 || currentBreakpointIndex === effectiveBreakpoints.length - 1) {
+    if (!currentBp) {
       return {
-        position: currentBp?.cameraPosition || [0, 1, 1],
-        rotation: currentBp?.cameraRotation || [0, 0, 0],
-        fov: currentBp?.cameraFov || 25,
+        position: cameraPosition,
+        rotation: cameraRotation,
+        fov: cameraFov,
       };
     }
 
-    // Get next breakpoint for interpolation
-    const nextBp = effectiveBreakpoints[currentBreakpointIndex + 1];
-    
     const progress = animationMode === "duration" ? animationProgress : scrollProgress;
     
     // Get easing function for this breakpoint
-    const easingName = currentBp?.easingFunction || easingFunction || "linear";
+    const easingName = currentBp.easingFunction || easingFunction || "linear";
     const easing = easingFunctions[easingName] || easingFunctions.linear;
-    
+
+    // For interpolation mode, interpolate within current breakpoint
+    if (animationMode === "interpolation") {
+      const startPos = currentBp.cameraPosition || cameraPosition;
+      const endPos = currentBp.endCameraPosition || startPos;
+      
+      const startRot = currentBp.cameraRotation || cameraRotation;
+      const endRot = currentBp.endCameraRotation || startRot;
+      
+      const startFov = currentBp.cameraFov !== undefined ? currentBp.cameraFov : cameraFov;
+      const endFov = currentBp.endCameraFov !== undefined ? currentBp.endCameraFov : startFov;
+
+      return {
+        position: interpolateArray(startPos, endPos, progress, easing),
+        rotation: interpolateArray(startRot, endRot, progress, easing),
+        fov: interpolateValue(startFov, endFov, progress, easing),
+      };
+    }
+
+    // For duration mode, interpolate to next breakpoint
+    if (nextBpIndex < effectiveBreakpoints.length) {
+      const nextBp = effectiveBreakpoints[nextBpIndex];
+      
+      const startPos = currentBp.cameraPosition || cameraPosition;
+      const endPos = nextBp.cameraPosition || startPos;
+      
+      const startRot = currentBp.cameraRotation || cameraRotation;
+      const endRot = nextBp.cameraRotation || startRot;
+      
+      const startFov = currentBp.cameraFov !== undefined ? currentBp.cameraFov : cameraFov;
+      const endFov = nextBp.cameraFov !== undefined ? nextBp.cameraFov : startFov;
+
+      return {
+        position: interpolateArray(startPos, endPos, progress, easing),
+        rotation: interpolateArray(startRot, endRot, progress, easing),
+        fov: interpolateValue(startFov, endFov, progress, easing),
+      };
+    }
+
+    // Last breakpoint, stay at final values
     return {
-      position: interpolateArray(
-        currentBp?.cameraPosition || [0, 1, 1],
-        nextBp?.cameraPosition || currentBp?.cameraPosition || [0, 1, 1],
-        progress,
-        easing
-      ),
-      rotation: interpolateArray(
-        currentBp?.cameraRotation || [0, 0, 0],
-        nextBp?.cameraRotation || currentBp?.cameraRotation || [0, 0, 0],
-        progress,
-        easing
-      ),
-      fov: interpolateNumber(
-        currentBp?.cameraFov || 25,
-        nextBp?.cameraFov || currentBp?.cameraFov || 25,
-        progress,
-        easing
-      ),
+      position: currentBp.cameraPosition || cameraPosition,
+      rotation: currentBp.cameraRotation || cameraRotation,
+      fov: currentBp.cameraFov !== undefined ? currentBp.cameraFov : cameraFov,
     };
   };
 
-  const cameraState = getCurrentCameraState();
+  const currentCameraValues = getCurrentCameraValues();
 
   return (
     <div
@@ -218,6 +231,7 @@ export default function ThreeCanvas({
     >
       <Canvas 
         shadows 
+        camera={{ position: currentCameraValues.position, fov: currentCameraValues.fov }}
         style={{backgroundColor: "transparent", height: "100%", width: "100%", zIndex: 2}} 
         gl={{ preserveDrawingBuffer: true}} 
         eventPrefix="client"
@@ -225,14 +239,12 @@ export default function ThreeCanvas({
       >
         <ambientLight intensity={6}/>
         <fog attach="fog" color="#0029ff" near={1} far={3} />
-        
         <PerspectiveCamera 
           makeDefault 
-          position={cameraState.position} 
-          fov={cameraState.fov} 
-          rotation={cameraState.rotation}
+          position={currentCameraValues.position} 
+          fov={currentCameraValues.fov} 
+          rotation={currentCameraValues.rotation}
         />
-        
         <Environment files="https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/potsdamer_platz_1k.hdr" />
 
         <LanderScene 
@@ -248,6 +260,7 @@ export default function ThreeCanvas({
           <boxGeometry args={[2, 1, 10]} />
           <meshBasicMaterial color={"#362986"} side={THREE.BackSide}/>
         </mesh>
+        
       </Canvas>
     </div>
   );

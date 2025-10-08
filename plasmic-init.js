@@ -16,9 +16,9 @@ import ThreeCanvas from "./components/three/canvas/ThreeCanvas"
 import { CustomScroll } from "./components/effects/CustomScroll";
 
 PLASMIC.registerComponent(ThreeCanvas, {
-  name: "ThreeCanvas",
-  displayName: "Three.js Scroll Canvas",
-  description: "3D scene with camera animations based on scroll with multiple breakpoints",
+  name: "TheeCanvas",
+  displayName: "Three.js Scroll Effect",
+  description: "Animate camera and 3D scene based on scroll with multiple breakpoints",
   props: {
     animationMode: {
       type: "choice",
@@ -76,8 +76,8 @@ PLASMIC.registerComponent(ThreeCanvas, {
     },
     breakpoints: {
       type: "array",
-      displayName: "Camera Animation Breakpoints",
-      description: "Define multiple scroll breakpoints with custom camera positions, rotations, and FOV",
+      displayName: "Camera Breakpoints",
+      description: "Define multiple scroll breakpoints with camera positions, rotations, FOV and easing",
       itemType: {
         type: "object",
         fields: {
@@ -91,12 +91,6 @@ PLASMIC.registerComponent(ThreeCanvas, {
             type: "number",
             displayName: "Scroll End (px)",
             description: "Scroll position where this breakpoint ends (interpolation mode)",
-            defaultValue: 1000,
-          },
-          duration: {
-            type: "number",
-            displayName: "Duration (ms)",
-            description: "Animation duration for this breakpoint (duration mode only)",
             defaultValue: 1000,
           },
           easingFunction: {
@@ -141,27 +135,43 @@ PLASMIC.registerComponent(ThreeCanvas, {
           cameraPosition: {
             type: "object",
             displayName: "Camera Position",
-            description: "Camera position [x, y, z] for this breakpoint",
             defaultValue: [0, 1, 1],
+            description: "Camera position [x, y, z] at start of breakpoint",
+          },
+          endCameraPosition: {
+            type: "object",
+            displayName: "End Camera Position",
+            defaultValue: [0, 1, 1],
+            description: "Camera position [x, y, z] at end of breakpoint (interpolation mode)",
           },
           cameraRotation: {
             type: "object",
             displayName: "Camera Rotation",
-            description: "Camera rotation [x, y, z] in radians for this breakpoint",
             defaultValue: [0, 0, 0],
+            description: "Camera rotation [x, y, z] in radians at start",
+          },
+          endCameraRotation: {
+            type: "object",
+            displayName: "End Camera Rotation",
+            defaultValue: [0, 0, 0],
+            description: "Camera rotation [x, y, z] in radians at end (interpolation mode)",
           },
           cameraFov: {
             type: "number",
             displayName: "Camera FOV",
-            description: "Camera field of view (degrees) for this breakpoint",
             defaultValue: 25,
-            min: 1,
-            max: 180,
+            description: "Camera field of view at start of breakpoint",
+          },
+          endCameraFov: {
+            type: "number",
+            displayName: "End Camera FOV",
+            defaultValue: 25,
+            description: "Camera field of view at end of breakpoint (interpolation mode)",
           },
         },
       },
     },
-    // Legacy props for backwards compatibility
+    // Legacy props for backwards compatibility (hidden when breakpoints are used)
     cameraPosition: {
       type: "object",
       displayName: "Camera Position",
@@ -180,9 +190,7 @@ PLASMIC.registerComponent(ThreeCanvas, {
       type: "number",
       displayName: "Camera FOV",
       defaultValue: 25,
-      description: "Camera field of view (degrees)",
-      min: 1,
-      max: 180,
+      description: "Camera field of view",
       hidden: (props) => props.breakpoints && props.breakpoints.length > 0,
     },
     scrollStart: {
@@ -231,7 +239,7 @@ PLASMIC.registerComponent(ThreeCanvas, {
     "borderRadius",
     "overflow",
   ],
-  importPath: "./components/three/canvas/ThreeCanvas",
+  importPath: "../components/three/canvas/ThreeCanvas",
   isDefaultExport: true,
 });
 
