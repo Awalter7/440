@@ -243,8 +243,7 @@ PLASMIC.registerComponent(ThreeCanvas, {
   isDefaultExport: true,
 });
 
-
-
+// Plasmic Registration
 // Plasmic Registration
 PLASMIC.registerComponent(CustomScroll, {
   name: "CustomScroll",
@@ -449,67 +448,10 @@ PLASMIC.registerComponent(CustomScroll, {
         },
       },
     },
-    initialValues: {
-      type: "array",
-      displayName: "Initial Property Values",
-      description: "Set initial values for properties used in click effects (before any effects are triggered)",
-      itemType: {
-        type: "object",
-        fields: {
-          property: {
-            type: "choice",
-            displayName: "CSS Property",
-            description: "Which property to set initial value for",
-            options: [
-              "top",
-              "left",
-              "right",
-              "bottom",
-              "width",
-              "height",
-              "opacity",
-              "borderRadius",
-              "scale",
-              "rotate",
-              "translateX",
-              "translateY",
-              "translateZ",
-              "scaleX",
-              "scaleY",
-              "scaleZ",
-              "rotateX",
-              "rotateY",
-              "rotateZ",
-              "skewX",
-              "skewY",
-              "backgroundColor",
-              "color",
-              "fontSize",
-              "letterSpacing",
-              "lineHeight",
-              "padding",
-              "margin",
-              "borderWidth",
-              "boxShadow",
-              "textShadow",
-              "filter",
-              "backdropFilter",
-            ],
-            defaultValue: "opacity",
-          },
-          value: {
-            type: "string",
-            displayName: "Initial Value",
-            description: "Starting value when page loads (e.g., '0', '100px', '1', '0deg')",
-            defaultValue: "0",
-          },
-        },
-      },
-    },
     clickEffects: {
       type: "array",
       displayName: "Click-Triggered Effects",
-      description: "Define effects that trigger when specific elements are clicked (each effect transitions from the last applied value)",
+      description: "Define effects that trigger when specific elements are clicked (works alongside scroll animations)",
       itemType: {
         type: "object",
         fields: {
@@ -567,7 +509,7 @@ PLASMIC.registerComponent(CustomScroll, {
           styles: {
             type: "array",
             displayName: "Animated Styles",
-            description: "CSS properties to animate when triggered (transitions from last value)",
+            description: "CSS properties to animate when triggered",
             itemType: {
               type: "object",
               fields: {
@@ -612,10 +554,16 @@ PLASMIC.registerComponent(CustomScroll, {
                   ],
                   defaultValue: "opacity",
                 },
+                startValue: {
+                  type: "string",
+                  displayName: "Start Value",
+                  description: "Starting value (builds on current state from scroll effects)",
+                  defaultValue: "0",
+                },
                 endValue: {
                   type: "string",
                   displayName: "End Value",
-                  description: "Target value to animate to (starts from current/last value)",
+                  description: "Final value after animation completes",
                   defaultValue: "1",
                 },
               },
