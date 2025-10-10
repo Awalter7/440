@@ -605,12 +605,6 @@ PLASMIC.registerComponent(CustomScroll, {
                   ],
                   defaultValue: "opacity",
                 },
-                startValue: {
-                  type: "string",
-                  displayName: "Start Value",
-                  description: "Starting value (builds on current state from scroll effects)",
-                  defaultValue: "0",
-                },
                 endValue: {
                   type: "string",
                   displayName: "End Value",
