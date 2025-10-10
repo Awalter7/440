@@ -443,7 +443,7 @@ PLASMIC.registerComponent(CustomScroll, {
       },
     },
     initialStyles: {
-      type: "object",
+      type: "array",
       displayName: "Initial Animation Styles",
       description: "Define the initial values of styles that animations modify",
       itemType: {
