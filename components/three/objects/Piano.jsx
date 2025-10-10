@@ -8,7 +8,6 @@ export default function Piano({ position, rotation }) {
   const groupRef = useRef();
 
 
-  console.log(nodes.Scene.children[0].children[0])
   return (
     <group
       ref={groupRef}
