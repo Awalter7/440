@@ -518,6 +518,12 @@ PLASMIC.registerComponent(CustomScroll, {
             description: "How long this effect takes to animate",
             defaultValue: 1000,
           },
+          delay: {
+            type: "number",
+            displayName: "Delay (ms)",
+            description: "How long should this effect wait to animate",
+            defaultValue: 0,
+          },
           easingFunction: {
             type: "choice",
             options: [

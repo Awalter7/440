@@ -132,11 +132,14 @@ export function CustomScroll({
 
     const effectIndex = parseInt(activeClickEffect.split('_')[1]);
     const effect = clickEffects[effectIndex];
-    
+
     if (!effect || clickEffectAnimationFrames.current[activeClickEffect]) return;
 
     const startTime = { current: null };
     const effectDuration = effect.duration || 1000;
+    const effectDelay = effect.delay || 0; // Delay in ms
+
+    let delayTimeoutId = null;
 
     const animate = (currentTime) => {
       if (!startTime.current) {
@@ -163,19 +166,27 @@ export function CustomScroll({
             return updatedStyles;
           });
         }
-        
+
         delete clickEffectAnimationFrames.current[activeClickEffect];
         setActiveClickEffect("");
         setClickEffectProgress(0);
       }
     };
 
-    clickEffectAnimationFrames.current[activeClickEffect] = requestAnimationFrame(animate);
-    
+    // Delay the start of the animation using setTimeout
+    delayTimeoutId = setTimeout(() => {
+      clickEffectAnimationFrames.current[activeClickEffect] = requestAnimationFrame(animate);
+    }, effectDelay);
+
+    // Cleanup function
     return () => {
+      // Cancel any scheduled animation frames
       Object.values(clickEffectAnimationFrames.current).forEach(frameId => {
         if (frameId) cancelAnimationFrame(frameId);
       });
+
+      // Clear timeout if still pending
+      if (delayTimeoutId) clearTimeout(delayTimeoutId);
     };
   }, [activeClickEffect, clickEffects]);
 
