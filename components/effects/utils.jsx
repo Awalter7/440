@@ -90,6 +90,25 @@ const interpolateCalcParts = (startParts, endParts, progress, easing) => {
   return result;
 };
 
+
+function parsePadding(paddingStr) {
+  const values = paddingStr.trim().split(/\s+/);
+
+  switch (values.length) {
+    case 1:
+      return [values[0], values[0], values[0], values[0]]; // top, right, bottom, left
+    case 2:
+      return [values[0], values[1], values[0], values[1]];
+    case 3:
+      return [values[0], values[1], values[2], values[1]];
+    case 4:
+      return [values[0], values[1], values[2], values[3]];
+    default:
+      return ["0px", "0px", "0px", "0px"];
+  }
+}
+
+
 const stringifyCalc = (parts) => {
   let result = "calc(";
   
@@ -108,36 +127,38 @@ const stringifyCalc = (parts) => {
 };
 
 export const interpolate = (start, end, progress, easing, property) => {
-  const s = parseValue(start, property);
-  const e = parseValue(end, property);
-  
-  if (!s || !e) return undefined;
 
-  // Handle calc() interpolation
-  if (s.isCalc && e.isCalc) {
-    if (s.parts.length !== e.parts.length) {
-      console.warn(`calc() structure mismatch. Using start value.`);
-      return start;
-    }
+
+    const s = parseValue(start, property);
+    const e = parseValue(end, property);
     
-    const interpolatedParts = interpolateCalcParts(s.parts, e.parts, progress, easing);
-    return stringifyCalc(interpolatedParts);
-  }
-  
-  // One is calc(), one isn't - can't interpolate
-  if (s.isCalc || e.isCalc) {
-    console.warn(`Cannot interpolate between calc() and non-calc() values.`);
-    return progress < 0.5 ? start : end;
-  }
+    if (!s || !e) return undefined;
 
-  // Standard interpolation for non-calc values
-  if (s.unit !== e.unit) {
-    console.warn(`Unit mismatch: ${start} vs ${end}. Using start value unit.`);
-  }
+    // Handle calc() interpolation
+    if (s.isCalc && e.isCalc) {
+        if (s.parts.length !== e.parts.length) {
+            console.warn(`calc() structure mismatch. Using start value.`);
+            return start;
+        }
+        
+        const interpolatedParts = interpolateCalcParts(s.parts, e.parts, progress, easing);
+        return stringifyCalc(interpolatedParts);
+    }
 
-  const eased = easing ? easing(progress) : progress;
-  const interpolated = s.number + (e.number - s.number) * eased;
-  return s.unit ? `${interpolated}${s.unit}` : interpolated;
+    // One is calc(), one isn't - can't interpolate
+    if (s.isCalc || e.isCalc) {
+        console.warn(`Cannot interpolate between calc() and non-calc() values.`);
+        return progress < 0.5 ? start : end;
+    }
+
+    // Standard interpolation for non-calc values
+    if (s.unit !== e.unit) {
+        console.warn(`Unit mismatch: ${start} vs ${end}. Using start value unit.`);
+    }
+
+    const eased = easing ? easing(progress) : progress;
+    const interpolated = s.number + (e.number - s.number) * eased;
+    return s.unit ? `${interpolated}${s.unit}` : interpolated;
 };
 
 // Example usage:
