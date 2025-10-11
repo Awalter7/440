@@ -616,9 +616,13 @@ PLASMIC.registerComponent(CustomScroll, {
           },
         },
       },
+    },   
+    zIndex: {
+      type: "number",
+      defaultValue: 1000,
+      displayName: "Z-Index",
+      description: "Stacking order",
     },
-   
-
   },
   importPath: "./components/effects/CustomScroll",
   isDefaultExport: false,
