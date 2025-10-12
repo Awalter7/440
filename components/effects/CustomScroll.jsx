@@ -75,7 +75,6 @@ export function CustomScroll({
       const elapsed = currentTime - startTime.current;
       const progress = Math.min(elapsed / onLoadDuration, 1);
 
-      console.log(progress)
       setLoadEffectProgress(progress)
 
       if (progress < 1) {

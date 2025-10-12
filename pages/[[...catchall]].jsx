@@ -9,47 +9,19 @@ import {
 import Error from "next/error";
 import { useRouter } from "next/router";
 import { PLASMIC } from "@/plasmic-init";
+import { useProgress } from "@react-three/drei";
 
 // Custom loading component
-function CustomLoading() {
-  return (
-    <div style={{
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      minHeight: '100vh',
-      backgroundColor: '#f9fafb',
-      fontFamily: 'system-ui, -apple-system, sans-serif'
-    }}>
-      <div style={{ textAlign: 'center' }}>
-        <div style={{
-          width: '48px',
-          height: '48px',
-          border: '4px solid #e5e7eb',
-          borderTopColor: '#3b82f6',
-          borderRadius: '50%',
-          animation: 'spin 1s linear infinite',
-          margin: '0 auto 16px'
-        }} />
-        <p style={{ 
-          color: '#6b7280',
-          fontSize: '16px',
-          margin: 0
-        }}>Loading...</p>
-      </div>
-      <style jsx>{`
-        @keyframes spin {
-          to { transform: rotate(360deg); }
-        }
-      `}</style>
-    </div>
-  );
-}
+import { usePlasmicComponent } from "@plasmicapp/loader-nextjs";
+import GuitarLoader from "@/components/loaders/GuitarLoader";
+
+
 
 
 export default function PlasmicLoaderPage(props) {
   const { plasmicData, queryCache } = props;
   const router = useRouter();
+  
   
   // Show custom loading while router is not ready
   if (router.isFallback) {
@@ -60,6 +32,8 @@ export default function PlasmicLoaderPage(props) {
     return <Error statusCode={404} />;
   }
   const pageMeta = plasmicData.entryCompMetas[0];
+
+
   return (
     <PlasmicRootProvider
       loader={PLASMIC}

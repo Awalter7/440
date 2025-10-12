@@ -1,7 +1,12 @@
 import { useProgress } from '@react-three/drei'
+import { useEffect } from 'react';
+
 
 const GuitarLoader = () => {
   const { progress } = useProgress();
+
+
+  
 
   return(
       <div style={{
@@ -16,7 +21,7 @@ const GuitarLoader = () => {
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          justifyContent: 'center'
+          justifyContent: 'center',
         }}
         className={`loader ${progress === 100 && 'hidden'}`}
       >
@@ -47,7 +52,7 @@ const GuitarLoader = () => {
             />
           </div>
         </div>
-        <img src="/output-onlinepngtools.png" alt="Logo" style={{
+        <img src="/images/output-onlinepngtools.png" alt="Logo" style={{
           maxWidth: '250px',
           maxHeight: '250px',
           objectFit: 'contain',
