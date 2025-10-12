@@ -22,11 +22,7 @@ export default function PlasmicLoaderPage(props) {
   const { plasmicData, queryCache } = props;
   const router = useRouter();
   
-  
-  // Show custom loading while router is not ready
-  if (router.isFallback) {
-    return <CustomLoading />;
-  }
+
 
   if (!plasmicData || plasmicData.entryCompMetas.length === 0) {
     return <Error statusCode={404} />;
