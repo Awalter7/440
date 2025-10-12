@@ -6,7 +6,7 @@ const GuitarLoader = (props) => {
   return(
     <>
       {
-        props.showLoader || progress !== 100
+        props.showLoader && progress !== 100
         ?
         <div 
           className={`loader ${progress === 100 ? 'hidden' : ''} ${props.className}`}
