@@ -19,7 +19,7 @@ import Loader from "./components/loaders/Loader";
 PLASMIC.registerComponent(Loader, {
   name: "440 Loader",
   displayName: "440 Loader",
-  discription: "Some discription",
+  description: "Some discription",
   styleProps: [
     "width",
     "height",
