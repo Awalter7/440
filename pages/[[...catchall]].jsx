@@ -9,21 +9,11 @@ import {
 import Error from "next/error";
 import { useRouter } from "next/router";
 import { PLASMIC } from "@/plasmic-init";
-import { useProgress } from "@react-three/drei";
-
-// Custom loading component
-import { usePlasmicComponent } from "@plasmicapp/loader-nextjs";
-import GuitarLoader from "@/components/loaders/GuitarLoader";
-
-
-
 
 export default function PlasmicLoaderPage(props) {
   const { plasmicData, queryCache } = props;
   const router = useRouter();
   
-
-  console.log(plasmicData)
   if (!plasmicData || plasmicData.entryCompMetas.length === 0) {
     return <Error statusCode={404} />;
   }

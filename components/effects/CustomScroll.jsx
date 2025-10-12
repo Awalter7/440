@@ -3,7 +3,7 @@
 import * as React from "react";
 import easingFunctions from "../utils/easingFunctions";
 import { interpolate } from "./utils";
-import { Effects } from "@react-three/drei";
+import { useEffect } from "react";
 
 // Convert camelCase to kebab-case for CSS properties
 const camelToKebab = (str) => {
@@ -22,10 +22,7 @@ export function CustomScroll({
   // New multi-breakpoint prop
   breakpoints = [],
   initialStyles = [],
-  onLoadStyles = [],
-  onLoadDuration = 1000,
-  onLoadDellay = 0,
-  onLoadEasingFunction = "linear",
+  loadEffect = [],
   // New click-triggered effects
   clickEffects = [],
   zIndex = 1000,
@@ -44,74 +41,78 @@ export function CustomScroll({
   const [loadEffectProgress, setLoadEffectProgress] = React.useState(0);
   
   // New state for click effects
-  const [activeClickEffect, setActiveClickEffect] = React.useState("");
+  const [activeEffect, setActiveEffect] = React.useState("");
   const [clickEffectProgress, setClickEffectProgress] = React.useState(0);
     
-  const animationStartTime = React.useRef(null);
   const clickEffectAnimationFrames = React.useRef({});
+  const loadEffectAnimationFrames = React.useRef({})
 
 
   //Handle Load effects
-  React.useEffect(() => {
-    if (clickEffectAnimationFrames.current["onLoad"]) return;
+  // useEffect(() => {
+  //   if (loadEffectAnimationFrames.current["onLoad"]) return;
 
-    const startTime = { current: null };
+  //   const startTime = { current: null };
 
-    let delayTimeoutId = null;
+  //   let delayTimeoutId = null;
 
-    const animate = (currentTime) => {
-      if (!startTime.current) {
-        startTime.current = currentTime;
-      }
+  //   const animate = (currentTime) => {
+  //     if (!startTime.current) {
+  //       startTime.current = currentTime;
+  //     }
 
-      const elapsed = currentTime - startTime.current;
-      const progress = Math.min(elapsed / onLoadDuration, 1);
+  //     const elapsed = currentTime - startTime.current;
+  //     const progress = Math.min(elapsed / onLoadDuration, 1);
 
-      setLoadEffectProgress(progress)
+  //     setLoadEffectProgress(progress)
 
-      if (progress < 1) {
-        // Continue animating
-        clickEffectAnimationFrames.current["onLoad"] = requestAnimationFrame(animate);
-      } else {
-        // Animation complete - update styles with final values
+  //     if (progress < 1) {
+  //       // Continue animating
+  //       loadEffectAnimationFrames.current["onLoad"] = requestAnimationFrame(animate);
+  //     } else {
+  //       // Animation complete - update styles with final values
 
-        // setStyles(prevStyles => {
-        //   const updatedStyles = { ...prevStyles };
+  //       // setStyles(prevStyles => {
+  //       //   const updatedStyles = { ...prevStyles };
 
-        //   Object.keys(onLoadStyles).forEach(key => {
-        //     if (key !== 'transform') {
-        //       updatedStyles[key] = onLoadStyles[key];
-        //     }
-        //   });
+  //       //   Object.keys(onLoadStyles).forEach(key => {
+  //       //     if (key !== 'transform') {
+  //       //       updatedStyles[key] = onLoadStyles[key];
+  //       //     }
+  //       //   });
 
-        //   return updatedStyles;
-        // });
+  //       //   return updatedStyles;
+  //       // });
         
 
-        delete clickEffectAnimationFrames.current["onLoad"];
-        setClickEffectProgress(0);
-      }
-    }
+  //       delete loadEffectAnimationFrames.current["onLoad"];
+  //       setLoadEffectProgress(1);
+  //     }
+  //   }
     
-    delayTimeoutId = setTimeout(() => {
-      clickEffectAnimationFrames.current["onLoad"] = requestAnimationFrame(animate);
-    }, onLoadDellay);
+  //   delayTimeoutId = setTimeout(() => {
+  //     loadEffectAnimationFrames.current["onLoad"] = requestAnimationFrame(animate);
+  //   }, onLoadDellay);
 
-    // Cleanup function
-    return () => {
-      // Cancel any scheduled animation frames
-      Object.values(clickEffectAnimationFrames.current).forEach(frameId => {
-        if (frameId) cancelAnimationFrame(frameId);
-      });
+  //   // Cleanup function
+  //   return () => {
+  //     // Cancel any scheduled animation frames
+  //     Object.values(loadEffectAnimationFrames.current).forEach(frameId => {
+  //       if (frameId) cancelAnimationFrame(frameId);
+  //     });
 
-      // Clear timeout if still pending
-      if (delayTimeoutId) clearTimeout(delayTimeoutId);
-    };
+  //     // Clear timeout if still pending
+  //     if (delayTimeoutId) clearTimeout(delayTimeoutId);
+  //   };
 
-  }, [ onLoadStyles, loadEffectProgress])
+  // }, [onLoadStyles, styles])
+
+  useEffect(() => {
+    console.log(loadEffectProgress)
+  }, [loadEffectProgress])
 
   // Handle click triggers for click effects
-  React.useEffect(() => {
+  useEffect(() => {
     if (!clickEffects || clickEffects.length === 0) return;
     
     const handleClick = (e) => {
@@ -128,11 +129,11 @@ export function CustomScroll({
           if (effect.triggerId && element.id === effect.triggerId) {
             const effectId = `effect_${index}`;
             
-            if (activeClickEffect === effectId) return;
+            if (activeEffect === effectId) return;
             
             // If there's an active effect, capture current interpolated values
-            if (activeClickEffect !== "" && clickEffectProgress > 0) {
-              const currentEffectIndex = parseInt(activeClickEffect.split('_')[1]);
+            if (activeEffect !== "" && clickEffectProgress > 0) {
+              const currentEffectIndex = parseInt(activeEffect.split('_')[1]);
               const currentEffect = clickEffects[currentEffectIndex];
               
               if (currentEffect && currentEffect.styles) {
@@ -164,13 +165,13 @@ export function CustomScroll({
               }
               
               // Cancel the current animation
-              if (clickEffectAnimationFrames.current[activeClickEffect]) {
-                cancelAnimationFrame(clickEffectAnimationFrames.current[activeClickEffect]);
-                delete clickEffectAnimationFrames.current[activeClickEffect];
+              if (clickEffectAnimationFrames.current[activeEffect]) {
+                cancelAnimationFrame(clickEffectAnimationFrames.current[activeEffect]);
+                delete clickEffectAnimationFrames.current[activeEffect];
               }
             }
             
-            setActiveClickEffect(effectId);
+            setActiveEffect(effectId);
             setClickEffectProgress(0);
           }
         });
@@ -181,16 +182,16 @@ export function CustomScroll({
     document.addEventListener("click", handleClick);
     
     return () => document.removeEventListener("click", handleClick);
-  }, [ clickEffects, activeClickEffect, clickEffectProgress, styles]);
+  }, [ clickEffects, activeEffect, clickEffectProgress, styles]);
 
   // Animation loop for click effects
-  React.useEffect(() => {
-    if (activeClickEffect === "") return;
+  useEffect(() => {
+    if (activeEffect === "") return;
 
-    const effectIndex = parseInt(activeClickEffect.split('_')[1]);
+    const effectIndex = parseInt(activeEffect.split('_')[1]);
     const effect = clickEffects[effectIndex];
 
-    if (!effect || clickEffectAnimationFrames.current[activeClickEffect]) return;
+    if (!effect || clickEffectAnimationFrames.current[activeEffect]) return;
 
     const startTime = { current: null };
     const effectDuration = effect.duration || 1000;
@@ -210,10 +211,10 @@ export function CustomScroll({
 
       if (progress < 1) {
         // Continue animating
-        clickEffectAnimationFrames.current[activeClickEffect] = requestAnimationFrame(animate);
+        clickEffectAnimationFrames.current[activeEffect] = requestAnimationFrame(animate);
       } else {
         // Animation complete - update styles with final values
-        const idx = parseInt(activeClickEffect.split('_')[1]);
+        const idx = parseInt(activeEffect.split('_')[1]);
         if (clickEffects[idx] && clickEffects[idx].styles) {
           setStyles(prevStyles => {
             const updatedStyles = { ...prevStyles };
@@ -224,15 +225,15 @@ export function CustomScroll({
           });
         }
 
-        delete clickEffectAnimationFrames.current[activeClickEffect];
-        setActiveClickEffect("");
+        delete clickEffectAnimationFrames.current[activeEffect];
+        setActiveEffect("");
         setClickEffectProgress(0);
       }
     };
 
     // Delay the start of the animation using setTimeout
     delayTimeoutId = setTimeout(() => {
-      clickEffectAnimationFrames.current[activeClickEffect] = requestAnimationFrame(animate);
+      clickEffectAnimationFrames.current[activeEffect] = requestAnimationFrame(animate);
     }, effectDelay);
 
     // Cleanup function
@@ -245,22 +246,23 @@ export function CustomScroll({
       // Clear timeout if still pending
       if (delayTimeoutId) clearTimeout(delayTimeoutId);
     };
-  }, [activeClickEffect, clickEffects]);
+  }, [activeEffect, clickEffects]);
 
 
-  React.useEffect(() => {
+  useEffect(() => {
     console.log(loadEffectProgress)
   }, [loadEffectProgress])
 
+
   const getStyles = () => {
-    if (activeClickEffect === "") return styles;
+    if (activeEffect === "") return styles;
 
     const computedStyles = { ...styles };
     const transformValues = [];
     const transformProps = ['scale', 'scaleX', 'scaleY', 'scaleZ', 'rotate', 'rotateX', 'rotateY', 'rotateZ', 
                             'translateX', 'translateY', 'translateZ', 'skewX', 'skewY'];
 
-    const idx = parseInt(activeClickEffect.split("_")[1]);
+    const idx = parseInt(activeEffect.split("_")[1]);
     const progress = clickEffectProgress;
 
     if (!clickEffects[idx] || !clickEffects[idx].styles) return styles;
