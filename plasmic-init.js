@@ -556,19 +556,19 @@ PLASMIC.registerComponent(CustomScroll, {
       displayName: "On Load Effect",
       description: "Define effects that trigger when application loads",
       fields: {
-        itemType: {
+        duration: {  // Changed from itemType to duration
           type: "number",
           displayName: "Duration (ms)",
           description: "How long should this effect animate",
           defaultValue: 1000,
         },
-        itemType: {
+        delay: {  // Changed from itemType to delay
           type: "number",
           displayName: "Delay (ms)",
           description: "How long should this effect wait to animate",
           defaultValue: 0,
         },
-        itemType: {
+        easingFunction: {  // Changed from itemType to easingFunction
           type: "choice",
           options: [
             "linear",
@@ -608,7 +608,7 @@ PLASMIC.registerComponent(CustomScroll, {
           description: "Timing function for the on load animation.",
           hidden: (props) => props.breakpoints && props.breakpoints.length > 0,
         },
-        itemType: {
+        styles: {  // Changed from itemType to styles
           type: "array",
           displayName: "On Load Animation Styles",
           description: "Define the values of styles to modify on load",
@@ -656,17 +656,16 @@ PLASMIC.registerComponent(CustomScroll, {
                 ],
                 defaultValue: "opacity",
               },
-              startValue: {
+              endValue: {  // Changed from startValue to endValue
                 type: "string",
                 displayName: "End Value",
-                description: "Initial value (e.g., '100px', '0', '1', '45deg', '#ff0000')",
-                defaultValue: "0",
+                description: "Final value (e.g., '100px', '1', '0', '45deg', '#ff0000')",
+                defaultValue: "1",
               }
             }
           },
         },
       }
-      
     },
     clickEffects: {
       type: "array",
