@@ -64,4 +64,4 @@ const GuitarLoader = () => {
   )
 }
 
-export default Loader;
+export default GuitarLoader;
