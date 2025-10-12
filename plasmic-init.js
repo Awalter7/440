@@ -14,6 +14,42 @@ export const PLASMIC = initPlasmicLoader({
 
 import ThreeCanvas from "./components/three/canvas/ThreeCanvas"
 import { CustomScroll } from "./components/effects/CustomScroll";
+import Loading from "./components/loaders/loading"
+
+PLASMIC.registerComponent(Loader, {
+  name: "Loader",
+  displayName: "440 Loader",
+  discription: "",
+    styleProps: [
+    "width",
+    "height",
+    "minWidth",
+    "maxWidth", 
+    "minHeight",
+    "maxHeight",
+    "position",
+    "top",
+    "left",
+    "right",
+    "bottom",
+    "zIndex",
+    "display",
+    "flexDirection",
+    "flexWrap",
+    "justifyContent",
+    "alignItems",
+    "gap",
+    "padding",
+    "margin",
+    "background",
+    "backgroundColor",
+    "border",
+    "borderRadius",
+    "overflow",
+  ],
+  importPath: "../components/loaders/loading",
+  isDefaultExport: true,
+})
 
 PLASMIC.registerComponent(ThreeCanvas, {
   name: "TheeCanvas",
@@ -600,7 +636,7 @@ PLASMIC.registerComponent(CustomScroll, {
       type: "number",
       displayName: "Duration (ms)",
       description: "How long should this effect animate",
-      defaultValue: 0,
+      defaultValue: 1000,
     },
     onLoadDelay: {
       type: "number",

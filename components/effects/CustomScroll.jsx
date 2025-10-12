@@ -61,6 +61,61 @@ export function CustomScroll({
 
   //Handle Load effects
   React.useEffect(() => {
+    if (!stylesInitialized || clickEffectAnimationFrames.current["onLoad"]) return;
+
+    const startTime = { current: null };
+
+    let delayTimeoutId = null;
+
+    const animate = (currentTime) => {
+      if (!startTime.current) {
+        startTime.current = currentTime;
+      }
+
+      const elapsed = currentTime - startTime.current;
+      const progress = Math.min(elapsed / onLoadDuration, 1);
+
+      console.log(progress)
+      setLoadEffectProgress(progress)
+
+      if (progress < 1) {
+        // Continue animating
+        clickEffectAnimationFrames.current["onLoad"] = requestAnimationFrame(animate);
+      } else {
+        // Animation complete - update styles with final values
+
+        // setStyles(prevStyles => {
+        //   const updatedStyles = { ...prevStyles };
+
+        //   Object.keys(onLoadStyles).forEach(key => {
+        //     if (key !== 'transform') {
+        //       updatedStyles[key] = onLoadStyles[key];
+        //     }
+        //   });
+
+        //   return updatedStyles;
+        // });
+        
+
+        delete clickEffectAnimationFrames.current["onLoad"];
+        setClickEffectProgress(0);
+      }
+    }
+    
+    delayTimeoutId = setTimeout(() => {
+      clickEffectAnimationFrames.current["onLoad"] = requestAnimationFrame(animate);
+    }, onLoadDellay);
+
+    // Cleanup function
+    return () => {
+      // Cancel any scheduled animation frames
+      Object.values(clickEffectAnimationFrames.current).forEach(frameId => {
+        if (frameId) cancelAnimationFrame(frameId);
+      });
+
+      // Clear timeout if still pending
+      if (delayTimeoutId) clearTimeout(delayTimeoutId);
+    };
 
   }, [stylesInitialized, onLoadStyles, loadEffectProgress])
 
@@ -200,6 +255,11 @@ export function CustomScroll({
       if (delayTimeoutId) clearTimeout(delayTimeoutId);
     };
   }, [activeClickEffect, clickEffects]);
+
+
+  React.useEffect(() => {
+    console.log(loadEffectProgress)
+  }, [loadEffectProgress])
 
   const getStyles = () => {
     if (activeClickEffect === "") return styles;
