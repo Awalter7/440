@@ -1,14 +1,7 @@
 import { useProgress } from '@react-three/drei'
-import { usePlasmicComponent } from '@plasmicapp/loader-nextjs';
-import { useEffect } from 'react';
-
 
 const GuitarLoader = (props) => {
   const { progress } = useProgress();
-
-  useEffect(() => {
-    console.log(progress)
-  }, [progress])
 
   return(
     <>
