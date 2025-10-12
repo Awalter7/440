@@ -10,9 +10,14 @@ import Error from "next/error";
 import { useRouter } from "next/router";
 import { PLASMIC } from "@/plasmic-init";
 
+
+
 export default function PlasmicLoaderPage(props) {
   const { plasmicData, queryCache } = props;
   const router = useRouter();
+
+  console.log(router)
+
   if (!plasmicData || plasmicData.entryCompMetas.length === 0) {
     return <Error statusCode={404} />;
   }

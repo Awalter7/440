@@ -22,6 +22,10 @@ export function CustomScroll({
   // New multi-breakpoint prop
   breakpoints = [],
   initialStyles = [],
+  onLoadStyles = [],
+  onLoadDuration = 1000,
+  onLoadDellay = 0,
+  onLoadEasingFunction = "linear",
   // New click-triggered effects
   clickEffects = [],
   zIndex = 1000,
@@ -32,6 +36,8 @@ export function CustomScroll({
   const [styles, setStyles] = React.useState({});
 
   const [currentBreakpointIndex, setCurrentBreakpointIndex] = React.useState(0);
+
+  const [loadEffectProgress, setLoadEffectProgress] = useState(0);
   
   // New state for click effects
   const [activeClickEffect, setActiveClickEffect] = React.useState("");
@@ -52,6 +58,11 @@ export function CustomScroll({
       setStylesInitialized(true);
     }
   }, [stableInitialStyles, styles, initialStyles.length]);
+
+  //Handle Load effects
+  React.useEffect(() => {
+
+  }, [stylesInitialized, onLoadStyles, loadEffectProgress])
 
   // Handle click triggers for click effects
   React.useEffect(() => {
