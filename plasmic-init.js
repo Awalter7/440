@@ -552,11 +552,10 @@ PLASMIC.registerComponent(CustomScroll, {
       }
     },
     loadEffect: {
-      type: "array",
+      type: "object",
       displayName: "On Load Effect",
       description: "Define effects that trigger when application loads",
-      itemType: {
-        type: "object",
+      fields: {
         itemType: {
           type: "number",
           displayName: "Duration (ms)",
