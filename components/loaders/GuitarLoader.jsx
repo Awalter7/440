@@ -1,18 +1,15 @@
 import { useProgress } from '@react-three/drei'
-import { useEffect } from 'react';
 
-
-const GuitarLoader = ({styleProps}) => {
+const GuitarLoader = (props) => {
   const { progress } = useProgress();
-
-
-  
+  const { ...styleProps } = props;
 
   return(
-      <div style={{
+      <div 
+        className={`loader ${progress === 100 ? 'hidden' : ''} ${className || ''} ${props.className}`}
+        style={{
           ...styleProps
         }}
-        className={`loader ${progress === 100 && 'hidden'}`}
       >
         <div style={{width: "250px", height: "0px"}}>
           <div style={{
@@ -47,10 +44,6 @@ const GuitarLoader = ({styleProps}) => {
           objectFit: 'contain',
           display: 'block',
           rotate: "-90deg",
-          display: "flex", 
-          flexDirection: "column",
-          alignContent: "start",
-          justifyContent: "start"
         }}/>
       </div>
   )
