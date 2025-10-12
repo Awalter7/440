@@ -37,7 +37,7 @@ export function CustomScroll({
 
   const [currentBreakpointIndex, setCurrentBreakpointIndex] = React.useState(0);
 
-  const [loadEffectProgress, setLoadEffectProgress] = useState(0);
+  const [loadEffectProgress, setLoadEffectProgress] = React.useState(0);
   
   // New state for click effects
   const [activeClickEffect, setActiveClickEffect] = React.useState("");
