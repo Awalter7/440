@@ -2,7 +2,7 @@ import { useProgress } from '@react-three/drei'
 import { useEffect } from 'react';
 
 
-const GuitarLoader = () => {
+const GuitarLoader = ({styleProps}) => {
   const { progress } = useProgress();
 
 
@@ -10,18 +10,7 @@ const GuitarLoader = () => {
 
   return(
       <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          width: '100vw',
-          height: '100vh',
-          backgroundColor: 'black',
-          zIndex: 101,
-          pointerEvents: 'auto',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
+          ...styleProps
         }}
         className={`loader ${progress === 100 && 'hidden'}`}
       >
