@@ -6,7 +6,7 @@ const GuitarLoader = (props) => {
 
   return(
       <div 
-        className={`loader ${progress === 100 ? 'hidden' : ''} ${className || ''} ${props.className}`}
+        className={`loader ${progress === 100 ? 'hidden' : ''} ${props.className}`}
         style={{
           ...styleProps
         }}
