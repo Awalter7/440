@@ -14,12 +14,12 @@ export const PLASMIC = initPlasmicLoader({
 
 import ThreeCanvas from "./components/three/canvas/ThreeCanvas"
 import { CustomScroll } from "./components/effects/CustomScroll";
-import Loader from "./components/loaders/Loader";
+import GuitarLoader from "./components/loaders/Loader";
 
-PLASMIC.registerComponent(Loader, {
-  name: "440 Loader",
-  displayName: "440 Loader",
-  description: "Some discription",
+PLASMIC.registerComponent(GuitarLoader, {
+  name: "Guitar Loader",
+  displayName: "Guitar Loader",
+  description: "A Guitar loader to show loading progress",
   styleProps: [
     "width",
     "height",

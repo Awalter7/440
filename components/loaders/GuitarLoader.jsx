@@ -1,6 +1,6 @@
 import { useProgress } from '@react-three/drei'
 
-const Loader = () => {
+const GuitarLoader = () => {
   const { progress } = useProgress();
 
   return(
