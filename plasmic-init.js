@@ -14,7 +14,7 @@ export const PLASMIC = initPlasmicLoader({
 
 import ThreeCanvas from "./components/three/canvas/ThreeCanvas"
 import { CustomScroll } from "./components/effects/CustomScroll";
-import GuitarLoader from "./components/loaders/Loader";
+import GuitarLoader from "./components/loaders/GuitarLoader";
 
 PLASMIC.registerComponent(GuitarLoader, {
   name: "Guitar Loader",
@@ -47,7 +47,7 @@ PLASMIC.registerComponent(GuitarLoader, {
     "borderRadius",
     "overflow",
   ],
-  importPath: "./components/loaders/Loader",
+  importPath: "./components/loaders/GuitarLoader",
   isDefaultExport: true,
 })
 
