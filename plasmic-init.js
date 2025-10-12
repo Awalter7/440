@@ -30,6 +30,11 @@ PLASMIC.registerComponent(GuitarLoader, {
         value: "Content to load",
       },
     },
+    showLoader: {
+      type: "boolean",
+      displayName: "Display Loader?",
+      defaultValue: false,
+    }
   },
   styleProps: [
     "width",

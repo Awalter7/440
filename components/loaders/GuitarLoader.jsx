@@ -6,10 +6,14 @@ import { useEffect } from 'react';
 const GuitarLoader = (props) => {
   const { progress } = useProgress();
 
+  useEffect(() => {
+    console.log(progress)
+  }, [progress])
+
   return(
     <>
       {
-        progress !== 1
+        props.showLoader || progress !== 100
         ?
         <div 
           className={`loader ${progress === 100 ? 'hidden' : ''} ${props.className}`}
