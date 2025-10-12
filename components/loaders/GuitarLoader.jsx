@@ -4,7 +4,6 @@ const GuitarLoader = () => {
   const { progress } = useProgress();
 
   return(
-    <>
       <div style={{
           position: 'fixed',
           top: 0,
@@ -60,7 +59,6 @@ const GuitarLoader = () => {
           justifyContent: "start"
         }}/>
       </div>
-    </>
   )
 }
 

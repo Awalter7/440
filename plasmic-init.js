@@ -20,6 +20,7 @@ PLASMIC.registerComponent(GuitarLoader, {
   name: "Guitar Loader",
   displayName: "Guitar Loader",
   description: "A Guitar loader to show loading progress",
+  props: {},
   styleProps: [
     "width",
     "height",
