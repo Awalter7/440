@@ -14,7 +14,7 @@ export const PLASMIC = initPlasmicLoader({
 
 import ThreeCanvas from "./components/three/canvas/ThreeCanvas"
 import { CustomScroll } from "./components/effects/CustomScroll";
-import Loading from "./components/loaders/loading"
+import Loader from "./components/loaders/Loader";
 
 PLASMIC.registerComponent(Loader, {
   name: "Loader",
@@ -47,7 +47,7 @@ PLASMIC.registerComponent(Loader, {
     "borderRadius",
     "overflow",
   ],
-  importPath: "../components/loaders/loading",
+  importPath: "../components/loaders/Loader",
   isDefaultExport: true,
 })
 
