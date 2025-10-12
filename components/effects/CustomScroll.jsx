@@ -33,7 +33,11 @@ export function CustomScroll({
   const stableInitialStyles = React.useMemo(() => initialStyles, [JSON.stringify(initialStyles)]);
 
   // Changed from ref to state
-  const [styles, setStyles] = React.useState({});
+  const [styles, setStyles] = React.useState(stableInitialStyles.reduce((acc, { property, startValue }) => {
+        acc[property.trim()] = startValue;
+        return acc;
+      }, {})
+    );
 
   const [currentBreakpointIndex, setCurrentBreakpointIndex] = React.useState(0);
 
@@ -42,26 +46,14 @@ export function CustomScroll({
   // New state for click effects
   const [activeClickEffect, setActiveClickEffect] = React.useState("");
   const [clickEffectProgress, setClickEffectProgress] = React.useState(0);
-  const [stylesInitialized, setStylesInitialized] = React.useState(false);
     
   const animationStartTime = React.useRef(null);
   const clickEffectAnimationFrames = React.useRef({});
 
-  // Initialize styles using state instead of ref
-  React.useEffect(() => {
-    if (Object.keys(styles).length === 0 && initialStyles.length !== 0) {
-      const newStyles = stableInitialStyles.reduce((acc, { property, startValue }) => {
-        acc[property.trim()] = startValue;
-        return acc;
-      }, {});
-      setStyles(newStyles);
-      setStylesInitialized(true);
-    }
-  }, [stableInitialStyles, styles, initialStyles.length]);
 
   //Handle Load effects
   React.useEffect(() => {
-    if (!stylesInitialized || clickEffectAnimationFrames.current["onLoad"]) return;
+    if (clickEffectAnimationFrames.current["onLoad"]) return;
 
     const startTime = { current: null };
 
@@ -116,11 +108,11 @@ export function CustomScroll({
       if (delayTimeoutId) clearTimeout(delayTimeoutId);
     };
 
-  }, [stylesInitialized, onLoadStyles, loadEffectProgress])
+  }, [ onLoadStyles, loadEffectProgress])
 
   // Handle click triggers for click effects
   React.useEffect(() => {
-    if (!stylesInitialized || !clickEffects || clickEffects.length === 0) return;
+    if (!clickEffects || clickEffects.length === 0) return;
     
     const handleClick = (e) => {
       let element = e.target;
@@ -189,7 +181,7 @@ export function CustomScroll({
     document.addEventListener("click", handleClick);
     
     return () => document.removeEventListener("click", handleClick);
-  }, [stylesInitialized, clickEffects, activeClickEffect, clickEffectProgress, styles]);
+  }, [ clickEffects, activeClickEffect, clickEffectProgress, styles]);
 
   // Animation loop for click effects
   React.useEffect(() => {

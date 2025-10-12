@@ -14,13 +14,23 @@ export const PLASMIC = initPlasmicLoader({
 
 import ThreeCanvas from "./components/three/canvas/ThreeCanvas"
 import { CustomScroll } from "./components/effects/CustomScroll";
-import GuitarLoader from "./components/loaders/GuitarLoader";
+import dynamic from 'next/dynamic';
+
+const GuitarLoader = dynamic(() => import('./components/loaders/GuitarLoader'), { ssr: false });
 
 PLASMIC.registerComponent(GuitarLoader, {
   name: "Guitar Loader",
   displayName: "Guitar Loader",
   description: "A Guitar loader to show loading progress",
-  props: {},
+  props: {
+    children: {
+      type: "slot",
+      defaultValue: {
+        type: "text",
+        value: "Content to load",
+      },
+    },
+  },
   styleProps: [
     "width",
     "height",

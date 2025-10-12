@@ -23,7 +23,7 @@ export default function PlasmicLoaderPage(props) {
   const router = useRouter();
   
 
-
+  console.log(plasmicData)
   if (!plasmicData || plasmicData.entryCompMetas.length === 0) {
     return <Error statusCode={404} />;
   }
