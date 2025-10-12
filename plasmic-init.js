@@ -17,10 +17,10 @@ import { CustomScroll } from "./components/effects/CustomScroll";
 import Loader from "./components/loaders/Loader";
 
 PLASMIC.registerComponent(Loader, {
-  name: "Loader",
+  name: "440 Loader",
   displayName: "440 Loader",
-  discription: "",
-    styleProps: [
+  discription: "Some discription",
+  styleProps: [
     "width",
     "height",
     "minWidth",
