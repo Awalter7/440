@@ -47,7 +47,7 @@ PLASMIC.registerComponent(Loader, {
     "borderRadius",
     "overflow",
   ],
-  importPath: "../components/loaders/Loader",
+  importPath: "./components/loaders/Loader",
   isDefaultExport: true,
 })
 
