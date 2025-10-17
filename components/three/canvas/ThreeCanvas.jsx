@@ -327,7 +327,7 @@ export default function ThreeCanvas({
         resize={{ scroll: false, debounce: 0 }}
       >
         <ambientLight intensity={6}/>
-        <fog attach="fog" color="#0029ff" near={1} far={10} />
+        <fog attach="fog" color="#0029ff" near={1} far={5} />
         
         <PlasmicEffect 
           objectId="camera"
@@ -347,7 +347,7 @@ export default function ThreeCanvas({
           castShadow
           receiveShadow
         >
-          <boxGeometry args={[2, 1, 10]} />
+          <boxGeometry args={[2, 1, 20]} />
           <meshBasicMaterial color={"#201855"} side={THREE.BackSide}/>
         </mesh>
       </Canvas>

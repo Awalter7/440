@@ -24,11 +24,12 @@ export function CustomScroll({
   positionType = "fixed",
   // Initial Styles
   initialStyles = [],
-  // New click-triggered effects
+  // Click-triggered effects
   clickEffects = [],
-  // New load effects
+  // Hover effects
+  hoverEffects = [],
+  // Load effects
   loadEffect = [],
-
   zIndex = 1000,
 }) {
   const stableInitialStyles = React.useMemo(() => initialStyles, [JSON.stringify(initialStyles)]);
@@ -44,20 +45,27 @@ export function CustomScroll({
     }, {})
   );
 
-
-  
-  // New state for click effects
+  // State for click effects
   const [activeEffect, setActiveEffect] = React.useState("");
   const [clickEffectProgress, setClickEffectProgress] = React.useState(0);
   const clickEffectAnimationFrames = React.useRef({});
 
+  // State for hover effects
+  const [activeHoverEffect, setActiveHoverEffect] = React.useState("");
+  const [hoverEffectProgress, setHoverEffectProgress] = React.useState(0);
+  const [isHovering, setIsHovering] = React.useState(false);
+  const [reversingHover, setReversingHover] = React.useState(false);
+  const hoverEffectAnimationFrame = React.useRef(null);
+  const hoverStartStyles = React.useRef({});
 
+  // State for load effects
   const [loadEffectProgress, setLoadEffectProgress] = React.useState(0);
   const loadEffectAnimationFrame = React.useRef({});
 
   const ref = React.useRef(null)
   const startTime = React.useRef(null);
 
+  // Load effect
   useEffect(() => {
     if( progress !== 100 || !loadEffect.duration || !loadEffect.styles || clickEffectAnimationFrames.current["load"]) return;
 
@@ -107,20 +115,208 @@ export function CustomScroll({
     };
   }, [progress])
 
-  
+  // Handle hover effects
+  useEffect(() => {
+    if (!hoverEffects || hoverEffects.length === 0) return;
+    
+    const handleMouseEnter = (e) => {
+      let element = e.target;
 
+      if (!styles || Object.keys(styles).length === 0) {
+        console.warn("Styles not initialized yet");
+        return;
+      }
 
+      while (element) {
+        hoverEffects.forEach((effect, index) => {
+          if (effect.triggerId && element.id === effect.triggerId) {
+            const effectId = `hover_${index}`;
+            
+            if (activeHoverEffect === effectId && isHovering) return;
+            
+            // Save current styles before hover animation
+            const currentStyles = getStyles();
+            hoverStartStyles.current = { ...currentStyles };
+            
+            // Cancel any active click effect
+            if (activeEffect !== "" && clickEffectProgress > 0) {
+              const currentEffectIndex = parseInt(activeEffect.split('_')[1]);
+              const currentEffect = clickEffects[currentEffectIndex];
+              
+              if (currentEffect && currentEffect.styles) {
+                const updatedStyles = { ...styles };
+                
+                Object.keys(currentStyles).forEach(key => {
+                  if (key !== 'transform') {
+                    updatedStyles[key] = currentStyles[key];
+                  }
+                });
+                
+                if (currentStyles.transform) {
+                  const transformProps = ['scale', 'scaleX', 'scaleY', 'scaleZ', 'rotate', 'rotateX', 'rotateY', 'rotateZ', 
+                                        'translateX', 'translateY', 'translateZ', 'skewX', 'skewY'];
+                  const transformRegex = /(\w+)\(([^)]+)\)/g;
+                  let match;
+                  while ((match = transformRegex.exec(currentStyles.transform)) !== null) {
+                    const [, prop, value] = match;
+                    if (transformProps.includes(prop)) {
+                      updatedStyles[prop] = value;
+                    }
+                  }
+                }
+                
+                setStyles(updatedStyles);
+              }
+              
+              if (clickEffectAnimationFrames.current[activeEffect]) {
+                cancelAnimationFrame(clickEffectAnimationFrames.current[activeEffect]);
+                delete clickEffectAnimationFrames.current[activeEffect];
+              }
+              setActiveEffect("");
+              setClickEffectProgress(0);
+            }
+            
+            setActiveHoverEffect(effectId);
+            setIsHovering(true);
+            setReversingHover(false);
+            setHoverEffectProgress(0);
+          }
+        });
+        element = element.parentElement;
+      }
+    };
 
+    const handleMouseLeave = (e) => {
+      let element = e.target;
 
+      while (element) {
+        hoverEffects.forEach((effect, index) => {
+          if (effect.triggerId && element.id === effect.triggerId) {
+            const effectId = `hover_${index}`;
+            
+            if (activeHoverEffect === effectId && isHovering) {
+              setIsHovering(false);
+              setReversingHover(true);
+            }
+          }
+        });
+        element = element.parentElement;
+      }
+    };
+
+    document.addEventListener("mouseenter", handleMouseEnter, true);
+    document.addEventListener("mouseleave", handleMouseLeave, true);
+    
+    return () => {
+      document.removeEventListener("mouseenter", handleMouseEnter, true);
+      document.removeEventListener("mouseleave", handleMouseLeave, true);
+    };
+  }, [activeHoverEffect, isHovering, hoverEffects, styles]);
+
+  // Hover animation loop
+  useEffect(() => {
+    if (activeHoverEffect === "" && !reversingHover) return;
+
+    const effectIndex = parseInt(activeHoverEffect.split('_')[1]);
+    const effect = hoverEffects[effectIndex];
+
+    if (!effect) return;
+
+    if (hoverEffectAnimationFrame.current) {
+      cancelAnimationFrame(hoverEffectAnimationFrame.current);
+    }
+
+    const startTime = { current: null };
+    const effectDuration = effect.duration || 1000;
+    const effectDelay = isHovering ? (effect.delay || 0) : 0;
+
+    let delayTimeoutId = null;
+
+    const animate = (currentTime) => {
+      if (!startTime.current) {
+        startTime.current = currentTime;
+      }
+
+      const elapsed = currentTime - startTime.current;
+      let progress = Math.min(elapsed / effectDuration, 1);
+
+      // If reversing, invert the progress
+      if (reversingHover) {
+        progress = 1 - progress;
+      }
+
+      setHoverEffectProgress(progress);
+
+      if ((reversingHover && progress > 0) || (!reversingHover && progress < 1)) {
+        hoverEffectAnimationFrame.current = requestAnimationFrame(animate);
+      } else {
+        // Animation complete
+        if (reversingHover) {
+          // Restore original styles
+          setStyles(prevStyles => {
+            const updatedStyles = { ...prevStyles };
+            Object.keys(hoverStartStyles.current).forEach(key => {
+              if (key !== 'transform') {
+                updatedStyles[key] = hoverStartStyles.current[key];
+              }
+            });
+            
+            if (hoverStartStyles.current.transform) {
+              const transformProps = ['scale', 'scaleX', 'scaleY', 'scaleZ', 'rotate', 'rotateX', 'rotateY', 'rotateZ', 
+                                    'translateX', 'translateY', 'translateZ', 'skewX', 'skewY'];
+              const transformRegex = /(\w+)\(([^)]+)\)/g;
+              let match;
+              while ((match = transformRegex.exec(hoverStartStyles.current.transform)) !== null) {
+                const [, prop, value] = match;
+                if (transformProps.includes(prop)) {
+                  updatedStyles[prop] = value;
+                }
+              }
+            }
+            
+            return updatedStyles;
+          });
+          setActiveHoverEffect("");
+          setReversingHover(false);
+        } else {
+          // Hover animation complete - update with final values
+          setStyles(prevStyles => {
+            const updatedStyles = { ...prevStyles };
+            effect.styles.forEach((style) => {
+              updatedStyles[style.property.trim()] = style.endValue;
+            });
+            return updatedStyles;
+          });
+        }
+        
+        hoverEffectAnimationFrame.current = null;
+        setHoverEffectProgress(0);
+      }
+    };
+
+    delayTimeoutId = setTimeout(() => {
+      hoverEffectAnimationFrame.current = requestAnimationFrame(animate);
+    }, effectDelay);
+
+    return () => {
+      if (hoverEffectAnimationFrame.current) {
+        cancelAnimationFrame(hoverEffectAnimationFrame.current);
+        hoverEffectAnimationFrame.current = null;
+      }
+      if (delayTimeoutId) clearTimeout(delayTimeoutId);
+    };
+  }, [activeHoverEffect, isHovering, reversingHover]);
 
   // Handle click triggers for click effects
   useEffect(() => {
     if (!clickEffects || clickEffects.length === 0) return;
     
     const handleClick = (e) => {
+      // Don't trigger click effects if hover is active
+      if (activeHoverEffect !== "" && isHovering) return;
+      
       let element = e.target;
 
-      // Check if styles are initialized
       if (!styles || Object.keys(styles).length === 0) {
         console.warn("Styles not initialized yet");
         return;
@@ -139,7 +335,6 @@ export function CustomScroll({
               const currentEffect = clickEffects[currentEffectIndex];
               
               if (currentEffect && currentEffect.styles) {
-                // Save current interpolated values to styles state
                 const currentStyles = getStyles();
                 const updatedStyles = { ...styles };
                 
@@ -149,7 +344,6 @@ export function CustomScroll({
                   }
                 });
                 
-                // Handle transform properties separately
                 if (currentStyles.transform) {
                   const transformProps = ['scale', 'scaleX', 'scaleY', 'scaleZ', 'rotate', 'rotateX', 'rotateY', 'rotateZ', 
                                         'translateX', 'translateY', 'translateZ', 'skewX', 'skewY'];
@@ -166,7 +360,6 @@ export function CustomScroll({
                 setStyles(updatedStyles);
               }
               
-              // Cancel the current animation
               if (clickEffectAnimationFrames.current[activeEffect]) {
                 cancelAnimationFrame(clickEffectAnimationFrames.current[activeEffect]);
                 delete clickEffectAnimationFrames.current[activeEffect];
@@ -184,7 +377,7 @@ export function CustomScroll({
     document.addEventListener("click", handleClick);
     
     return () => document.removeEventListener("click", handleClick);
-  }, []);
+  }, [activeHoverEffect, isHovering]);
 
   // Animation loop for click effects
   useEffect(() => {
@@ -197,7 +390,7 @@ export function CustomScroll({
 
     const startTime = { current: null };
     const effectDuration = effect.duration || 1000;
-    const effectDelay = effect.delay || 0; // Delay in ms
+    const effectDelay = effect.delay || 0;
 
     let delayTimeoutId = null;
 
@@ -212,7 +405,6 @@ export function CustomScroll({
       setClickEffectProgress(progress);
 
       if (progress < 1) {
-        // Continue animating
         clickEffectAnimationFrames.current[activeEffect] = requestAnimationFrame(animate);
       } else {
         // Animation complete - update styles with final values
@@ -233,31 +425,24 @@ export function CustomScroll({
       }
     };
 
-    // Delay the start of the animation using setTimeout
     delayTimeoutId = setTimeout(() => {
       clickEffectAnimationFrames.current[activeEffect] = requestAnimationFrame(animate);
     }, effectDelay);
 
-    // Cleanup function
     return () => {
-      // Cancel any scheduled animation frames
       Object.values(clickEffectAnimationFrames.current).forEach(frameId => {
         if (frameId) cancelAnimationFrame(frameId);
       });
 
-      // Clear timeout if still pending
       if (delayTimeoutId) clearTimeout(delayTimeoutId);
     };
   }, [activeEffect]);
 
-
-  const getStyles = (loadEffectProgress) => {
+  const getStyles = () => {
     if(!ref.current){
       startTime.current = 0;
-
       return;
     }
-
 
     const computedStyles = { ...styles };
     const transformProps = ['scale', 'scaleX', 'scaleY', 'scaleZ', 'rotate', 'rotateX', 'rotateY', 'rotateZ', 
@@ -269,7 +454,9 @@ export function CustomScroll({
 
       effectStyles.forEach(({ property, endValue }) => {
         const propKey = property.trim();
-        const startValue = styles[propKey];
+        const startValue = reversingHover && activeHoverEffect !== "" 
+          ? hoverStartStyles.current[propKey] 
+          : styles[propKey];
         const interpolated = interpolate(startValue, endValue, progress, easing, propKey);
 
         if (interpolated !== undefined) {
@@ -282,9 +469,16 @@ export function CustomScroll({
       });
     };
 
-    if (loadEffectProgress > 0 && loadEffectProgress < 1 && loadEffect?.styles?.length > 0) {
+    // Priority: hover > load > click
+    if ((activeHoverEffect !== "" && (isHovering || reversingHover)) && hoverEffectProgress >= 0) {
+      const idx = parseInt(activeHoverEffect.split('_')[1]);
+      const effect = hoverEffects[idx];
+      if (effect?.styles?.length > 0) {
+        applyEffectStyles(effect.styles, hoverEffectProgress, effect.easingFunction || 'linear');
+      }
+    } else if (loadEffectProgress > 0 && loadEffectProgress < 1 && loadEffect?.styles?.length > 0) {
       applyEffectStyles(loadEffect.styles, loadEffectProgress, loadEffect.easingFunction || 'linear');
-    }else if (activeEffect !== "") {
+    } else if (activeEffect !== "") {
       const idx = parseInt(activeEffect.split('_')[1]);
       const effect = clickEffects[idx];
       if (effect?.styles?.length > 0) {
@@ -301,10 +495,9 @@ export function CustomScroll({
     return computedStyles;
   };
 
-  const currentStyles = getStyles(loadEffectProgress);
+  const currentStyles = getStyles();
   const position = positionType;
 
-  
   const style = {
     position,
     ...currentStyles,
@@ -312,14 +505,11 @@ export function CustomScroll({
     transition: "none",
   };
 
-  // Combine user-provided className with unique identifier
   const finalClassName = className ? `${className} ${uniqueClassName}` : uniqueClassName;
 
   return (
     <div className={finalClassName}  style={{...style, transformStyle: "preserve-3d"}} ref={ref}>
-      {
-        children
-      }
+      {children}
     </div>
   );
 }
