@@ -8,123 +8,92 @@ import LanderScene from "../scenes/LanderScene";
 import * as THREE from 'three';
 import easingFunctions from "../../utils/easingFunctions";
 
-// Camera controller component that handles all animations
+// Camera Controller Component (runs inside Canvas)
 function CameraController({ 
   initialPositions, 
-  loadEffects, 
+  loadEffect, 
   clickEffects 
 }) {
   const { progress } = useProgress();
   const cameraRef = useRef();
   
-  // State to track current object states (position, rotation, fov)
-  const [objectStates, setObjectStates] = useState({});
-  
-  // Load effect state
-  const [activeLoadEffects, setActiveLoadEffects] = useState([]);
-  const [loadEffectProgress, setLoadEffectProgress] = useState({});
-  const loadEffectFrames = useRef({});
-  const loadEffectStartTimes = useRef({});
-  
-  // Click effect state
-  const [activeClickEffects, setActiveClickEffects] = useState([]);
-  const [clickEffectProgress, setClickEffectProgress] = useState({});
-  const clickEffectFrames = useRef({});
-  const clickEffectStartTimes = useRef({});
+  // State to track current camera values (like styles in CustomScroll)
+  const [cameraState, setCameraState] = useState(() => {
+    const initial = initialPositions.find(item => item.object === "camera");
+    return {
+      position: initial?.position || { x: 0, y: 1, z: 1 },
+      rotation: initial?.rotation || { x: 0, y: 0, z: 0 },
+      fov: initial?.fov || 25
+    };
+  });
 
-  // Initialize object states from initialPositions
+  // Track active click effect
+  const [activeEffect, setActiveEffect] = useState("");
+  const [clickEffectProgress, setClickEffectProgress] = useState(0);
+  const clickEffectAnimationFrames = useRef({});
+
+  // Track load effect
+  const [loadEffectProgress, setLoadEffectProgress] = useState(0);
+  const loadEffectAnimationFrame = useRef({});
+  const loadStartTime = useRef(null);
+
+  // Helper to interpolate numeric values
+  const interpolateValue = (start, end, progress, easing) => {
+    const easedProgress = easing ? easing(progress) : progress;
+    return start + (end - start) * easedProgress;
+  };
+
+  // Load Effect Animation
   useEffect(() => {
-    if (!initialPositions || initialPositions.length === 0) return;
-    
-    const states = {};
-    initialPositions.forEach(init => {
-      states[init.object] = {
-        position: init.position || { x: 0, y: 0, z: 0 },
-        rotation: init.rotation || { x: 0, y: 0, z: 0 },
-        fov: init.fov
-      };
-    });
-    
-    setObjectStates(states);
-  }, [initialPositions]);
+    if (progress !== 100 || !loadEffect || loadEffect.length === 0) return;
 
-  // Trigger load effects when progress reaches 100
-  useEffect(() => {
-    if (progress !== 100 || !loadEffects || loadEffects.length === 0) return;
-    if (activeLoadEffects.length > 0) return; // Already triggered
-    
-    const effectsToActivate = loadEffects.map((effect, index) => ({
-      ...effect,
-      id: `load_${index}`
-    }));
-    
-    setActiveLoadEffects(effectsToActivate);
-  }, [progress, loadEffects]);
+    const cameraLoadEffect = loadEffect.find(effect => effect.object === "camera");
+    if (!cameraLoadEffect || loadEffectAnimationFrame.current["load"]) return;
 
-  // Animate active load effects
-  useEffect(() => {
-    if (activeLoadEffects.length === 0) return;
+    const effectDelay = cameraLoadEffect.delay || 0;
+    const effectDuration = cameraLoadEffect.duration || 1000;
+    let delayTimeoutId = null;
 
-    activeLoadEffects.forEach(effect => {
-      if (loadEffectFrames.current[effect.id]) return; // Already animating
+    const animate = (currentTime) => {
+      if (!loadStartTime.current) {
+        loadStartTime.current = currentTime;
+      }
 
-      const effectDelay = effect.delay || 0;
-      const effectDuration = effect.duration || 1000;
+      const elapsed = currentTime - loadStartTime.current;
+      const progress = Math.min(elapsed / effectDuration, 1);
 
-      const animate = (currentTime) => {
-        if (!loadEffectStartTimes.current[effect.id]) {
-          loadEffectStartTimes.current[effect.id] = currentTime;
-        }
+      setLoadEffectProgress(progress);
 
-        const elapsed = currentTime - loadEffectStartTimes.current[effect.id];
-        const progress = Math.min(elapsed / effectDuration, 1);
+      if (progress < 1) {
+        loadEffectAnimationFrame.current["load"] = requestAnimationFrame(animate);
+      } else {
+        // Animation complete - set final values
+        setCameraState(prevState => ({
+          position: cameraLoadEffect.position || prevState.position,
+          rotation: cameraLoadEffect.rotation || prevState.rotation,
+          fov: cameraLoadEffect.fov !== undefined ? cameraLoadEffect.fov : prevState.fov
+        }));
 
-        setLoadEffectProgress(prev => ({ ...prev, [effect.id]: progress }));
+        delete loadEffectAnimationFrame.current["load"];
+        setLoadEffectProgress(0);
+        loadStartTime.current = null;
+      }
+    };
 
-        if (progress < 1) {
-          loadEffectFrames.current[effect.id] = requestAnimationFrame(animate);
-        } else {
-          // Animation complete - commit final values
-          setObjectStates(prevStates => {
-            const updated = { ...prevStates };
-            const objState = updated[effect.object] || {};
-            
-            if (effect.position) objState.position = effect.position;
-            if (effect.rotation) objState.rotation = effect.rotation;
-            if (effect.fov !== undefined) objState.fov = effect.fov;
-            
-            updated[effect.object] = objState;
-            return updated;
-          });
-
-          // Cleanup
-          delete loadEffectFrames.current[effect.id];
-          delete loadEffectStartTimes.current[effect.id];
-          
-          setActiveLoadEffects(prev => prev.filter(e => e.id !== effect.id));
-        }
-      };
-
-      const timeoutId = setTimeout(() => {
-        loadEffectFrames.current[effect.id] = requestAnimationFrame(animate);
-      }, effectDelay);
-
-      // Store timeout for cleanup
-      loadEffectFrames.current[`${effect.id}_timeout`] = timeoutId;
-    });
+    delayTimeoutId = setTimeout(() => {
+      loadEffectAnimationFrame.current["load"] = requestAnimationFrame(animate);
+    }, effectDelay);
 
     return () => {
-      Object.entries(loadEffectFrames.current).forEach(([key, value]) => {
-        if (key.includes('_timeout')) {
-          clearTimeout(value);
-        } else {
-          cancelAnimationFrame(value);
-        }
-      });
+      if (loadEffectAnimationFrame.current["load"]) {
+        cancelAnimationFrame(loadEffectAnimationFrame.current["load"]);
+        delete loadEffectAnimationFrame.current["load"];
+      }
+      if (delayTimeoutId) clearTimeout(delayTimeoutId);
     };
-  }, [activeLoadEffects]);
+  }, [progress, loadEffect]);
 
-  // Handle click triggers for click effects
+  // Click Effect Event Listener
   useEffect(() => {
     if (!clickEffects || clickEffects.length === 0) return;
 
@@ -133,37 +102,30 @@ function CameraController({
 
       while (element) {
         clickEffects.forEach((effect, index) => {
-          if (effect.triggerId && element.id === effect.triggerId) {
-            const effectId = `click_${index}_${Date.now()}`;
-            
-            // Capture current state if there's an active animation
-            const existingActiveEffect = activeClickEffects.find(
-              ae => ae.object === effect.object
-            );
-            
-            if (existingActiveEffect) {
-              // Cancel existing animation for this object
-              if (clickEffectFrames.current[existingActiveEffect.id]) {
-                cancelAnimationFrame(clickEffectFrames.current[existingActiveEffect.id]);
-                delete clickEffectFrames.current[existingActiveEffect.id];
-                delete clickEffectStartTimes.current[existingActiveEffect.id];
+          if (effect.object === "camera" && effect.triggerId && element.id === effect.triggerId) {
+            const effectId = `effect_${index}`;
+
+            if (activeEffect === effectId) return;
+
+            // If there's an active effect, capture current interpolated values
+            if (activeEffect !== "" && clickEffectProgress > 0) {
+              const currentEffectIndex = parseInt(activeEffect.split('_')[1]);
+              const currentEffect = clickEffects[currentEffectIndex];
+
+              if (currentEffect && currentEffect.object === "camera") {
+                const currentValues = getCurrentCameraValues(clickEffectProgress);
+                setCameraState(currentValues);
               }
-              
-              // Capture current interpolated values
-              const currentValues = getCurrentObjectValues(existingActiveEffect.object);
-              setObjectStates(prev => ({
-                ...prev,
-                [existingActiveEffect.object]: currentValues
-              }));
-              
-              // Remove from active effects
-              setActiveClickEffects(prev => 
-                prev.filter(e => e.id !== existingActiveEffect.id)
-              );
+
+              // Cancel the current animation
+              if (clickEffectAnimationFrames.current[activeEffect]) {
+                cancelAnimationFrame(clickEffectAnimationFrames.current[activeEffect]);
+                delete clickEffectAnimationFrames.current[activeEffect];
+              }
             }
-            
-            // Add new effect
-            setActiveClickEffects(prev => [...prev, { ...effect, id: effectId }]);
+
+            setActiveEffect(effectId);
+            setClickEffectProgress(0);
           }
         });
         element = element.parentElement;
@@ -172,212 +134,157 @@ function CameraController({
 
     document.addEventListener("click", handleClick);
     return () => document.removeEventListener("click", handleClick);
-  }, [clickEffects, activeClickEffects]);
+  }, [clickEffects, activeEffect, clickEffectProgress]);
 
-  // Animate active click effects
+  // Click Effect Animation Loop
   useEffect(() => {
-    if (activeClickEffects.length === 0) return;
+    if (activeEffect === "") return;
 
-    activeClickEffects.forEach(effect => {
-      if (clickEffectFrames.current[effect.id]) return; // Already animating
+    const effectIndex = parseInt(activeEffect.split('_')[1]);
+    const effect = clickEffects[effectIndex];
 
-      const effectDelay = effect.delay || 0;
-      const effectDuration = effect.duration || 1000;
+    if (!effect || effect.object !== "camera" || clickEffectAnimationFrames.current[activeEffect]) return;
 
-      const animate = (currentTime) => {
-        if (!clickEffectStartTimes.current[effect.id]) {
-          clickEffectStartTimes.current[effect.id] = currentTime;
-        }
+    const startTime = { current: null };
+    const effectDuration = effect.duration || 1000;
+    const effectDelay = effect.delay || 0;
+    let delayTimeoutId = null;
 
-        const elapsed = currentTime - clickEffectStartTimes.current[effect.id];
-        const progress = Math.min(elapsed / effectDuration, 1);
+    const animate = (currentTime) => {
+      if (!startTime.current) {
+        startTime.current = currentTime;
+      }
 
-        setClickEffectProgress(prev => ({ ...prev, [effect.id]: progress }));
+      const elapsed = currentTime - startTime.current;
+      const progress = Math.min(elapsed / effectDuration, 1);
 
-        if (progress < 1) {
-          clickEffectFrames.current[effect.id] = requestAnimationFrame(animate);
-        } else {
-          // Animation complete - commit final values
-          setObjectStates(prevStates => {
-            const updated = { ...prevStates };
-            const objState = updated[effect.object] || {};
-            
-            if (effect.position) objState.position = effect.position;
-            if (effect.rotation) objState.rotation = effect.rotation;
-            if (effect.fov !== undefined) objState.fov = effect.fov;
-            
-            updated[effect.object] = objState;
-            return updated;
-          });
+      setClickEffectProgress(progress);
 
-          // Cleanup
-          delete clickEffectFrames.current[effect.id];
-          delete clickEffectStartTimes.current[effect.id];
-          
-          setActiveClickEffects(prev => prev.filter(e => e.id !== effect.id));
-        }
-      };
+      if (progress < 1) {
+        clickEffectAnimationFrames.current[activeEffect] = requestAnimationFrame(animate);
+      } else {
+        // Animation complete - update with final values
+        setCameraState({
+          position: effect.position || cameraState.position,
+          rotation: effect.rotation || cameraState.rotation,
+          fov: effect.fov !== undefined ? effect.fov : cameraState.fov
+        });
 
-      const timeoutId = setTimeout(() => {
-        clickEffectFrames.current[effect.id] = requestAnimationFrame(animate);
-      }, effectDelay);
+        delete clickEffectAnimationFrames.current[activeEffect];
+        setActiveEffect("");
+        setClickEffectProgress(0);
+      }
+    };
 
-      clickEffectFrames.current[`${effect.id}_timeout`] = timeoutId;
-    });
+    delayTimeoutId = setTimeout(() => {
+      clickEffectAnimationFrames.current[activeEffect] = requestAnimationFrame(animate);
+    }, effectDelay);
 
     return () => {
-      Object.entries(clickEffectFrames.current).forEach(([key, value]) => {
-        if (key.includes('_timeout')) {
-          clearTimeout(value);
-        } else {
-          cancelAnimationFrame(value);
-        }
+      Object.values(clickEffectAnimationFrames.current).forEach(frameId => {
+        if (frameId) cancelAnimationFrame(frameId);
       });
+      if (delayTimeoutId) clearTimeout(delayTimeoutId);
     };
-  }, [activeClickEffects]);
+  }, [activeEffect, clickEffects]);
 
-  // Helper: Interpolate between two values
-  const interpolateValue = (start, end, progress, easing) => {
-    const easedProgress = easing ? easing(progress) : progress;
-    return start + (end - start) * easedProgress;
-  };
+  // Get current camera values with interpolation
+  const getCurrentCameraValues = (progressOverride) => {
+    const currentProgress = progressOverride !== undefined ? progressOverride : 
+                           (loadEffectProgress > 0 ? loadEffectProgress : clickEffectProgress);
+    
+    let result = { ...cameraState };
 
-  // Helper: Interpolate objects with x, y, z properties
-  const interpolateVector = (start, end, progress, easing) => {
-    if (!start || !end) return start || { x: 0, y: 0, z: 0 };
-    return {
-      x: interpolateValue(start.x, end.x, progress, easing),
-      y: interpolateValue(start.y, end.y, progress, easing),
-      z: interpolateValue(start.z, end.z, progress, easing)
-    };
-  };
+    // Apply load effect if active
+    if (loadEffectProgress > 0 && loadEffectProgress < 1) {
+      const cameraLoadEffect = loadEffect?.find(effect => effect.object === "camera");
+      if (cameraLoadEffect) {
+        const easingName = cameraLoadEffect.easingFunction || 'linear';
+        const easing = easingFunctions[easingName] || easingFunctions.linear;
 
-  // Get current values for an object (considering active animations)
-  const getCurrentObjectValues = (objectName) => {
-    const baseState = objectStates[objectName] || {
-      position: { x: 0, y: 0, z: 0 },
-      rotation: { x: 0, y: 0, z: 0 }
-    };
+        if (cameraLoadEffect.position) {
+          result.position = {
+            x: interpolateValue(cameraState.position.x, cameraLoadEffect.position.x, loadEffectProgress, easing),
+            y: interpolateValue(cameraState.position.y, cameraLoadEffect.position.y, loadEffectProgress, easing),
+            z: interpolateValue(cameraState.position.z, cameraLoadEffect.position.z, loadEffectProgress, easing)
+          };
+        }
 
-    let currentValues = { ...baseState };
+        if (cameraLoadEffect.rotation) {
+          result.rotation = {
+            x: interpolateValue(cameraState.rotation.x, cameraLoadEffect.rotation.x, loadEffectProgress, easing),
+            y: interpolateValue(cameraState.rotation.y, cameraLoadEffect.rotation.y, loadEffectProgress, easing),
+            z: interpolateValue(cameraState.rotation.z, cameraLoadEffect.rotation.z, loadEffectProgress, easing)
+          };
+        }
 
-    // Check for active load effect
-    const activeLoad = activeLoadEffects.find(e => e.object === objectName);
-    if (activeLoad) {
-      const progress = loadEffectProgress[activeLoad.id] || 0;
-      const easing = easingFunctions[activeLoad.easingFunction] || easingFunctions.linear;
-
-      if (activeLoad.position) {
-        currentValues.position = interpolateVector(
-          baseState.position,
-          activeLoad.position,
-          progress,
-          easing
-        );
+        if (cameraLoadEffect.fov !== undefined) {
+          result.fov = interpolateValue(cameraState.fov, cameraLoadEffect.fov, loadEffectProgress, easing);
+        }
       }
+    }
+    // Apply click effect if active
+    else if (activeEffect !== "") {
+      const idx = parseInt(activeEffect.split('_')[1]);
+      const effect = clickEffects[idx];
+      
+      if (effect && effect.object === "camera") {
+        const easingName = effect.easingFunction || 'linear';
+        const easing = easingFunctions[easingName] || easingFunctions.linear;
+        const progress = progressOverride !== undefined ? progressOverride : clickEffectProgress;
 
-      if (activeLoad.rotation) {
-        currentValues.rotation = interpolateVector(
-          baseState.rotation,
-          activeLoad.rotation,
-          progress,
-          easing
-        );
-      }
+        if (effect.position) {
+          result.position = {
+            x: interpolateValue(cameraState.position.x, effect.position.x, progress, easing),
+            y: interpolateValue(cameraState.position.y, effect.position.y, progress, easing),
+            z: interpolateValue(cameraState.position.z, effect.position.z, progress, easing)
+          };
+        }
 
-      if (activeLoad.fov !== undefined && baseState.fov !== undefined) {
-        currentValues.fov = interpolateValue(
-          baseState.fov,
-          activeLoad.fov,
-          progress,
-          easing
-        );
+        if (effect.rotation) {
+          result.rotation = {
+            x: interpolateValue(cameraState.rotation.x, effect.rotation.x, progress, easing),
+            y: interpolateValue(cameraState.rotation.y, effect.rotation.y, progress, easing),
+            z: interpolateValue(cameraState.rotation.z, effect.rotation.z, progress, easing)
+          };
+        }
+
+        if (effect.fov !== undefined) {
+          result.fov = interpolateValue(cameraState.fov, effect.fov, progress, easing);
+        }
       }
     }
 
-    // Check for active click effect (overrides load effect)
-    const activeClick = activeClickEffects.find(e => e.object === objectName);
-    if (activeClick) {
-      const progress = clickEffectProgress[activeClick.id] || 0;
-      const easing = easingFunctions[activeClick.easingFunction] || easingFunctions.linear;
-
-      if (activeClick.position) {
-        currentValues.position = interpolateVector(
-          baseState.position,
-          activeClick.position,
-          progress,
-          easing
-        );
-      }
-
-      if (activeClick.rotation) {
-        currentValues.rotation = interpolateVector(
-          baseState.rotation,
-          activeClick.rotation,
-          progress,
-          easing
-        );
-      }
-
-      if (activeClick.fov !== undefined && baseState.fov !== undefined) {
-        currentValues.fov = interpolateValue(
-          baseState.fov,
-          activeClick.fov,
-          progress,
-          easing
-        );
-      }
-    }
-
-    return currentValues;
+    return result;
   };
 
-  // Update camera every frame
+  const currentValues = getCurrentCameraValues();
+
+  // Update camera on every frame
   useEffect(() => {
-    if (!cameraRef.current) return;
-
-    const camera = cameraRef.current;
-    const cameraValues = getCurrentObjectValues('camera');
-
-    if (cameraValues.position) {
-      camera.position.set(
-        cameraValues.position.x,
-        cameraValues.position.y,
-        cameraValues.position.z
+    if (cameraRef.current) {
+      cameraRef.current.position.set(
+        currentValues.position.x,
+        currentValues.position.y,
+        currentValues.position.z
       );
-    }
-
-    if (cameraValues.rotation) {
-      camera.rotation.set(
-        cameraValues.rotation.x,
-        cameraValues.rotation.y,
-        cameraValues.rotation.z
+      cameraRef.current.rotation.set(
+        currentValues.rotation.x,
+        currentValues.rotation.y,
+        currentValues.rotation.z
       );
-    }
-
-    if (cameraValues.fov !== undefined) {
-      camera.fov = cameraValues.fov;
-      camera.updateProjectionMatrix();
+      cameraRef.current.fov = currentValues.fov;
+      cameraRef.current.updateProjectionMatrix();
     }
   });
 
-  const cameraValues = getCurrentObjectValues('camera');
-
   return (
-    <PerspectiveCamera 
+    <PerspectiveCamera
       ref={cameraRef}
-      makeDefault 
-      position={[
-        cameraValues.position?.x || 0,
-        cameraValues.position?.y || 0,
-        cameraValues.position?.z || 0
-      ]}
-      rotation={[
-        cameraValues.rotation?.x || 0,
-        cameraValues.rotation?.y || 0,
-        cameraValues.rotation?.z || 0
-      ]}
-      fov={cameraValues.fov || 50}
+      makeDefault
+      position={[currentValues.position.x, currentValues.position.y, currentValues.position.z]}
+      rotation={[currentValues.rotation.x, currentValues.rotation.y, currentValues.rotation.z]}
+      fov={currentValues.fov}
     />
   );
 }
@@ -385,19 +292,20 @@ function CameraController({
 export default function ThreeCanvas({
   className,
   style,
-  // New props
   initialPositions = [],
-  loadEffects = [],
+  loadEffect = [],
   clickEffects = [],
-  // Environment settings
-  environmentUrl = "https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/potsdamer_platz_1k.hdr",
-  ambientLightIntensity = 6,
-  fogColor = "#0029ff",
-  fogNear = 1,
-  fogFar = 10,
-  children
 }) {
   const containerRef = useRef(null);
+
+  // Get initial camera values for Canvas setup
+  const initialCamera = React.useMemo(() => {
+    const initial = initialPositions.find(item => item.object === "camera");
+    return {
+      position: initial?.position ? [initial.position.x, initial.position.y, initial.position.z] : [0, 1, 1],
+      fov: initial?.fov || 25
+    };
+  }, [initialPositions]);
 
   return (
     <div
@@ -407,24 +315,23 @@ export default function ThreeCanvas({
     >
       <Canvas 
         shadows 
+        camera={{ position: initialCamera.position, fov: initialCamera.fov }}
         style={{backgroundColor: "transparent", height: "100%", width: "100%", zIndex: 2}} 
         gl={{ preserveDrawingBuffer: true}} 
         eventPrefix="client"
         resize={{ scroll: false, debounce: 0 }}
       >
-        <ambientLight intensity={ambientLightIntensity}/>
-        {fogColor && <fog attach="fog" color={fogColor} near={fogNear} far={fogFar} />}
+        <ambientLight intensity={6}/>
+        <fog attach="fog" color="#0029ff" near={1} far={10} />
         
         <CameraController 
           initialPositions={initialPositions}
-          loadEffects={loadEffects}
+          loadEffect={loadEffect}
           clickEffects={clickEffects}
         />
         
-        {environmentUrl && <Environment files={environmentUrl} />}
-        
-        {children || <LanderScene />}
-        
+        <Environment files="https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/potsdamer_platz_1k.hdr" />
+        <LanderScene />
         <mesh 
           position={[0, 1, 0]} 
           rotation={[0, 0, 0]}       

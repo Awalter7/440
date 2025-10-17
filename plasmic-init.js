@@ -68,22 +68,22 @@ PLASMIC.registerComponent(GuitarLoader, {
 })
 
 PLASMIC.registerComponent(ThreeCanvas, {
-  name: "ThreeCanvas",
-  displayName: "Three.js Load & Click Effects",
+  name: "TheeCanvas",
+  displayName: "Three.js Scroll Effect",
   description: "Animate camera and 3D objects with initial positions, load effects, and click-triggered effects",
   props: {
     initialPositions: {
       type: "array",
       displayName: "Initial Positions",
-      description: "Set starting positions for camera and objects",
+      description: "Set initial position, rotation, and FOV for objects",
       itemType: {
         type: "object",
         fields: {
           object: {
             type: "string",
             displayName: "Object Name",
+            description: "Name of the object (e.g., 'camera')",
             defaultValue: "camera",
-            description: "Name of the object (e.g., 'camera', 'mesh1')",
           },
           position: {
             type: "object",
@@ -92,8 +92,8 @@ PLASMIC.registerComponent(ThreeCanvas, {
             fields: {
               x: { type: "number", defaultValue: 0 },
               y: { type: "number", defaultValue: 1 },
-              z: { type: "number", defaultValue: 1 },
-            },
+              z: { type: "number", defaultValue: 1 }
+            }
           },
           rotation: {
             type: "object",
@@ -102,42 +102,42 @@ PLASMIC.registerComponent(ThreeCanvas, {
             fields: {
               x: { type: "number", defaultValue: 0 },
               y: { type: "number", defaultValue: 0 },
-              z: { type: "number", defaultValue: 0 },
-            },
+              z: { type: "number", defaultValue: 0 }
+            }
           },
           fov: {
             type: "number",
-            displayName: "FOV",
-            description: "Field of view (camera only)",
-            defaultValue: 50,
-          },
-        },
-      },
+            displayName: "FOV (camera only)",
+            description: "Field of view for camera",
+            defaultValue: 25,
+          }
+        }
+      }
     },
-    loadEffects: {
+    loadEffect: {
       type: "array",
       displayName: "Load Effects",
-      description: "Animations triggered when scene finishes loading",
+      description: "Animations triggered when scene loads (progress reaches 100%)",
       itemType: {
         type: "object",
         fields: {
           object: {
             type: "string",
             displayName: "Object Name",
+            description: "Name of the object (e.g., 'camera')",
             defaultValue: "camera",
-            description: "Name of the object to animate",
           },
           duration: {
             type: "number",
             displayName: "Duration (ms)",
-            defaultValue: 1000,
             description: "Animation duration in milliseconds",
+            defaultValue: 1000,
           },
           delay: {
             type: "number",
             displayName: "Delay (ms)",
-            defaultValue: 0,
             description: "Delay before animation starts",
+            defaultValue: 0,
           },
           easingFunction: {
             type: "choice",
@@ -174,9 +174,8 @@ PLASMIC.registerComponent(ThreeCanvas, {
               "easeOutBounce",
               "easeInOutBounce",
             ],
-            defaultValue: "linear",
             displayName: "Easing Function",
-            description: "Timing function for the animation",
+            defaultValue: "linear",
           },
           position: {
             type: "object",
@@ -185,8 +184,8 @@ PLASMIC.registerComponent(ThreeCanvas, {
             fields: {
               x: { type: "number", defaultValue: 0 },
               y: { type: "number", defaultValue: 1 },
-              z: { type: "number", defaultValue: 1 },
-            },
+              z: { type: "number", defaultValue: 1 }
+            }
           },
           rotation: {
             type: "object",
@@ -195,16 +194,17 @@ PLASMIC.registerComponent(ThreeCanvas, {
             fields: {
               x: { type: "number", defaultValue: 0 },
               y: { type: "number", defaultValue: 0 },
-              z: { type: "number", defaultValue: 0 },
-            },
+              z: { type: "number", defaultValue: 0 }
+            }
           },
           fov: {
             type: "number",
             displayName: "Target FOV",
             description: "End field of view (camera only)",
-          },
-        },
-      },
+            defaultValue: 25,
+          }
+        }
+      }
     },
     clickEffects: {
       type: "array",
@@ -216,26 +216,26 @@ PLASMIC.registerComponent(ThreeCanvas, {
           object: {
             type: "string",
             displayName: "Object Name",
+            description: "Name of the object (e.g., 'camera')",
             defaultValue: "camera",
-            description: "Name of the object to animate",
           },
           triggerId: {
             type: "string",
             displayName: "Trigger Element ID",
             description: "ID of the element that triggers this effect when clicked",
-            defaultValue: "button1",
+            defaultValue: "",
           },
           duration: {
             type: "number",
             displayName: "Duration (ms)",
-            defaultValue: 1000,
             description: "Animation duration in milliseconds",
+            defaultValue: 1000,
           },
           delay: {
             type: "number",
             displayName: "Delay (ms)",
-            defaultValue: 0,
             description: "Delay before animation starts",
+            defaultValue: 0,
           },
           easingFunction: {
             type: "choice",
@@ -272,9 +272,8 @@ PLASMIC.registerComponent(ThreeCanvas, {
               "easeOutBounce",
               "easeInOutBounce",
             ],
-            defaultValue: "linear",
             displayName: "Easing Function",
-            description: "Timing function for the animation",
+            defaultValue: "linear",
           },
           position: {
             type: "object",
@@ -283,8 +282,8 @@ PLASMIC.registerComponent(ThreeCanvas, {
             fields: {
               x: { type: "number", defaultValue: 0 },
               y: { type: "number", defaultValue: 1 },
-              z: { type: "number", defaultValue: 1 },
-            },
+              z: { type: "number", defaultValue: 1 }
+            }
           },
           rotation: {
             type: "object",
@@ -293,46 +292,17 @@ PLASMIC.registerComponent(ThreeCanvas, {
             fields: {
               x: { type: "number", defaultValue: 0 },
               y: { type: "number", defaultValue: 0 },
-              z: { type: "number", defaultValue: 0 },
-            },
+              z: { type: "number", defaultValue: 0 }
+            }
           },
           fov: {
             type: "number",
             displayName: "Target FOV",
             description: "End field of view (camera only)",
-          },
-        },
-      },
-    },
-    environmentUrl: {
-      type: "string",
-      displayName: "Environment HDR URL",
-      description: "URL to HDR environment map",
-      defaultValue: "https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/potsdamer_platz_1k.hdr",
-    },
-    ambientLightIntensity: {
-      type: "number",
-      displayName: "Ambient Light Intensity",
-      defaultValue: 6,
-      description: "Intensity of ambient lighting",
-    },
-    fogColor: {
-      type: "string",
-      displayName: "Fog Color",
-      defaultValue: "#0029ff",
-      description: "Fog color (hex format)",
-    },
-    fogNear: {
-      type: "number",
-      displayName: "Fog Near",
-      defaultValue: 1,
-      description: "Distance where fog starts",
-    },
-    fogFar: {
-      type: "number",
-      displayName: "Fog Far",
-      defaultValue: 10,
-      description: "Distance where fog is fully opaque",
+            defaultValue: 25,
+          }
+        }
+      }
     },
     className: {
       type: "class",
