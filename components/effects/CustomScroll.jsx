@@ -4,6 +4,7 @@ import * as React from "react";
 import easingFunctions from "../utils/easingFunctions";
 import { interpolate } from "./utils";
 import { useEffect } from "react";
+import { useProgress } from "@react-three/drei";
 
 // Convert camelCase to kebab-case for CSS properties
 const camelToKebab = (str) => {
@@ -29,6 +30,8 @@ export function CustomScroll({
 }) {
   const stableInitialStyles = React.useMemo(() => initialStyles, [JSON.stringify(initialStyles)]);
 
+
+
   // Changed from ref to state
   const [styles, setStyles] = React.useState(stableInitialStyles.reduce((acc, { property, startValue }) => {
         acc[property.trim()] = startValue;
@@ -36,80 +39,76 @@ export function CustomScroll({
       }, {})
     );
 
-  const [currentBreakpointIndex, setCurrentBreakpointIndex] = React.useState(0);
-
-  const [loadEffectProgress, setLoadEffectProgress] = React.useState(0);
   
   // New state for click effects
   const [activeEffect, setActiveEffect] = React.useState("");
   const [clickEffectProgress, setClickEffectProgress] = React.useState(0);
-    
   const clickEffectAnimationFrames = React.useRef({});
-  const loadEffectAnimationFrames = React.useRef({})
 
-
-  //Handle Load effects
-  // useEffect(() => {
-  //   if (loadEffectAnimationFrames.current["onLoad"]) return;
-
-  //   const startTime = { current: null };
-
-  //   let delayTimeoutId = null;
-
-  //   const animate = (currentTime) => {
-  //     if (!startTime.current) {
-  //       startTime.current = currentTime;
-  //     }
-
-  //     const elapsed = currentTime - startTime.current;
-  //     const progress = Math.min(elapsed / onLoadDuration, 1);
-
-  //     setLoadEffectProgress(progress)
-
-  //     if (progress < 1) {
-  //       // Continue animating
-  //       loadEffectAnimationFrames.current["onLoad"] = requestAnimationFrame(animate);
-  //     } else {
-  //       // Animation complete - update styles with final values
-
-  //       // setStyles(prevStyles => {
-  //       //   const updatedStyles = { ...prevStyles };
-
-  //       //   Object.keys(onLoadStyles).forEach(key => {
-  //       //     if (key !== 'transform') {
-  //       //       updatedStyles[key] = onLoadStyles[key];
-  //       //     }
-  //       //   });
-
-  //       //   return updatedStyles;
-  //       // });
-        
-
-  //       delete loadEffectAnimationFrames.current["onLoad"];
-  //       setLoadEffectProgress(1);
-  //     }
-  //   }
-    
-  //   delayTimeoutId = setTimeout(() => {
-  //     loadEffectAnimationFrames.current["onLoad"] = requestAnimationFrame(animate);
-  //   }, onLoadDellay);
-
-  //   // Cleanup function
-  //   return () => {
-  //     // Cancel any scheduled animation frames
-  //     Object.values(loadEffectAnimationFrames.current).forEach(frameId => {
-  //       if (frameId) cancelAnimationFrame(frameId);
-  //     });
-
-  //     // Clear timeout if still pending
-  //     if (delayTimeoutId) clearTimeout(delayTimeoutId);
-  //   };
-
-  // }, [onLoadStyles, styles])
+  const [loadEffectActive, setLoadEffectActive] = React.useState(false);
+  const [loadEffectProgress, setLoadEffectProgress] = React.useState(0);
+  const loadEffectAnimationFrame = React.useRef({});
+  const tmpStyleRef = React.useRef("10px")
+  const [update, setUpdate] = React.useState(true);
 
   useEffect(() => {
-    console.log(loadEffectProgress)
-  }, [loadEffectProgress])
+    if( !loadEffect.duration || !loadEffect.styles || clickEffectAnimationFrames.current["load"]) return;
+
+    const effectDelay = loadEffect.delay || 0;
+    const effectDuration = loadEffect.duration || 1000;
+
+    console.log(effectDelay)
+
+    let delayTimeoutId = null;
+    const startTime = { current: null };
+
+    const animate = (currentTime) => {
+      if (!startTime.current) {
+        startTime.current = currentTime;
+      }
+
+      const elapsed = currentTime - startTime.current;
+      const progress = Math.min(elapsed / effectDuration, 1);
+
+      setLoadEffectProgress(progress);
+
+      if (progress < 1) {
+        loadEffectAnimationFrame.current["load"] = requestAnimationFrame(animate);
+      } else {
+        // Animation complete
+        setStyles(prevStyles => {
+          const updatedStyles = { ...prevStyles };
+          loadEffect.styles.forEach((style) => {
+            updatedStyles[style.property.trim()] = style.endValue;
+          });
+          return updatedStyles;
+        });
+
+        setLoadEffectActive(false);
+        delete loadEffectAnimationFrame.current["load"];
+      }
+    };
+
+    delayTimeoutId = setTimeout(() => {
+      clickEffectAnimationFrames.current["load"] = requestAnimationFrame(animate);
+    }, effectDelay);
+
+    // Cleanup function
+    return () => {
+      if (loadEffectAnimationFrame.current["load"]) {
+        cancelAnimationFrame(loadEffectAnimationFrame.current["load"]);
+        delete loadEffectAnimationFrame.current["load"];
+      }
+
+      if (delayTimeoutId) clearTimeout(delayTimeoutId);
+    };
+  }, [])
+
+  
+
+
+
+
 
   // Handle click triggers for click effects
   useEffect(() => {
@@ -182,7 +181,7 @@ export function CustomScroll({
     document.addEventListener("click", handleClick);
     
     return () => document.removeEventListener("click", handleClick);
-  }, [ clickEffects, activeEffect, clickEffectProgress, styles]);
+  }, []);
 
   // Animation loop for click effects
   useEffect(() => {
@@ -246,63 +245,64 @@ export function CustomScroll({
       // Clear timeout if still pending
       if (delayTimeoutId) clearTimeout(delayTimeoutId);
     };
-  }, [activeEffect, clickEffects]);
+  }, [activeEffect]);
 
 
-  useEffect(() => {
-    console.log(loadEffectProgress)
-  }, [loadEffectProgress])
-
-
-  const getStyles = () => {
-    if (activeEffect === "") return styles;
-
+  const getStyles = (loadEffectProgress) => {
     const computedStyles = { ...styles };
-    const transformValues = [];
     const transformProps = ['scale', 'scaleX', 'scaleY', 'scaleZ', 'rotate', 'rotateX', 'rotateY', 'rotateZ', 
                             'translateX', 'translateY', 'translateZ', 'skewX', 'skewY'];
+    const transformValues = [];
 
-    const idx = parseInt(activeEffect.split("_")[1]);
-    const progress = clickEffectProgress;
-
-    if (!clickEffects[idx] || !clickEffects[idx].styles) return styles;
-
-    clickEffects[idx].styles.forEach((style) => {
-      const { property, endValue } = style;
-      const propKey = property.trim();
-
-      const easingName = clickEffects[idx].easingFunction || "linear";
+    const applyEffectStyles = (effectStyles, progress, easingName) => {
       const easing = easingFunctions[easingName] || easingFunctions.linear;
 
-      const currentStartValue = styles[propKey];
+      effectStyles.forEach(({ property, endValue }) => {
+        const propKey = property.trim();
+        const startValue = styles[propKey];
+        const interpolated = interpolate(startValue, endValue, progress, easing, propKey);
 
-      const interpolated = interpolate(currentStartValue, endValue, progress, easing, property);
-      
-      if (interpolated !== undefined) {
-        if (transformProps.includes(propKey)) {
-          transformValues.push(`${propKey}(${interpolated})`);
-        } else {
-          computedStyles[propKey] = interpolated;
+        if (interpolated !== undefined) {
+          if (transformProps.includes(propKey)) {
+            transformValues.push(`${propKey}(${interpolated})`);
+          } else {
+            computedStyles[propKey] = interpolated;
+          }
         }
+      });
+    };
+
+    if (loadEffectProgress > 0 && loadEffectProgress < 1 && loadEffect?.styles?.length > 0) {
+      applyEffectStyles(loadEffect.styles, loadEffectProgress, loadEffect.easingFunction || 'linear');
+    }else if (activeEffect !== "") {
+      const idx = parseInt(activeEffect.split('_')[1]);
+      const effect = clickEffects[idx];
+      if (effect?.styles?.length > 0) {
+        applyEffectStyles(effect.styles, clickEffectProgress, effect.easingFunction || 'linear');
       }
-    });
+    }
 
     if (transformValues.length > 0) {
       computedStyles.transform = transformValues.join(' ');
+    } else {
+      delete computedStyles.transform;
     }
+
 
     return computedStyles;
   };
 
-  const currentStyles = getStyles();
+  const currentStyles = getStyles(loadEffectProgress);
   const position = positionType;
 
+  
   const style = {
     position,
     ...currentStyles,
     zIndex: zIndex,
     transition: "none",
   };
+
 
   return (
     <div className={className} style={{...style, transformStyle: "preserve-3d"}}>
