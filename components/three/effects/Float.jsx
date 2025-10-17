@@ -1,28 +1,36 @@
 import React, { useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
-import { cloneElement } from "react";
+import { cloneElement, isValidElement } from "react";
 
 /**
- * Float component that floats each child independently
+ * Float component that floats each child independently,
+ * even if some are still loading via React Suspense.
  */
-export default function Float({ children, intensity = 1, speed = 1, directions = { x: true, y: true, z: true } }) {
+export default function Float({
+  children,
+  intensity = 1,
+  speed = 1,
+  directions = { x: true, y: true, z: true },
+}) {
   const groupRefs = useRef([]);
+  const phases = useRef([]);
+  const basePositions = useRef([]);
 
-  // Initialize phase offsets for each child
-  const phases = useRef(
-    React.Children.map(children, () => ({
+  // Ensure phases are only created once per child
+  const validChildren = React.Children.toArray(children).filter(isValidElement);
+
+  if (phases.current.length !== validChildren.length) {
+    phases.current = validChildren.map(() => ({
       x: Math.random() * Math.PI * 2,
       y: Math.random() * Math.PI * 2,
       z: Math.random() * Math.PI * 2,
-    }))
-  );
-
-  // Store base positions for each child
-  const basePositions = useRef([]);
+    }));
+  }
 
   useFrame((state) => {
     const t = state.clock.getElapsedTime() * speed;
+
     groupRefs.current.forEach((group, i) => {
       if (!group) return;
 
@@ -47,11 +55,12 @@ export default function Float({ children, intensity = 1, speed = 1, directions =
     });
   });
 
-  // Wrap each child in its own floating group
   return (
     <>
-      {React.Children.map(children, (child, i) => (
-        <group ref={(ref) => (groupRefs.current[i] = ref)}>{cloneElement(child)}</group>
+      {validChildren.map((child, i) => (
+        <group key={i} ref={(ref) => (groupRefs.current[i] = ref)}>
+          {cloneElement(child)}
+        </group>
       ))}
     </>
   );

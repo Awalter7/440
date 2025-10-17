@@ -44,7 +44,6 @@ export function CustomScroll({
     }, {})
   );
 
-  const triggerIds = clickEffects.map((effect) => effect.triggerId);
 
   
   // New state for click effects
@@ -52,7 +51,7 @@ export function CustomScroll({
   const [clickEffectProgress, setClickEffectProgress] = React.useState(0);
   const clickEffectAnimationFrames = React.useRef({});
 
-  const [loadEffectActive, setLoadEffectActive] = React.useState(false);
+
   const [loadEffectProgress, setLoadEffectProgress] = React.useState(0);
   const loadEffectAnimationFrame = React.useRef({});
 
@@ -89,7 +88,6 @@ export function CustomScroll({
           return updatedStyles;
         });
 
-        setLoadEffectActive(false);
         delete loadEffectAnimationFrame.current["load"];
       }
     };
@@ -117,7 +115,6 @@ export function CustomScroll({
 
   // Handle click triggers for click effects
   useEffect(() => {
-    console.log(clickEffects)
     if (!clickEffects || clickEffects.length === 0) return;
     
     const handleClick = (e) => {
@@ -319,7 +316,7 @@ export function CustomScroll({
   const finalClassName = className ? `${className} ${uniqueClassName}` : uniqueClassName;
 
   return (
-    <div className={finalClassName} data-triggerIds={triggerIds} style={{...style, transformStyle: "preserve-3d"}} ref={ref}>
+    <div className={finalClassName}  style={{...style, transformStyle: "preserve-3d"}} ref={ref}>
       {
         children
       }
