@@ -6,6 +6,13 @@ import { interpolate } from "./utils";
 import { useEffect } from "react";
 import { useProgress } from "@react-three/drei";
 
+// Generate unique ID for component instances
+let instanceCounter = 0;
+const generateUniqueId = () => {
+  instanceCounter += 1;
+  return `custom-scroll-${instanceCounter}-${Date.now()}`;
+};
+
 // Convert camelCase to kebab-case for CSS properties
 const camelToKebab = (str) => {
   return str.replace(/[A-Z]/g, letter => `-${letter.toLowerCase()}`);
@@ -15,29 +22,29 @@ export function CustomScroll({
   children,
   className,
   positionType = "fixed",
-  animationMode = "interpolation",
-  duration = 1000,
-  easingFunction = "linear",
-  triggerId,
-
-  // New multi-breakpoint prop
-  breakpoints = [],
+  // Initial Styles
   initialStyles = [],
-  loadEffect = [],
   // New click-triggered effects
   clickEffects = [],
+  // New load effects
+  loadEffect = [],
+
   zIndex = 1000,
 }) {
   const stableInitialStyles = React.useMemo(() => initialStyles, [JSON.stringify(initialStyles)]);
+  const { progress } = useProgress();   
 
-
+  // Generate unique class name for this instance
+  const uniqueClassName = React.useMemo(() => generateUniqueId(), []);
 
   // Changed from ref to state
   const [styles, setStyles] = React.useState(stableInitialStyles.reduce((acc, { property, startValue }) => {
-        acc[property.trim()] = startValue;
-        return acc;
-      }, {})
-    );
+      acc[property.trim()] = startValue;
+      return acc;
+    }, {})
+  );
+
+  const triggerIds = clickEffects.map((effect) => effect.triggerId);
 
   
   // New state for click effects
@@ -48,19 +55,17 @@ export function CustomScroll({
   const [loadEffectActive, setLoadEffectActive] = React.useState(false);
   const [loadEffectProgress, setLoadEffectProgress] = React.useState(0);
   const loadEffectAnimationFrame = React.useRef({});
-  const tmpStyleRef = React.useRef("10px")
-  const [update, setUpdate] = React.useState(true);
+
+  const ref = React.useRef(null)
+  const startTime = React.useRef(null);
 
   useEffect(() => {
-    if( !loadEffect.duration || !loadEffect.styles || clickEffectAnimationFrames.current["load"]) return;
+    if( progress !== 100 || !loadEffect.duration || !loadEffect.styles || clickEffectAnimationFrames.current["load"]) return;
 
     const effectDelay = loadEffect.delay || 0;
     const effectDuration = loadEffect.duration || 1000;
 
-    console.log(effectDelay)
-
     let delayTimeoutId = null;
-    const startTime = { current: null };
 
     const animate = (currentTime) => {
       if (!startTime.current) {
@@ -102,7 +107,7 @@ export function CustomScroll({
 
       if (delayTimeoutId) clearTimeout(delayTimeoutId);
     };
-  }, [])
+  }, [progress])
 
   
 
@@ -112,6 +117,7 @@ export function CustomScroll({
 
   // Handle click triggers for click effects
   useEffect(() => {
+    console.log(clickEffects)
     if (!clickEffects || clickEffects.length === 0) return;
     
     const handleClick = (e) => {
@@ -249,6 +255,13 @@ export function CustomScroll({
 
 
   const getStyles = (loadEffectProgress) => {
+    if(!ref.current){
+      startTime.current = 0;
+
+      return;
+    }
+
+
     const computedStyles = { ...styles };
     const transformProps = ['scale', 'scaleX', 'scaleY', 'scaleZ', 'rotate', 'rotateX', 'rotateY', 'rotateZ', 
                             'translateX', 'translateY', 'translateZ', 'skewX', 'skewY'];
@@ -288,7 +301,6 @@ export function CustomScroll({
       delete computedStyles.transform;
     }
 
-
     return computedStyles;
   };
 
@@ -303,10 +315,14 @@ export function CustomScroll({
     transition: "none",
   };
 
+  // Combine user-provided className with unique identifier
+  const finalClassName = className ? `${className} ${uniqueClassName}` : uniqueClassName;
 
   return (
-    <div className={className} style={{...style, transformStyle: "preserve-3d"}}>
-      {children}
+    <div className={finalClassName} data-triggerIds={triggerIds} style={{...style, transformStyle: "preserve-3d"}} ref={ref}>
+      {
+        children
+      }
     </div>
   );
 }
