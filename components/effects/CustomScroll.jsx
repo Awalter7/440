@@ -3,7 +3,7 @@
 import * as React from "react";
 import easingFunctions from "../utils/easingFunctions";
 import { interpolate } from "./utils";
-import { useEffect } from "react";
+import { useEffect, useMemo, useCallback } from "react";
 import { useProgress } from "@react-three/drei";
 
 // Generate unique ID for component instances
@@ -32,14 +32,18 @@ export function CustomScroll({
   loadEffect = [],
   zIndex = 1000,
 }) {
-  const stableInitialStyles = React.useMemo(() => initialStyles, [JSON.stringify(initialStyles)]);
+  const stableInitialStyles = useMemo(() => initialStyles, [initialStyles]);
+  const stableClickEffects = useMemo(() => clickEffects, [clickEffects]);
+  const stableHoverEffects = useMemo(() => hoverEffects, [hoverEffects]);
+  const stableLoadEffect = useMemo(() => loadEffect, [loadEffect]);
   const { progress } = useProgress();   
 
   // Generate unique class name for this instance
-  const uniqueClassName = React.useMemo(() => generateUniqueId(), []);
+  const uniqueClassName = useMemo(() => generateUniqueId(), []);
 
   // Changed from ref to state
-  const [styles, setStyles] = React.useState(stableInitialStyles.reduce((acc, { property, startValue }) => {
+  const [styles, setStyles] = React.useState(() => 
+    stableInitialStyles.reduce((acc, { property, startValue }) => {
       acc[property.trim()] = startValue;
       return acc;
     }, {})
@@ -57,6 +61,8 @@ export function CustomScroll({
   const [reversingHover, setReversingHover] = React.useState(false);
   const hoverEffectAnimationFrame = React.useRef(null);
   const hoverStartStyles = React.useRef({});
+  const hoverStartStylesLocked = React.useRef(false); // Lock to prevent overwriting
+  const previousHoverEffect = React.useRef(""); // Track previous hover effect
 
   // State for load effects
   const [loadEffectProgress, setLoadEffectProgress] = React.useState(0);
@@ -65,12 +71,73 @@ export function CustomScroll({
   const ref = React.useRef(null)
   const startTime = React.useRef(null);
 
+  const getStyles = useCallback(() => {
+    if(!ref.current){
+      startTime.current = 0;
+      return {};
+    }
+
+    const computedStyles = { ...styles };
+    const transformProps = ['scale', 'scaleX', 'scaleY', 'scaleZ', 'rotate', 'rotateX', 'rotateY', 'rotateZ', 
+                            'translateX', 'translateY', 'translateZ', 'skewX', 'skewY'];
+    const transformValues = [];
+
+    const applyEffectStyles = (effectStyles, progress, easingName) => {
+      const easing = easingFunctions[easingName] || easingFunctions.linear;
+
+      effectStyles.forEach(({ property, endValue }) => {
+        const propKey = property.trim();
+        const startValue = reversingHover && activeHoverEffect !== "" 
+          ? hoverStartStyles.current[propKey] 
+          : styles[propKey];
+        const interpolated = interpolate(startValue, endValue, progress, easing, propKey);
+
+        if (interpolated !== undefined) {
+          if (transformProps.includes(propKey)) {
+            transformValues.push(`${propKey}(${interpolated})`);
+          } else {
+            computedStyles[propKey] = interpolated;
+          }
+        }
+      });
+    };
+
+    // Priority: hover > load > click
+    if ((activeHoverEffect !== "" && (isHovering || reversingHover)) && hoverEffectProgress >= 0) {
+      const idx = parseInt(activeHoverEffect.split('_')[1]);
+      const effect = stableHoverEffects[idx];
+      if (effect?.styles?.length > 0) {
+        applyEffectStyles(effect.styles, hoverEffectProgress, effect.easingFunction || 'linear');
+      }
+    } else if (loadEffectProgress > 0 && loadEffectProgress < 1 && stableLoadEffect?.styles?.length > 0) {
+      applyEffectStyles(stableLoadEffect.styles, loadEffectProgress, stableLoadEffect.easingFunction || 'linear');
+    } else if (activeEffect !== "") {
+      const idx = parseInt(activeEffect.split('_')[1]);
+      const effect = stableClickEffects[idx];
+      if (effect?.styles?.length > 0) {
+        applyEffectStyles(effect.styles, clickEffectProgress, effect.easingFunction || 'linear');
+      }
+    }
+
+    if (transformValues.length > 0) {
+      computedStyles.transform = transformValues.join(' ');
+    } else {
+      delete computedStyles.transform;
+    }
+
+    return computedStyles;
+  }, [styles, activeHoverEffect, isHovering, reversingHover, hoverEffectProgress, stableHoverEffects, 
+      loadEffectProgress, stableLoadEffect, activeEffect, clickEffectProgress, stableClickEffects]);
+
   // Load effect
   useEffect(() => {
-    if( progress !== 100 || !loadEffect.duration || !loadEffect.styles || clickEffectAnimationFrames.current["load"]) return;
+    if (progress !== 100 || !stableLoadEffect.duration || !stableLoadEffect.styles) return;
 
-    const effectDelay = loadEffect.delay || 0;
-    const effectDuration = loadEffect.duration || 1000;
+    const loadEffectFrame = loadEffectAnimationFrame.current;
+    if (loadEffectFrame["load"]) return;
+
+    const effectDelay = stableLoadEffect.delay || 0;
+    const effectDuration = stableLoadEffect.duration || 1000;
 
     let delayTimeoutId = null;
 
@@ -90,7 +157,7 @@ export function CustomScroll({
         // Animation complete
         setStyles(prevStyles => {
           const updatedStyles = { ...prevStyles };
-          loadEffect.styles.forEach((style) => {
+          stableLoadEffect.styles.forEach((style) => {
             updatedStyles[style.property.trim()] = style.endValue;
           });
           return updatedStyles;
@@ -101,23 +168,24 @@ export function CustomScroll({
     };
 
     delayTimeoutId = setTimeout(() => {
-      clickEffectAnimationFrames.current["load"] = requestAnimationFrame(animate);
+      loadEffectAnimationFrame.current["load"] = requestAnimationFrame(animate);
     }, effectDelay);
 
     // Cleanup function
     return () => {
-      if (loadEffectAnimationFrame.current["load"]) {
-        cancelAnimationFrame(loadEffectAnimationFrame.current["load"]);
+      const frameToCancel = loadEffectAnimationFrame.current["load"];
+      if (frameToCancel) {
+        cancelAnimationFrame(frameToCancel);
         delete loadEffectAnimationFrame.current["load"];
       }
 
       if (delayTimeoutId) clearTimeout(delayTimeoutId);
     };
-  }, [progress])
+  }, [progress, stableLoadEffect]);
 
   // Handle hover effects
   useEffect(() => {
-    if (!hoverEffects || hoverEffects.length === 0) return;
+    if (!stableHoverEffects || stableHoverEffects.length === 0) return;
     
     const handleMouseEnter = (e) => {
       let element = e.target;
@@ -128,22 +196,40 @@ export function CustomScroll({
       }
 
       while (element) {
-        hoverEffects.forEach((effect, index) => {
+        stableHoverEffects.forEach((effect, index) => {
           if (effect.triggerId && element.id === effect.triggerId) {
             const effectId = `hover_${index}`;
             
+            // If we're already hovering the same element, don't restart
             if (activeHoverEffect === effectId && isHovering) return;
-            
-            // Save current styles before hover animation
-            const currentStyles = getStyles();
-            hoverStartStyles.current = { ...currentStyles };
+
+            // CRITICAL: Only save start styles if:
+            // 1. This is a completely new hover effect, OR
+            // 2. The hover effect has fully completed (lock is released)
+            const isNewHoverEffect = previousHoverEffect.current !== effectId;
+            const canSaveStartStyles = !hoverStartStylesLocked.current || isNewHoverEffect;
+
+            if (canSaveStartStyles) {
+              // Get the ACTUAL current rendered styles (not mid-animation styles)
+              // If we're in the middle of reversing, we should use the locked start styles
+              // Otherwise, get fresh styles from the base state
+              if (isNewHoverEffect || Object.keys(hoverStartStyles.current).length === 0) {
+                // For a new hover or first hover, capture from base styles
+                hoverStartStyles.current = { ...styles };
+              }
+              // If same effect re-entering, keep existing start styles
+              
+              hoverStartStylesLocked.current = true;
+              previousHoverEffect.current = effectId;
+            }
             
             // Cancel any active click effect
             if (activeEffect !== "" && clickEffectProgress > 0) {
               const currentEffectIndex = parseInt(activeEffect.split('_')[1]);
-              const currentEffect = clickEffects[currentEffectIndex];
+              const currentEffect = stableClickEffects[currentEffectIndex];
               
               if (currentEffect && currentEffect.styles) {
+                const currentStyles = getStyles();
                 const updatedStyles = { ...styles };
                 
                 Object.keys(currentStyles).forEach(key => {
@@ -168,8 +254,9 @@ export function CustomScroll({
                 setStyles(updatedStyles);
               }
               
-              if (clickEffectAnimationFrames.current[activeEffect]) {
-                cancelAnimationFrame(clickEffectAnimationFrames.current[activeEffect]);
+              const frameToCancel = clickEffectAnimationFrames.current[activeEffect];
+              if (frameToCancel) {
+                cancelAnimationFrame(frameToCancel);
                 delete clickEffectAnimationFrames.current[activeEffect];
               }
               setActiveEffect("");
@@ -190,7 +277,7 @@ export function CustomScroll({
       let element = e.target;
 
       while (element) {
-        hoverEffects.forEach((effect, index) => {
+        stableHoverEffects.forEach((effect, index) => {
           if (effect.triggerId && element.id === effect.triggerId) {
             const effectId = `hover_${index}`;
             
@@ -211,14 +298,14 @@ export function CustomScroll({
       document.removeEventListener("mouseenter", handleMouseEnter, true);
       document.removeEventListener("mouseleave", handleMouseLeave, true);
     };
-  }, [activeHoverEffect, isHovering, hoverEffects, styles]);
+  }, [activeHoverEffect, isHovering, stableHoverEffects, styles, activeEffect, clickEffectProgress, stableClickEffects, getStyles]);
 
   // Hover animation loop
   useEffect(() => {
     if (activeHoverEffect === "" && !reversingHover) return;
 
     const effectIndex = parseInt(activeHoverEffect.split('_')[1]);
-    const effect = hoverEffects[effectIndex];
+    const effect = stableHoverEffects[effectIndex];
 
     if (!effect) return;
 
@@ -276,6 +363,9 @@ export function CustomScroll({
             
             return updatedStyles;
           });
+          
+          // CRITICAL: Only unlock after reverse animation fully completes
+          hoverStartStylesLocked.current = false;
           setActiveHoverEffect("");
           setReversingHover(false);
         } else {
@@ -299,17 +389,18 @@ export function CustomScroll({
     }, effectDelay);
 
     return () => {
-      if (hoverEffectAnimationFrame.current) {
-        cancelAnimationFrame(hoverEffectAnimationFrame.current);
+      const frameToCancel = hoverEffectAnimationFrame.current;
+      if (frameToCancel) {
+        cancelAnimationFrame(frameToCancel);
         hoverEffectAnimationFrame.current = null;
       }
       if (delayTimeoutId) clearTimeout(delayTimeoutId);
     };
-  }, [activeHoverEffect, isHovering, reversingHover]);
+  }, [activeHoverEffect, isHovering, reversingHover, stableHoverEffects]);
 
   // Handle click triggers for click effects
   useEffect(() => {
-    if (!clickEffects || clickEffects.length === 0) return;
+    if (!stableClickEffects || stableClickEffects.length === 0) return;
     
     const handleClick = (e) => {
       // Don't trigger click effects if hover is active
@@ -323,7 +414,7 @@ export function CustomScroll({
       }
 
       while (element) {
-        clickEffects.forEach((effect, index) => {
+        stableClickEffects.forEach((effect, index) => {
           if (effect.triggerId && element.id === effect.triggerId) {
             const effectId = `effect_${index}`;
             
@@ -332,7 +423,7 @@ export function CustomScroll({
             // If there's an active effect, capture current interpolated values
             if (activeEffect !== "" && clickEffectProgress > 0) {
               const currentEffectIndex = parseInt(activeEffect.split('_')[1]);
-              const currentEffect = clickEffects[currentEffectIndex];
+              const currentEffect = stableClickEffects[currentEffectIndex];
               
               if (currentEffect && currentEffect.styles) {
                 const currentStyles = getStyles();
@@ -360,8 +451,9 @@ export function CustomScroll({
                 setStyles(updatedStyles);
               }
               
-              if (clickEffectAnimationFrames.current[activeEffect]) {
-                cancelAnimationFrame(clickEffectAnimationFrames.current[activeEffect]);
+              const frameToCancel = clickEffectAnimationFrames.current[activeEffect];
+              if (frameToCancel) {
+                cancelAnimationFrame(frameToCancel);
                 delete clickEffectAnimationFrames.current[activeEffect];
               }
             }
@@ -377,16 +469,19 @@ export function CustomScroll({
     document.addEventListener("click", handleClick);
     
     return () => document.removeEventListener("click", handleClick);
-  }, [activeHoverEffect, isHovering]);
+  }, [activeHoverEffect, isHovering, styles, activeEffect, clickEffectProgress, stableClickEffects, getStyles]);
 
   // Animation loop for click effects
   useEffect(() => {
     if (activeEffect === "") return;
 
     const effectIndex = parseInt(activeEffect.split('_')[1]);
-    const effect = clickEffects[effectIndex];
+    const effect = stableClickEffects[effectIndex];
 
-    if (!effect || clickEffectAnimationFrames.current[activeEffect]) return;
+    if (!effect) return;
+    
+    const clickFrames = clickEffectAnimationFrames.current;
+    if (clickFrames[activeEffect]) return;
 
     const startTime = { current: null };
     const effectDuration = effect.duration || 1000;
@@ -409,10 +504,10 @@ export function CustomScroll({
       } else {
         // Animation complete - update styles with final values
         const idx = parseInt(activeEffect.split('_')[1]);
-        if (clickEffects[idx] && clickEffects[idx].styles) {
+        if (stableClickEffects[idx] && stableClickEffects[idx].styles) {
           setStyles(prevStyles => {
             const updatedStyles = { ...prevStyles };
-            clickEffects[idx].styles.forEach((style) => {
+            stableClickEffects[idx].styles.forEach((style) => {
               updatedStyles[style.property.trim()] = style.endValue;
             });
             return updatedStyles;
@@ -430,70 +525,14 @@ export function CustomScroll({
     }, effectDelay);
 
     return () => {
-      Object.values(clickEffectAnimationFrames.current).forEach(frameId => {
+      const framesToCancel = { ...clickEffectAnimationFrames.current };
+      Object.values(framesToCancel).forEach(frameId => {
         if (frameId) cancelAnimationFrame(frameId);
       });
 
       if (delayTimeoutId) clearTimeout(delayTimeoutId);
     };
-  }, [activeEffect]);
-
-  const getStyles = () => {
-    if(!ref.current){
-      startTime.current = 0;
-      return;
-    }
-
-    const computedStyles = { ...styles };
-    const transformProps = ['scale', 'scaleX', 'scaleY', 'scaleZ', 'rotate', 'rotateX', 'rotateY', 'rotateZ', 
-                            'translateX', 'translateY', 'translateZ', 'skewX', 'skewY'];
-    const transformValues = [];
-
-    const applyEffectStyles = (effectStyles, progress, easingName) => {
-      const easing = easingFunctions[easingName] || easingFunctions.linear;
-
-      effectStyles.forEach(({ property, endValue }) => {
-        const propKey = property.trim();
-        const startValue = reversingHover && activeHoverEffect !== "" 
-          ? hoverStartStyles.current[propKey] 
-          : styles[propKey];
-        const interpolated = interpolate(startValue, endValue, progress, easing, propKey);
-
-        if (interpolated !== undefined) {
-          if (transformProps.includes(propKey)) {
-            transformValues.push(`${propKey}(${interpolated})`);
-          } else {
-            computedStyles[propKey] = interpolated;
-          }
-        }
-      });
-    };
-
-    // Priority: hover > load > click
-    if ((activeHoverEffect !== "" && (isHovering || reversingHover)) && hoverEffectProgress >= 0) {
-      const idx = parseInt(activeHoverEffect.split('_')[1]);
-      const effect = hoverEffects[idx];
-      if (effect?.styles?.length > 0) {
-        applyEffectStyles(effect.styles, hoverEffectProgress, effect.easingFunction || 'linear');
-      }
-    } else if (loadEffectProgress > 0 && loadEffectProgress < 1 && loadEffect?.styles?.length > 0) {
-      applyEffectStyles(loadEffect.styles, loadEffectProgress, loadEffect.easingFunction || 'linear');
-    } else if (activeEffect !== "") {
-      const idx = parseInt(activeEffect.split('_')[1]);
-      const effect = clickEffects[idx];
-      if (effect?.styles?.length > 0) {
-        applyEffectStyles(effect.styles, clickEffectProgress, effect.easingFunction || 'linear');
-      }
-    }
-
-    if (transformValues.length > 0) {
-      computedStyles.transform = transformValues.join(' ');
-    } else {
-      delete computedStyles.transform;
-    }
-
-    return computedStyles;
-  };
+  }, [activeEffect, stableClickEffects]);
 
   const currentStyles = getStyles();
   const position = positionType;
