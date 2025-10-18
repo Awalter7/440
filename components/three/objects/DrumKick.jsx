@@ -1,6 +1,6 @@
 import { useRef } from 'react';
 import { useGLTF, useTexture} from '@react-three/drei'
-import { useFrame } from '@react-three/fiber';
+import * as THREE from "three"
 
 export default function DrumKick({position, rotation}) {
   const baseUrl = typeof window !== "undefined" ? window.location.origin : "";
@@ -25,6 +25,15 @@ export default function DrumKick({position, rotation}) {
         rotation={[0, 0, 0]}
         dispose={null}
         material-roughness={1}
+        // renderOrder={4}
+        // material-stencilWrite={true}
+        // material-depthTest={false}
+        // material-depthWrite={false}
+        // material-stencilRef={stencilEnabled ? 1 : 0}
+        // material-stencilFunc={stencilEnabled ? THREE.EqualStencilFunc : THREE.AlwaysStencilFunc}
+        // material-stencilFail={THREE.KeepStencilOp}
+        // material-stencilZFail={THREE.KeepStencilOp}
+        // material-stencilZPass={THREE.KeepStencilOp}
       />
     </group>
   );

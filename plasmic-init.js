@@ -1,6 +1,9 @@
 // plasmic-init.js
 import { initPlasmicLoader } from "@plasmicapp/loader-nextjs";
-
+import ThreeCanvas from "./components/three/canvas/ThreeCanvas"
+import { CustomScroll } from "./components/effects/CustomScroll";
+import dynamic from 'next/dynamic';
+import MapTilerMap from "./components/maps/map"
 
 export const PLASMIC = initPlasmicLoader({
   projects: [
@@ -12,12 +15,168 @@ export const PLASMIC = initPlasmicLoader({
   preview: true,
 });
 
-import ThreeCanvas from "./components/three/canvas/ThreeCanvas"
-import { CustomScroll } from "./components/effects/CustomScroll";
-import dynamic from 'next/dynamic';
+
+PLASMIC.registerComponent(MapTilerMap, {
+  name: 'MapTilerMap',
+  displayName: 'MapTiler Map',
+  description: 'Interactive map powered by MapTiler and MapLibre GL JS',
+  importPath: './MapTilerMap',
+  props: {
+    apiKey: {
+      type: 'string',
+      displayName: 'API Key',
+      description: 'Your MapTiler API key from https://cloud.maptiler.com',
+      defaultValue: 'YOUR_MAPTILER_API_KEY',
+    },
+    mapStyle: {
+      type: 'choice',
+      displayName: 'Map Style',
+      description: 'MapTiler map style to use',
+      options: [
+        { value: 'streets-v2', label: 'Streets' },
+        { value: 'satellite', label: 'Satellite' },
+        { value: 'hybrid', label: 'Hybrid' },
+        { value: 'outdoor-v2', label: 'Outdoor' },
+        { value: 'winter-v2', label: 'Winter' },
+        { value: 'basic-v2', label: 'Basic' },
+        { value: 'bright-v2', label: 'Bright' },
+        { value: 'pastel', label: 'Pastel' },
+        { value: 'topo-v2', label: 'Topographic' },
+        { value: 'voyager', label: 'Voyager' },
+        { value: 'toner-v2', label: 'Toner' },
+        { value: 'backdrop', label: 'Backdrop' },
+        { value: 'dataviz', label: 'Data Visualization' },
+        { value: 'ocean', label: 'Ocean' },
+      ],
+      defaultValue: 'streets-v2',
+    },
+    longitude: {
+      type: 'number',
+      displayName: 'Longitude',
+      description: 'Center longitude coordinate',
+      defaultValue: -81.9748,
+    },
+    latitude: {
+      type: 'number',
+      displayName: 'Latitude',
+      description: 'Center latitude coordinate',
+      defaultValue: 33.4735,
+    },
+    zoom: {
+      type: 'number',
+      displayName: 'Zoom Level',
+      description: 'Map zoom level (0-22)',
+      defaultValue: 12,
+      min: 0,
+      max: 22,
+      step: 0.1,
+    },
+    pitch: {
+      type: 'number',
+      displayName: 'Pitch',
+      description: 'Map pitch/tilt angle in degrees (0-85)',
+      defaultValue: 0,
+      min: 0,
+      max: 85,
+      step: 1,
+    },
+    bearing: {
+      type: 'number',
+      displayName: 'Bearing',
+      description: 'Map rotation bearing in degrees (0-360)',
+      defaultValue: 0,
+      min: 0,
+      max: 360,
+      step: 1,
+    },
+    minZoom: {
+      type: 'number',
+      displayName: 'Min Zoom',
+      description: 'Minimum zoom level allowed',
+      defaultValue: 0,
+      min: 0,
+      max: 22,
+      step: 1,
+    },
+    maxZoom: {
+      type: 'number',
+      displayName: 'Max Zoom',
+      description: 'Maximum zoom level allowed',
+      defaultValue: 22,
+      min: 0,
+      max: 22,
+      step: 1,
+    },
+    width: {
+      type: 'string',
+      displayName: 'Width',
+      description: 'Map container width (CSS value)',
+      defaultValue: '100%',
+    },
+    height: {
+      type: 'string',
+      displayName: 'Height',
+      description: 'Map container height (CSS value)',
+      defaultValue: '400px',
+    },
+    showControls: {
+      type: 'boolean',
+      displayName: 'Show Controls',
+      description: 'Show zoom and rotation controls',
+      defaultValue: true,
+    },
+    showScale: {
+      type: 'boolean',
+      displayName: 'Show Scale',
+      description: 'Show map scale indicator',
+      defaultValue: false,
+    },
+    interactive: {
+      type: 'boolean',
+      displayName: 'Interactive',
+      description: 'Enable map interactions (zoom, pan, rotate)',
+      defaultValue: true,
+    },
+    markers: {
+      type: 'array',
+      displayName: 'Markers',
+      description: 'Array of marker objects',
+      defaultValue: [],
+      itemType: {
+        type: 'object',
+        fields: {
+          longitude: {
+            type: 'number',
+            displayName: 'Longitude',
+          },
+          latitude: {
+            type: 'number',
+            displayName: 'Latitude',
+          },
+          color: {
+            type: 'string',
+            displayName: 'Color',
+            defaultValue: '#3b82f6',
+          },
+          popup: {
+            type: 'string',
+            displayName: 'Popup Text',
+          },
+        },
+      },
+    },
+    className: {
+      type: 'string',
+      displayName: 'CSS Class',
+      description: 'Additional CSS class name',
+      defaultValue: '',
+    },
+  },
+  importPath: "./components/maps/map",
+  isDefaultExport: true,
+})
 
 const GuitarLoader = dynamic(() => import('./components/loaders/GuitarLoader'), { ssr: false });
-
 PLASMIC.registerComponent(GuitarLoader, {
   name: "Guitar Loader",
   displayName: "Guitar Loader",

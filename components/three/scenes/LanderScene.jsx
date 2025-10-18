@@ -13,6 +13,7 @@ import Float from '../effects/Float'
 import { Suspense } from 'react';
 
 export default function LanderScene({ 
+  stencilEnabled
 }) {
   const depthBuffer = useDepthBuffer({ frames: Infinity });
 
@@ -32,11 +33,11 @@ export default function LanderScene({
         realOff={true}
       />
       <Suspense fallback={null}>
-        <Float intensity={.02} directions={{ x: true, y: true, z: false }}>
-          <Guitar position={[-.72, 1.5, .3]} rotation={[.2, -Math.PI / 1.7, .6]}/>
-          <DrumKick position={[-.15, .8, .3]} rotation={[-Math.PI / 1.5, Math.PI / 1.3, -Math.PI / 5]}/>
-          <Piano position={[-.2, 1.85, -.4]} rotation={[Math.PI / 1.5, -Math.PI / 4, Math.PI / .85]} />
-          <DrumStand position={[.55, .8, .3]} rotation={[-Math.PI / .9, 0, -Math.PI / 9]} />
+        <Float intensity={.02} directions={{ x: true, y: true, z: false }} stencilEnabled={stencilEnabled}>
+          <Guitar position={[-.72, 1.5, .3]} rotation={[.2, -Math.PI / 1.7, .6]} stencilEnabled={stencilEnabled}/>
+          <DrumKick position={[-.15, .8, .3]} rotation={[-Math.PI / 1.5, Math.PI / 1.3, -Math.PI / 5]} stencilEnabled={stencilEnabled}/>
+          <Piano position={[-.2, 1.85, -.4]} rotation={[Math.PI / 1.5, -Math.PI / 4, Math.PI / .85]} stencilEnabled={stencilEnabled}/>
+          <DrumStand position={[.55, .8, .3]} rotation={[-Math.PI / .9, 0, -Math.PI / 9]} stencilEnabled={stencilEnabled}/>
         </Float>
       </Suspense>
     </>

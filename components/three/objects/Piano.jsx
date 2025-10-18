@@ -1,6 +1,6 @@
 import { useRef } from 'react';
 import { useGLTF, useTexture} from '@react-three/drei'
-import { useFrame } from '@react-three/fiber';
+import * as THREE from "three"
 
 export default function Piano({ position, rotation }) {
   const baseUrl = typeof window !== "undefined" ? window.location.origin : "";
@@ -27,6 +27,15 @@ export default function Piano({ position, rotation }) {
             dispose={null}
             material-roughness={1}
             material-color="#1500ff"
+            // renderOrder={1}
+            // material-stencilWrite={true}
+            // material-depthTest={false}
+            // material-depthWrite={false}
+            // material-stencilRef={stencilEnabled ? 1 : 0}
+            // material-stencilFunc={stencilEnabled ? THREE.EqualStencilFunc : THREE.AlwaysStencilFunc}
+            // material-stencilFail={THREE.KeepStencilOp}
+            // material-stencilZFail={THREE.KeepStencilOp}
+            // material-stencilZPass={THREE.KeepStencilOp}
         />
         <mesh
             castShadow
@@ -39,7 +48,15 @@ export default function Piano({ position, rotation }) {
             rotation={[0, 0, 0]}
             dispose={null}
             material-roughness={1}
-            
+            // renderOrder={1}
+            // material-stencilWrite={true}
+            // material-depthTest={false}
+            // material-depthWrite={false}
+            // material-stencilRef={stencilEnabled ? 1 : 0}
+            // material-stencilFunc={stencilEnabled ? THREE.EqualStencilFunc : THREE.AlwaysStencilFunc}
+            // material-stencilFail={THREE.KeepStencilOp}
+            // material-stencilZFail={THREE.KeepStencilOp}
+            // material-stencilZPass={THREE.KeepStencilOp}
         />
         <mesh
             castShadow
@@ -52,7 +69,15 @@ export default function Piano({ position, rotation }) {
             rotation={[0, 0, 0]}
             dispose={null}
             material-roughness={1}
-            
+            // renderOrder={1}
+            // material-stencilWrite={true}
+            // material-depthTest={false}
+            // material-depthWrite={false}
+            // material-stencilRef={stencilEnabled ? 1 : 0}
+            // material-stencilFunc={stencilEnabled ? THREE.EqualStencilFunc : THREE.AlwaysStencilFunc}
+            // material-stencilFail={THREE.KeepStencilOp}
+            // material-stencilZFail={THREE.KeepStencilOp}
+            // material-stencilZPass={THREE.KeepStencilOp}
         />
         <mesh
             castShadow
@@ -64,7 +89,16 @@ export default function Piano({ position, rotation }) {
             position={[0, 0, 0]}
             rotation={[0, 0, 0]}
             dispose={null}
-            material-roughness={1}
+            // renderOrder={1}
+            // material-roughness={1}
+            // material-stencilWrite={true}
+            // material-depthTest={false}
+            // material-depthWrite={false}
+            // material-stencilRef={stencilEnabled ? 1 : 0}
+            // material-stencilFunc={stencilEnabled ? THREE.EqualStencilFunc : THREE.AlwaysStencilFunc}
+            // material-stencilFail={THREE.KeepStencilOp}
+            // material-stencilZFail={THREE.KeepStencilOp}
+            // material-stencilZPass={THREE.KeepStencilOp}
         />
     </group>
   );

@@ -1,6 +1,6 @@
 import { useRef } from 'react';
 import { useGLTF, useTexture} from '@react-three/drei'
-import { useFrame } from '@react-three/fiber';
+import * as THREE from "three"
 
 export default function Guitar({ position, rotation, ref }) {
   const baseUrl = typeof window !== "undefined" ? window.location.origin : "";
@@ -27,6 +27,15 @@ export default function Guitar({ position, rotation, ref }) {
         dispose={null}
         material-color="#0029ff"
         material-roughness={1}
+        // renderOrder={1}
+        // material-stencilWrite={true}
+        // material-depthTest={false}
+        // material-depthWrite={false}
+        // material-stencilRef={stencilEnabled ? 1 : 0}
+        // material-stencilFunc={stencilEnabled ? THREE.EqualStencilFunc : THREE.AlwaysStencilFunc}
+        // material-stencilFail={THREE.KeepStencilOp}
+        // material-stencilZFail={THREE.KeepStencilOp}
+        // material-stencilZPass={THREE.KeepStencilOp}
       >
       </mesh>
       <mesh
@@ -39,6 +48,15 @@ export default function Guitar({ position, rotation, ref }) {
         rotation={[0, 4.933 / Math.PI , 0]}
         dispose={null}
         material-roughness={1}
+        // renderOrder={2}
+        // material-stencilWrite={true}
+        // material-depthTest={false}
+        // material-depthWrite={false}
+        // material-stencilRef={stencilEnabled ? 1 : 0}
+        // material-stencilFunc={stencilEnabled ? THREE.EqualStencilFunc : THREE.AlwaysStencilFunc}
+        // material-stencilFail={THREE.KeepStencilOp}
+        // material-stencilZFail={THREE.KeepStencilOp}
+        // material-stencilZPass={THREE.KeepStencilOp}
       >
       </mesh>
       <mesh
@@ -51,6 +69,15 @@ export default function Guitar({ position, rotation, ref }) {
         rotation={[0, 4.933 / Math.PI , 0]}
         dispose={null}
         material-roughness={1}
+        // renderOrder={3}
+        // material-stencilWrite={true}
+        // material-depthTest={false}
+        // material-depthWrite={false}
+        // material-stencilRef={stencilEnabled ? 1 : 0}
+        // material-stencilFunc={stencilEnabled ? THREE.EqualStencilFunc : THREE.AlwaysStencilFunc}
+        // material-stencilFail={THREE.KeepStencilOp}
+        // material-stencilZFail={THREE.KeepStencilOp}
+        // material-stencilZPass={THREE.KeepStencilOp}
       >
       </mesh>
     </group>
