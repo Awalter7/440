@@ -39,6 +39,7 @@ PLASMIC.registerComponent(MapTilerMap, {
         { value: 'outdoor-v2', label: 'Outdoor' },
         { value: 'winter-v2', label: 'Winter' },
         { value: 'basic-v2', label: 'Basic' },
+        { value: 'basic-v2-dark', label: 'Basic' },
         { value: 'bright-v2', label: 'Bright' },
         { value: 'pastel', label: 'Pastel' },
         { value: 'topo-v2', label: 'Topographic' },
