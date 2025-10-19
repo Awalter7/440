@@ -1,101 +1,44 @@
 // ThreeCanvas.jsx
 "use client"
-import React, { useRef, useEffect, useMemo, useState } from "react";
-import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { Environment, OrbitControls, PerspectiveCamera } from "@react-three/drei";
-import OrbitalRig from "../rigs/OrbitalRig";
+import React, { useRef, useEffect, useState } from "react";
+import { Canvas, useThree } from "@react-three/fiber";
+import { Environment, PerspectiveCamera, useProgress } from "@react-three/drei";
 import LanderScene from "../scenes/LanderScene";
 import * as THREE from 'three';
-import { FontLoader } from 'three/examples/jsm/loaders/FontLoader';
-import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry';
-import { mergeVertices } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 
 import PlasmicEffect from "../effects/PlasmicEffect";
 
-
-
-
-
-function MorphingParticles(stencilEnabled) {
-  const meshRef = useRef();
-  const [fontLoaded, setFontLoaded] = useState(false);
-  const [textGeometry, setTextGeometry] = useState(null);
-
-  const position = [0, 1, 1];
+// New component to handle pre-rendering
+function ScenePreloader({ onPreloadComplete }) {
+  const { gl, scene, camera } = useThree();
+  const { progress } = useProgress();
+  const [isCompiling, setIsCompiling] = useState(false);
+  const hasCompiled = useRef(false);
 
   useEffect(() => {
-    const loader = new FontLoader();
-    
-    loader.load(
-      'https://threejs.org/examples/fonts/helvetiker_bold.typeface.json',
-      (loadedFont) => {
-        let geometry = new TextGeometry('WHERE?', {
-          font: loadedFont,
-          size: .3,
-          height: 0,
-          curveSegments: 120,
-          bevelEnabled: true,
-          bevelThickness: 0.01,
-          bevelEnabled: false,
-          bevelOffset: 0,
-          bevelSegments: 8,
-          depth: .0001,
-        });
+    // Wait for all assets to load (progress === 100)
+    if (progress === 100 && !hasCompiled.current && !isCompiling) {
+      hasCompiled.current = true;
+      setIsCompiling(true);
+
+      // Use setTimeout to ensure scene is fully set up
+      setTimeout(() => {
+        console.log('Pre-compiling shaders...');
         
+        // Compile all shaders in the scene
+        gl.compile(scene, camera);
         
-        geometry.computeBoundingBox();
-        console.log(geometry)
-        const centerOffset = new THREE.Vector3();
-        geometry.boundingBox.getCenter(centerOffset);
-        geometry.translate(-centerOffset.x, -centerOffset.y, -centerOffset.z);
+        console.log('Shader compilation complete');
+        setIsCompiling(false);
+        
+        if (onPreloadComplete) {
+          onPreloadComplete();
+        }
+      }, 100);
+    }
+  }, [progress, gl, scene, camera, isCompiling, onPreloadComplete]);
 
-
-        setTextGeometry(geometry);
-        setFontLoaded(true);
-      },
-      undefined,
-      (error) => {
-        console.error('Error loading font:', error);
-      }
-    );
-  }, []);
-
-
-  
-  return (
-    <>
-      {/* Stencil mask - write to stencil buffer first */}
-      {fontLoaded && textGeometry && (
-        <>
-          {stencilEnabled && (
-            <mesh 
-              geometry={textGeometry}
-              position={position}
-              renderOrder={-1}
-            >
-                <meshBasicMaterial 
-                  color="#ffffff"
-                  colorWrite={false}
-                  stencilWrite={true}
-                  stencilRef={1}
-                  stencilFunc={THREE.AlwaysStencilFunc}
-                  stencilZPass={THREE.ReplaceStencilOp}
-                  stencilFail={THREE.KeepStencilOp}
-                  stencilZFail={THREE.KeepStencilOp}
-                />
-            </mesh>
-          )}
-          {/* Visible text */}
-          {/* {!stencilEnabled && ( */}
-
-
-          {/* )} */}
-
-        </>
-      )}
-    
-    </>
-  );
+  return null;
 }
 
 export default function ThreeCanvas({
@@ -107,24 +50,10 @@ export default function ThreeCanvas({
 }) {
   const containerRef = useRef(null);
   const [stencilEnabled, setStencilEnabled] = useState(true);
-
   
   const CameraInitialPositions = initialPositions.filter((effect) => effect.object === "camera");
   const CameraLoadEffect = loadEffect.filter((effect) => effect.object === "camera");
   const CameraClickEffects = clickEffects.filter((effect) => effect.object === "camera");
-
-  // Add keyboard listener for Ctrl+O
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (e.ctrlKey && e.key === 'o') {
-        e.preventDefault();
-        setStencilEnabled(prev => !prev);
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
 
 
   return (
@@ -141,6 +70,7 @@ export default function ThreeCanvas({
         eventPrefix="client"
         resize={{ scroll: false, debounce: 0 }}
       >
+        <ScenePreloader />
         <ambientLight intensity={6}/>
         <fog attach="fog" color="#0029ff" near={1} far={5} />
         
@@ -156,7 +86,7 @@ export default function ThreeCanvas({
 
         <Environment files="https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/potsdamer_platz_1k.hdr" />
         
-        {/* <MorphingParticles stencilEnabled={stencilEnabled} /> */}
+
         <LanderScene stencilEnabled={stencilEnabled}/>
         {/* <OrbitControls enablePan enableZoom /> */}
         <mesh 
@@ -166,7 +96,7 @@ export default function ThreeCanvas({
           receiveShadow
           renderOrder={1}
         >
-          <boxGeometry args={[2, 1, 20]} />
+          <boxGeometry args={[2, 1, 100]} />
           <meshStandardMaterial 
             color={"#201855"} 
             side={THREE.DoubleSide}
