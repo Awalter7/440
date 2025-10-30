@@ -2,9 +2,10 @@
 
 import * as React from "react";
 import easingFunctions from "../utils/easingFunctions";
-import { interpolate } from "./utils";
+import { interpolate, parseValue } from "./utils";
 import { useEffect, useMemo, useCallback } from "react";
 import { useProgress } from "@react-three/drei";
+import useShaderStatus from "../hooks/useShaderStatus";
 
 // Generate unique ID for component instances
 let instanceCounter = 0;
@@ -17,6 +18,8 @@ const generateUniqueId = () => {
 const camelToKebab = (str) => {
   return str.replace(/[A-Z]/g, letter => `-${letter.toLowerCase()}`);
 };
+
+
 
 export function CustomScroll({
   children,
@@ -37,9 +40,11 @@ export function CustomScroll({
   const stableHoverEffects = useMemo(() => hoverEffects, [hoverEffects]);
   const stableLoadEffect = useMemo(() => loadEffect, [loadEffect]);
   const { progress } = useProgress();   
+  const shaderStatus = useShaderStatus();
 
   // Generate unique class name for this instance
   const uniqueClassName = useMemo(() => generateUniqueId(), []);
+  
 
   // Changed from ref to state
   const [styles, setStyles] = React.useState(() => 
@@ -71,6 +76,11 @@ export function CustomScroll({
   const ref = React.useRef(null)
   const startTime = React.useRef(null);
 
+  useEffect(() => {
+    console.log(shaderStatus)
+  }, [shaderStatus])
+  
+
   const getStyles = useCallback(() => {
     if(!ref.current){
       startTime.current = 0;
@@ -87,10 +97,11 @@ export function CustomScroll({
 
       effectStyles.forEach(({ property, endValue }) => {
         const propKey = property.trim();
-        const startValue = reversingHover && activeHoverEffect !== "" 
+        let startValue = reversingHover && activeHoverEffect !== "" 
           ? hoverStartStyles.current[propKey] 
           : styles[propKey];
-        const interpolated = interpolate(startValue, endValue, progress, easing, propKey);
+
+        const interpolated = interpolate(startValue, endValue, progress, easing, propKey, uniqueClassName);
 
         if (interpolated !== undefined) {
           if (transformProps.includes(propKey)) {
@@ -131,7 +142,7 @@ export function CustomScroll({
 
   // Load effect
   useEffect(() => {
-    if (progress !== 100 || !stableLoadEffect.duration || !stableLoadEffect.styles) return;
+    if (progress !== 100 || !shaderStatus || !stableLoadEffect.duration || !stableLoadEffect.styles) return;
 
     const loadEffectFrame = loadEffectAnimationFrame.current;
     if (loadEffectFrame["load"]) return;
@@ -181,7 +192,7 @@ export function CustomScroll({
 
       if (delayTimeoutId) clearTimeout(delayTimeoutId);
     };
-  }, [progress, stableLoadEffect]);
+  }, [progress, shaderStatus, stableLoadEffect]);
 
   // Handle hover effects
   useEffect(() => {

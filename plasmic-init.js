@@ -1,7 +1,7 @@
 // plasmic-init.js
 import { initPlasmicLoader } from "@plasmicapp/loader-nextjs";
 import ThreeCanvas from "./components/three/canvas/ThreeCanvas"
-import { CustomScroll } from "./components/effects/CustomScroll";
+import { CustomScroll } from "./components/effects/CustomScroll2";
 import dynamic from 'next/dynamic';
 import MapTilerMap from "./components/maps/map"
 
@@ -1127,7 +1127,7 @@ PLASMIC.registerComponent(CustomScroll, {
       description: "Stacking order",
     },
   },
-  importPath: "./components/effects/CustomScroll",
+  importPath: "./components/effects/CustomScroll2",
   isDefaultExport: false,
 });
 

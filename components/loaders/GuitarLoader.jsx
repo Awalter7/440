@@ -1,12 +1,21 @@
 import { useProgress } from '@react-three/drei'
+import { useEffect, useState } from 'react';
 
 const GuitarLoader = (props) => {
   const { progress } = useProgress();
 
+  const [hasLoaded, setHasLoaded] = useState(false)
+
+  useEffect(() => {
+    if(progress === 100 && hasLoaded === false){
+      setHasLoaded(true)
+    }
+  }, [progress])
+
   return(
     <>
       <div 
-        className={`${props.className}`} style={{opacity: progress !== 100 ? '1' : '0', transition: "opacity .1s linear", pointerEvents: "none"}}
+        className={`${props.className}`} style={{opacity: progress !== 100 || !hasLoaded ? '1' : '0', transition: "opacity .1s linear", pointerEvents: "none"}}
       >
         <div style={{width: "250px", height: "0px"}}>
           <div style={{

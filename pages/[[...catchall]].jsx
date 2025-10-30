@@ -19,6 +19,21 @@ export default function PlasmicLoaderPage(props) {
   }
   const pageMeta = plasmicData.entryCompMetas[0];
 
+  // const originalLog = console.log;
+
+  // console.log = function (...args) {
+  //   // Check if the message contains the target text
+  //   const message = args.join(" ");
+  //   if (message.includes("Shader compilation complete")) {
+  //     // ✅ Trigger your detection logic here
+  //     console.info("[Detector] Shader compilation complete detected!");
+  //     // You can dispatch an event, call a callback, set state, etc.
+  //     window.dispatchEvent(new Event("shader-compiled"));
+  //   }
+
+  //   // Still run the original log
+  //   originalLog.apply(console, args);
+  // };
 
   return (
     <PlasmicRootProvider

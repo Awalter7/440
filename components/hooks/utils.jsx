@@ -126,29 +126,7 @@ const stringifyCalc = (parts) => {
   return result;
 };
 
-export function getPixelFromPercent(property, percent, UID) {
-  const elm = document.getElementById(UID);
-  if (!elm) return null; // safety check
-  const parent = elm.parentNode;
-  if (!parent) return null; // safety check
-
-  let baseValue;
-
-  if (property === "width") {
-    baseValue = parent.offsetWidth;
-  } else if (property === "height") {
-    baseValue = parent.offsetHeight;
-  } else {
-    console.error("Invalid property. Use 'width' or 'height'.");
-    return null;
-  }
-
-  // Convert percent to pixel value
-  const pixelValue = (baseValue * percent) / 100;
-  return pixelValue;
-}
-
-export const interpolate = (start, end, progress, easing, property, UID) => {
+export const interpolate = (start, end, progress, easing, property) => {
     let s = parseValue(start, property);
     let e = parseValue(end, property);
     
@@ -179,7 +157,6 @@ export const interpolate = (start, end, progress, easing, property, UID) => {
 
     const eased = easing ? easing(progress) : progress;
     const interpolated = s.number + (e.number - s.number) * eased;
-
     return s.unit ? `${interpolated}${s.unit}` : interpolated;
 };
 
