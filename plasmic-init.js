@@ -535,6 +535,12 @@ PLASMIC.registerComponent(CustomScroll, {
           description: "Scroll position where this button should auto trigger ~ End",
           defaultValue: 0,
         },
+        buttonId: {
+          type: "string",
+          displayName: "Button Id",
+          description: "The name of the button you want auto triggered",
+          defaultValue: "example-id"
+        }
       },
       hidden: (props) => props.isButton !== true,
     },
