@@ -903,7 +903,7 @@ PLASMIC.registerComponent(CustomScroll, {
             description: "When should this button automatically trigger when scrolling?",
             defaultValue: 0,
           },
-          pseudoScrollRangeEdn: {
+          pseudoScrollRangeEnd: {
             type: "number",
             displayName: "Trigger Range End (%)",
             description: "When will the next button automatically trigger?",
