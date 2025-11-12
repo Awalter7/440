@@ -514,36 +514,36 @@ PLASMIC.registerComponent(CustomScroll, {
         value: "Scroll to animate",
       },
     },
-    isButton: {
-      type: "boolean",
-      displayName: "Is Button",
-      description: "Treat this component as a button",
-      defaultValue: false,
-    },
-    autoTriggerPoints: {
-      type: "object",
-      fields: {
-        start: {
-          type: "number",
-          displayName: "Trigger Start (%)",
-          description: "Scroll position where this button should auto trigger ~ Start",
-          defaultValue: 0,
-        },
-        end: {
-          type: "number",
-          displayName: "Trigger End (%)",
-          description: "Scroll position where this button should auto trigger ~ End",
-          defaultValue: 0,
-        },
-        buttonId: {
-          type: "string",
-          displayName: "Button Id",
-          description: "The name of the button you want auto triggered",
-          defaultValue: "example-id"
-        }
-      },
-      hidden: (props) => props.isButton !== true,
-    },
+    // isButton: {
+    //   type: "boolean",
+    //   displayName: "Is Button",
+    //   description: "Treat this component as a button",
+    //   defaultValue: false,
+    // },
+    // autoTriggerPoints: {
+    //   type: "object",
+    //   fields: {
+    //     start: {
+    //       type: "number",
+    //       displayName: "Trigger Start (%)",
+    //       description: "Scroll position where this button should auto trigger ~ Start",
+    //       defaultValue: 0,
+    //     },
+    //     end: {
+    //       type: "number",
+    //       displayName: "Trigger End (%)",
+    //       description: "Scroll position where this button should auto trigger ~ End",
+    //       defaultValue: 0,
+    //     },
+    //     buttonId: {
+    //       type: "string",
+    //       displayName: "Button Id",
+    //       description: "The name of the button you want auto triggered",
+    //       defaultValue: "example-id"
+    //     }
+    //   },
+    //   hidden: (props) => props.isButton !== true,
+    // },
     positionType: {
       type: "choice",
       options: ["fixed", "absolute", "relative"],

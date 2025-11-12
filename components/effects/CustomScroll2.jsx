@@ -90,8 +90,13 @@ class ScrollIndicator extends Component {
         }else{
             if(this.triggered) return;
 
-            console.log("Button Click")
+            const button = document.getElementById(this.autoTriggerPoints.buttonId);
+            
+            console.log("button")
 
+            if(button){
+                button.click();
+            }
 
             this.triggered = true;
         }
@@ -194,51 +199,51 @@ export function CustomScroll({
     }, [stableLoadEffect, stableClickEffects])
 
 
-    useEffect(() => {
-        if (isButton) {
-            let scrollIndicatorId = `scroll-indicator-${uID}`
+    // useEffect(() => {
+    //     if (isButton) {
+    //         let scrollIndicatorId = `scroll-indicator-${uID}`
 
-            let scrollIndicatorContainer = document.getElementById("scroll-indicator-container");
+    //         let scrollIndicatorContainer = document.getElementById("scroll-indicator-container");
             
 
-            // ✅ If element doesn't exist, create it and style it
-            if (!scrollIndicatorContainer) {
-                scrollIndicatorContainer = document.createElement("div");
-                scrollIndicatorContainer.id = "scroll-indicator-container";
+    //         // ✅ If element doesn't exist, create it and style it
+    //         if (!scrollIndicatorContainer) {
+    //             scrollIndicatorContainer = document.createElement("div");
+    //             scrollIndicatorContainer.id = "scroll-indicator-container";
 
-                // Apply inline styles
-                Object.assign(scrollIndicatorContainer.style, {
-                    position: "fixed",
-                    top: "0",
-                    left: "0",
-                    width: "100vw",
-                    height: "auto",
-                    zIndex: "9999",
-                    display: 'flex',
-                    justifyContent: "center",
-                    alignItems: "center",
-                    gap: "5px",
-                    padding: "15px",
-                });
+    //             // Apply inline styles
+    //             Object.assign(scrollIndicatorContainer.style, {
+    //                 position: "fixed",
+    //                 top: "0",
+    //                 left: "0",
+    //                 width: "100vw",
+    //                 height: "auto",
+    //                 zIndex: "9999",
+    //                 display: 'flex',
+    //                 justifyContent: "center",
+    //                 alignItems: "center",
+    //                 gap: "5px",
+    //                 padding: "15px",
+    //             });
 
-                // Append to the document root (body)
-                document.body.appendChild(scrollIndicatorContainer);
-            }
+    //             // Append to the document root (body)
+    //             document.body.appendChild(scrollIndicatorContainer);
+    //         }
 
-            let existingIndicator = document.getElementById(scrollIndicatorId);
+    //         let existingIndicator = document.getElementById(scrollIndicatorId);
 
-            if (!existingIndicator) {
-                const indicatorDiv = document.createElement("div");
-                indicatorDiv.id = scrollIndicatorId;
-                scrollIndicatorContainer.appendChild(indicatorDiv);
+    //         if (!existingIndicator) {
+    //             const indicatorDiv = document.createElement("div");
+    //             indicatorDiv.id = scrollIndicatorId;
+    //             scrollIndicatorContainer.appendChild(indicatorDiv);
 
-                const root = ReactDOM.createRoot(indicatorDiv);
-                root.render(
-                    <ScrollIndicator id={scrollIndicatorId} autoTriggerPoints={autoTriggerPoints} />
-                );
-            }
-        }
-    }, [isButton]);
+    //             const root = ReactDOM.createRoot(indicatorDiv);
+    //             root.render(
+    //                 <ScrollIndicator id={scrollIndicatorId} autoTriggerPoints={autoTriggerPoints} />
+    //             );
+    //         }
+    //     }
+    // }, [isButton]);
 
 
 
