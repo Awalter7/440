@@ -514,6 +514,30 @@ PLASMIC.registerComponent(CustomScroll, {
         value: "Scroll to animate",
       },
     },
+    isButton: {
+      type: "boolean",
+      displayName: "Is Button",
+      description: "Treat this component as a button",
+      defaultValue: false,
+    },
+    autoTriggerPoints: {
+      type: "object",
+      fields: {
+        start: {
+          type: "number",
+          displayName: "Trigger Start (%)",
+          description: "Scroll position where this button should auto trigger ~ Start",
+          defaultValue: 0,
+        },
+        end: {
+          type: "number",
+          displayName: "Trigger End (%)",
+          description: "Scroll position where this button should auto trigger ~ End",
+          defaultValue: 0,
+        },
+      },
+      hidden: (props) => props.isButton !== true,
+    },
     positionType: {
       type: "choice",
       options: ["fixed", "absolute", "relative"],
@@ -895,18 +919,6 @@ PLASMIC.registerComponent(CustomScroll, {
             type: "number",
             displayName: "Delay (ms)",
             description: "How long should this effect wait to animate",
-            defaultValue: 0,
-          },
-          pseudoScrollRangeStart: {
-            type: "number",
-            displayName: "Trigger Range Start (%)",
-            description: "When should this button automatically trigger when scrolling?",
-            defaultValue: 0,
-          },
-          pseudoScrollRangeEnd: {
-            type: "number",
-            displayName: "Trigger Range End (%)",
-            description: "When will the next button automatically trigger?",
             defaultValue: 0,
           },
           easingFunction: {
