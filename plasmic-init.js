@@ -897,6 +897,18 @@ PLASMIC.registerComponent(CustomScroll, {
             description: "How long should this effect wait to animate",
             defaultValue: 0,
           },
+          pseudoScrollRangeStart: {
+            type: "number",
+            displayName: "Trigger Range Start (%)",
+            description: "When should this button automatically trigger when scrolling?",
+            defaultValue: 0,
+          },
+          pseudoScrollRangeEdn: {
+            type: "number",
+            displayName: "Trigger Range End (%)",
+            description: "When will the next button automatically trigger?",
+            defaultValue: 0,
+          },
           easingFunction: {
             type: "choice",
             options: [
