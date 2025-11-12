@@ -1,0 +1,254 @@
+
+    // 
+
+    // const [currentBaseStyles, setCurrentBaseStyles] = useState(
+    //     initialStyles.reduce((acc, { property, startValue }) => {
+    //         acc[property.trim()] = startValue;
+    //         return acc;
+    //     }, {})
+    // );
+
+    // const [activeEffects, setActiveEffect] = useState({
+    //     hover: [],
+    //     click: [],
+    //     load: []
+    // });
+
+
+
+    // const activeEffect = useMemo(() => {
+    //     if (activeEffects.load.length > 0) {
+    //         return activeEffects.load;
+    //     }
+
+    //     if (activeEffects.hover.length > 0) {
+    //         return activeEffects.hover;
+    //     }
+
+    //     if (activeEffects.click.length > 0) {
+    //         return activeEffects.click;
+    //     }
+        
+    //     return [];
+    // }, [activeEffects]);
+
+
+    // const { progress, stopProgress, startProgress, isProgressing } = useAnimationProgress()
+
+    // function captureMidEffectStyles(){
+    //     const currentStyles = getStyles();
+    //     const updatedStyles = { ...styles };
+        
+    //     Object.keys(currentStyles).forEach(key => {
+    //         if (key !== 'transform') {
+    //         updatedStyles[key] = currentStyles[key];
+    //         }
+    //     });
+        
+    //     if (currentStyles.transform) {
+    //         const transformProps = ['scale', 'scaleX', 'scaleY', 'scaleZ', 'rotate', 'rotateX', 'rotateY', 'rotateZ', 
+    //                             'translateX', 'translateY', 'translateZ', 'skewX', 'skewY'];
+    //         const transformRegex = /(\w+)\(([^)]+)\)/g;
+    //         let match;
+    //         while ((match = transformRegex.exec(currentStyles.transform)) !== null) {
+    //             const [, prop, value] = match;
+    //             if (transformProps.includes(prop)) {
+    //                 updatedStyles[prop] = value;
+    //             }
+    //         }
+    //     }
+    
+    //     return currentStyles;
+    // }
+
+    // const isClickEffect = (effectArray) => {
+    //     return effectArray && 
+    //         Array.isArray(effectArray) && 
+    //         effectArray.length > 0 && 
+    //         effectArray[0]?.id?.startsWith('click-');
+    // };
+
+    // useClickListener(
+    //     useMemo(() => stableClickEffects?.map(e => e.triggerId), [stableClickEffects]),
+
+    //     useCallback((id) => {
+    //         const indices = stableClickEffects
+    //             .map((e, index) => e.triggerId === id ? index : -1)
+    //             .filter(index => index !== -1);
+
+            
+    //         const newClickEffects = indices.map((idx) => {
+    //             let styleWith = null;
+                
+    //             if(isProgressing && isClickEffect(activeEffect)){
+    //                 styleWith = captureMidEffectStyles();
+
+    //                 activeEffect.map((effect) => {
+    //                     stopProgress(`click-${effect.stableIdx}`)
+    //                 })
+    //             }
+
+    //             return {...stableClickEffects[idx], styleWith: styleWith, stableIdx: idx}
+    //         })
+
+    //         if(newClickEffects.length > 0){
+    //             newClickEffects.map((effect, idx) => {
+    //                 startProgress(`click-${effect.stableIdx}`, effect.duration, effect.delay)
+    //             })
+
+    //             setActiveEffect(prev => ({ ...prev, click: [...newClickEffects]}));
+    //         }
+
+            
+
+    //         // if(progress > 0 && activeEffect.id.startsWith('click-') && idx !== -1){
+    //         //     styleWith = captureMidEffectStyles();
+    //         //     resetProgress()
+    //         // }
+
+    //         // if (idx !== -1) {
+    //         //    setActiveEffect(prev => ({ ...prev, click: {...stableClickEffects[idx], startWith: styleWith}}));
+    //         // }
+
+    //     }, [stableClickEffects, activeEffect])
+    // );
+
+
+
+    // useThreeLoadedListener(useCallback((loaded) => {
+    //     if (loaded && stableLoadEffect) {
+    //         setActiveEffect(prev => ({ ...prev, load: [stableLoadEffect]}));
+            
+    //         startProgress(`load-${stableLoadEffect.stableIdx}`, stableLoadEffect.duration, stableLoadEffect.delay)
+    //     }
+    // }, [stableLoadEffect]));
+
+    // useEffect(() => {
+    //     console.log(progress)
+    // }, [progress])
+
+
+    // function getStyles(){
+    //     if(!activeEffect) return currentBaseStyles;
+
+    //     const computedStyles = { ...currentBaseStyles};
+    //     const transformProps = ['scale', 'scaleX', 'scaleY', 'scaleZ', 'rotate', 'rotateX', 'rotateY', 'rotateZ', 
+    //                             'translateX', 'translateY', 'translateZ', 'skewX', 'skewY'];
+    //     const transformValues = [];
+
+    //     activeEffect.map((effect) => {
+    //         if(!effect || !effect.styles) return currentBaseStyles;
+
+
+    //         const type = effect.id.split("-")[0]
+    //         const effectID = `${type}-${effect.stableIdx}`;
+    //         const effectProgress = progress[effectID]
+        
+    //         if(!effectProgress) return;
+
+    //         const easing = easingFunctions[effect.easingFunction] || easingFunctions.linear;
+
+    //         effect.styles.forEach(({property, endValue}) => {
+    //             let startValue = effect?.styleWith?.[property] ?? currentBaseStyles[property];
+
+    //             const interpolated = interpolate(startValue, endValue, effectProgress, easing, property, uID)
+                
+    //             if (interpolated !== undefined) {
+    //                 if (transformProps.includes(property)) {
+    //                     transformValues.push(`${property}(${interpolated})`);
+    //                 } else {
+    //                     computedStyles[property] = interpolated;
+    //                 }
+    //             }
+    //         })
+
+    //         if(effectProgress === 1){
+    //             const updatedStyles = { ...currentBaseStyles };
+
+    //             effect.styles.forEach(({ property, endValue }) => {
+    //                 updatedStyles[property.trim()] = endValue;
+    //             });
+
+                
+                
+    //             if (effectProgress === 1) {
+    //                 if (effect.id.startsWith('click-')) {
+    //                     setCurrentBaseStyles(updatedStyles);
+    //                     setActiveEffect(prev => ({ 
+    //                         ...prev, 
+    //                         click: prev.click.filter((prevEffect) => prevEffect.id !== effect.id)
+    //                     }));
+    //                     stopProgress(`click-${effect.stableIdx}`)
+    //                 } else if (effect.id.startsWith('load')) {
+    //                     setCurrentBaseStyles(updatedStyles);
+    //                     setActiveEffect(prev => ({ ...prev, load: []}));
+    //                     stopProgress(`load-${effect.stableIdx}`)
+    //                 }
+    //             }
+    //         }
+    //     })
+
+    //     return computedStyles;
+    // }
+
+
+    // function getStyles(){
+    //     if(!activeEffect || !activeEffect.styles) return currentBaseStyles;
+
+    //     const computedStyles = { ...currentBaseStyles};
+    //     const transformProps = ['scale', 'scaleX', 'scaleY', 'scaleZ', 'rotate', 'rotateX', 'rotateY', 'rotateZ', 
+    //                             'translateX', 'translateY', 'translateZ', 'skewX', 'skewY'];
+    //     const transformValues = [];
+
+    //     const easing = easingFunctions[activeEffect.easingFunction] || easingFunctions.linear;
+
+    //     activeEffect.styles.forEach(({property, endValue}) => {
+    //         let startValue = activeEffect?.startWith?.[property] ?? currentBaseStyles[property];
+
+    //         const interpolated = interpolate(startValue, endValue, progress, easing, property, uID)
+            
+    //         if (interpolated !== undefined) {
+    //             if (transformProps.includes(property)) {
+    //                 transformValues.push(`${property}(${interpolated})`);
+    //             } else {
+    //                 computedStyles[property] = interpolated;
+    //             }
+    //         }
+    //     })
+
+    //     if(progress === 1){
+    //         const updatedStyles = { ...currentBaseStyles };
+
+    //         activeEffect.styles.forEach(({ property, endValue }) => {
+    //             updatedStyles[property.trim()] = endValue;
+    //         });
+
+    //         setCurrentBaseStyles(updatedStyles);
+            
+    //         if (progress === 1) {
+    //             if (activeEffect.id.startsWith('click-')) {
+    //                 setActiveEffect(prev => ({ ...prev, click: null }));
+    //             } else if (activeEffect.id.startsWith('load')) {
+    //                 setActiveEffect(prev => ({ ...prev, load: null }));
+    //             }
+    //         }
+    //     }
+
+    //     return computedStyles;
+    // }
+
+
+    // const styles = getStyles();
+    
+
+
+    // console.log(styles)
+
+    // const style = {
+    //     position: positionType,
+    //     // ...styles,
+    //     zIndex: zIndex,
+    //     transition: "none",
+    // };
+
+    // const finalClassName = className;
