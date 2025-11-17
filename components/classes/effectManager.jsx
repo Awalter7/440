@@ -7,18 +7,35 @@ export default class EffectManager extends Component{
     constructor(props = {}){
         super(props)
         this._effects = props.effects ?? [];
-        this._initialStyles = props.initialStyles ?? {};
+        const transformProps = [
+            "scale", "scaleX", "scaleY", "scaleZ",
+            "rotate", "rotateX", "rotateY", "rotateZ",
+            "translateX", "translateY", "translateZ",
+            "skewX", "skewY"
+        ];
+
+        let baseStyles = {};
+        let transformValues = [];
+
+        // Build initial styles properly
+        if (Array.isArray(props.initialStyles)) {
+            props.initialStyles.forEach(({ property, startValue }) => {
+                property = property.trim();
+
+                if (transformProps.includes(property)) {
+                transformValues.push(`${property}(${startValue})`);
+                } else {
+                baseStyles[property] = startValue;
+                }
+            });
+
+            if (transformValues.length > 0) {
+                baseStyles.transform = transformValues.join(" ");
+            }
+        }
+
         this.state = {
-            styles: 
-            this._initialStyles.length 
-            && 
-            this._initialStyles.reduce(
-                (acc, { property, startValue }) => 
-                    {
-                        acc[property.trim()] = startValue;
-                        return acc;
-                    }, {}
-            )
+            styles: baseStyles 
         }
 
 
@@ -136,34 +153,64 @@ export default class EffectManager extends Component{
             "skewX", "skewY"
         ];
 
-        const transformValues = [];
+        // Clone current styles
+        const newStyles = { ...this.state.styles };
 
-        const newStyles = { ...this.state.styles }; // <-- create a new object
+        // 🔍 Parse existing transform into an object (e.g. { scaleX: "2", rotate: "30deg" })
+        const currentTransformString = newStyles.transform || "";
+        const existingTransforms = {};
+        currentTransformString.replace(
+            /(\w+)\(([^)]+)\)/g,
+            (_, key, value) => (existingTransforms[key] = value)
+        );
+
+        // Store updated transforms here
+        const updatedTransforms = { ...existingTransforms };
 
         effect.styles.forEach(({ property, endValue, startValue }) => {
             let currentStartValue = startValue;
 
-            if(!currentStartValue){
-                currentStartValue = newStyles[property];
-                effect.setStartValue(property, currentStartValue);
+            // 🧠 For transform props, pull starting value from the parsed transform map
+            if (transformProps.includes(property)) {
+                if (!currentStartValue) {
+                    currentStartValue = existingTransforms[property] || 0;
+                    effect.setStartValue(property, currentStartValue);
+                }
+            } else {
+                if (!currentStartValue) {
+                    currentStartValue = newStyles[property];
+                    effect.setStartValue(property, currentStartValue);
+                }
             }
 
-            // let startValue = this.state.styles[property];
-            const interpolated = interpolate(startValue, endValue, progress, easing, property);
-            
+            const interpolated = interpolate(
+                currentStartValue,
+                endValue,
+                progress,
+                easing,
+                property
+            );
+
             if (interpolated !== undefined) {
                 if (transformProps.includes(property)) {
-                    transformValues.push(`${property}(${interpolated})`);
+                    updatedTransforms[property] = interpolated;
                 } else {
                     newStyles[property] = interpolated;
                 }
             }
 
-            if(progress === 1){
+            if (progress === 1) {
                 effect.stop();
                 effect.setStartValue(property, undefined);
             }
         });
+
+        // 🌀 Rebuild transform string from updatedTransforms
+        const transformString = Object.entries(updatedTransforms)
+            .map(([key, value]) => `${key}(${value})`)
+            .join(" ");
+
+        newStyles.transform = transformString;
 
         this.setState({ styles: newStyles });
     }

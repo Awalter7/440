@@ -1,18 +1,7 @@
 //CustomScroll
 
-import { useState, useCallback, useMemo, useEffect, useRef, Component } from "react";
-import ReactDOM from "react-dom/client"; // for React 18+
-
-import easingFunctions from "../utils/easingFunctions";
-import { interpolate, parseValue, getPixelFromPercent} from "./utils";
+import { useState, useMemo, useEffect, useRef} from "react";
 import { useProgress } from "@react-three/drei";
-import useShaderStatus from "../hooks/useShaderStatus";
-import useAnimationProgress from "../hooks/useAnimationProgress";
-import useThreeLoadedListener from "../hooks/useThreeLoadedListener";
-import useClickListener from "../hooks/useClickListener";
-
-
-import Effect from "../classes/effect";
 import EffectManager from "../classes/effectManager";
 import LoadEffect from "../classes/loadEffect";
 import ClickEffect from "../classes/clickEffect";
@@ -23,121 +12,6 @@ const generateUniqueId = () => {
   instanceCounter += 1;
   return `custom-scroll-${instanceCounter}-${Date.now()}`;
 };
-
-// Convert camelCase to kebab-case for CSS properties
-const camelToKebab = (str) => {
-  return str.replace(/[A-Z]/g, letter => `-${letter.toLowerCase()}`);
-};
-
-
-class ScrollIndicator extends Component {
-    constructor(props = {}) {
-        super(props);
-
-        this.id = props.id ?? "scroll-indicator";
-        this.autoTriggerPoints = props.autoTriggerPoints ?? { start: 0, end: 100 };
-
-        this.state = {
-        percent: 0,
-        };
-
-        this.triggered = false;
-        this.triggerId = props.triggerId ?? "";
-
-        this.handleScroll = this.handleScroll.bind(this);
-    }
-
-    componentDidMount() {
-        window.addEventListener("scroll", this.handleScroll);
-        this.handleScroll(); // initialize
-    }
-
-    componentWillUnmount() {
-        window.removeEventListener("scroll", this.handleScroll);
-    }
-
-    handleScroll() {
-        const { start, end } = this.autoTriggerPoints;
-        const scrollY = window.scrollY;
-        const vh = window.innerHeight;
-
-        // Convert start and end from vh to pixels
-        const startPx = (start / 100) * vh;
-        const endPx = (end / 100) * vh;
-
-        // Calculate scroll percentage in range
-        let percent;
-
-        if (scrollY < startPx) {
-            percent = -1;
-        } else if (scrollY === startPx) {
-            percent = 0;
-        } else if (scrollY > endPx) {
-            percent = 101; // 👈 return 101 when above range
-        } else {
-            percent = ((scrollY - startPx) / (endPx - startPx)) * 100;
-        }
-
-        this.setState({ percent });
-        this.handleTrigger(percent);
-    }
-
-    handleTrigger(percent){
-        if(percent === -1){
-            this.triggered = false;
-        }else if(percent === 101){
-            this.triggered = false;
-        }else{
-            if(this.triggered) return;
-
-            const button = document.getElementById(this.autoTriggerPoints.buttonId);
-            
-            console.log("button")
-
-            if(button){
-                button.click();
-            }
-
-            this.triggered = true;
-        }
-    }
-
-    render() {
-        const { percent } = this.state;
-        const id = this.id;
-
-        // Create a conic gradient that fills around the circle
-        const background = `conic-gradient(
-        #ffffffff ${percent}%,
-        rgba(0, 0, 0, 0.1) ${percent}%
-        )`;
-
-        return (
-        <div
-            id={id}
-            style={{
-            width: "20px",
-            height: "20px",
-            borderRadius: "50%",
-            background,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            transition: "background 0.2s linear",
-            }}
-        >
-            <div
-            style={{
-                width: "15px",
-                height: "15px",
-                borderRadius: "50%",
-                backgroundColor: "black",
-            }}
-            ></div>
-        </div>
-        );
-    }
-}
 
 
 export function CustomScroll({
@@ -188,65 +62,12 @@ export function CustomScroll({
         [loadEffect]
     );
 
-    const [effects, setEffects] = useState(null);
+    const effects = useMemo(
+        () => [stableLoadEffect, ...stableClickEffects].filter(effect => effect != null),
+        [stableLoadEffect, stableClickEffects]
+    );
+
     const effectManagerRef = useRef(null);
-
-
-    useEffect(() => {
-        if(effects) return;
-        
-        setEffects([stableLoadEffect, ...stableClickEffects].filter(effect => effect != null));
-    }, [stableLoadEffect, stableClickEffects])
-
-
-    // useEffect(() => {
-    //     if (isButton) {
-    //         let scrollIndicatorId = `scroll-indicator-${uID}`
-
-    //         let scrollIndicatorContainer = document.getElementById("scroll-indicator-container");
-            
-
-    //         // ✅ If element doesn't exist, create it and style it
-    //         if (!scrollIndicatorContainer) {
-    //             scrollIndicatorContainer = document.createElement("div");
-    //             scrollIndicatorContainer.id = "scroll-indicator-container";
-
-    //             // Apply inline styles
-    //             Object.assign(scrollIndicatorContainer.style, {
-    //                 position: "fixed",
-    //                 top: "0",
-    //                 left: "0",
-    //                 width: "100vw",
-    //                 height: "auto",
-    //                 zIndex: "9999",
-    //                 display: 'flex',
-    //                 justifyContent: "center",
-    //                 alignItems: "center",
-    //                 gap: "5px",
-    //                 padding: "15px",
-    //             });
-
-    //             // Append to the document root (body)
-    //             document.body.appendChild(scrollIndicatorContainer);
-    //         }
-
-    //         let existingIndicator = document.getElementById(scrollIndicatorId);
-
-    //         if (!existingIndicator) {
-    //             const indicatorDiv = document.createElement("div");
-    //             indicatorDiv.id = scrollIndicatorId;
-    //             scrollIndicatorContainer.appendChild(indicatorDiv);
-
-    //             const root = ReactDOM.createRoot(indicatorDiv);
-    //             root.render(
-    //                 <ScrollIndicator id={scrollIndicatorId} autoTriggerPoints={autoTriggerPoints} />
-    //             );
-    //         }
-    //     }
-    // }, [isButton]);
-
-
-
 
     return (
         <>
