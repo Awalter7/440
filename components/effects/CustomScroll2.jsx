@@ -71,13 +71,14 @@ export function CustomScroll({
 
     return (
         <>
-            {
+            {/* {
                 effects
-                &&
+                && */}
                 <EffectManager 
                     ref={effectManagerRef}
                     effects={effects}
                     initialStyles={initialStyles}
+                    uID={uID}
                     customTriggers={{
                         start: {
                             'load-0': progress === 100,
@@ -88,7 +89,7 @@ export function CustomScroll({
                         {children}
                     </div>
                 </EffectManager>
-            }
+            {/* } */}
 
         </>
     );

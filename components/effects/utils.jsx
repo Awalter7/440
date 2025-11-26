@@ -61,6 +61,50 @@ const parseCalc = (calcStr, property) => {
   };
 };
 
+export const convertWidthUnit = (value, unit, UID) => {
+  const elm = document.querySelector(`[data-attribute-unique-id=${UID}]`);
+  
+  
+  if(elm){
+    const parent = elm.parentNode;
+
+    let parentWidth = parent.offsetWidth;
+    let newValue;
+
+    if(unit === '%'){
+      newValue = parentWidth * (value / 100);
+    }else{
+      newValue = (value / parentWidth) * 100;
+    }
+
+    return newValue;
+  }
+
+  return null;
+}
+
+export const convertHeightUnit = (value, unit, UID) => {
+  const elm = document.querySelector(`[data-attribute-unique-id=${UID}]`);
+  
+  
+  if(elm){
+    const parent = elm.parentNode;
+
+    let parentWidth = parent.offsetHeight;
+    let newValue;
+
+    if(unit === '%'){
+      newValue = parentWidth * (value / 100);
+    }else{
+      newValue = (value / parentWidth) * 100;
+    }
+
+    return newValue;
+  }
+
+  return null;
+}
+
 const interpolateCalcParts = (startParts, endParts, progress, easing) => {
   const eased = easing ? easing(progress) : progress;
   const result = [];

@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import easingFunctions from "../utils/easingFunctions";
-import { interpolate } from "../effects/utils";
+import { interpolate, parseValue, convertWidthUnit, convertHeightUnit} from "../effects/utils";
 
 
 export default class EffectManager extends Component{
@@ -49,6 +49,8 @@ export default class EffectManager extends Component{
         this.children = props.children;
 
         this.prevCustomTriggers = JSON.parse(JSON.stringify(props.customTriggers || {}));
+
+        this.uID = props.uID ?? "example-id";
     }
 
     get effects(){
@@ -103,10 +105,10 @@ export default class EffectManager extends Component{
                 // console.log(`⚡ Executing function at path: ${newPath[1]}.${newPath[0]}()`);
                 fn.call(effect); // <-- bind `this` correctly
             } catch (err) {
-                // console.error(`❌ Error executing function at path ${newPath[1]}.${newPath[0]}():`, err);
+                console.error(`❌ Error executing function at path ${newPath[1]}.${newPath[0]}():`, err);
             }
         } else {
-            // console.warn(`⚠️ No function found at path ${newPath[1]}.${newPath[0]}`);
+            console.warn(`⚠️ No function found at path ${newPath[1]}.${newPath[0]}`);
         }
     }
 
@@ -170,15 +172,50 @@ export default class EffectManager extends Component{
         effect.styles.forEach(({ property, endValue, startValue }) => {
             let currentStartValue = startValue;
 
+            console.log(endValue)
+            if(property === "width"){
+                console.log(currentStartValue)
+            }
+            
+
             // 🧠 For transform props, pull starting value from the parsed transform map
             if (transformProps.includes(property)) {
                 if (!currentStartValue) {
                     currentStartValue = existingTransforms[property] || 0;
+
+                
+
                     effect.setStartValue(property, currentStartValue);
                 }
             } else {
                 if (!currentStartValue) {
                     currentStartValue = newStyles[property];
+                    
+                    if(property === "width"){
+                        const e = parseValue(endValue, property)
+                        const s = parseValue(currentStartValue, property);
+
+                        if( s.unit === "px" && e.unit === "%"){
+                            const newValue = convertWidthUnit(e.number, s.unit, this.uID)
+                            currentStartValue = newValue + "%"
+                        }else if(s.unit === "%" && e.unit === "px"){
+                            const newValue = convertWidthUnit(s.number, s.unit, this.uID)
+                            currentStartValue = newValue + "px"
+                        }
+                    }else if(property === "height"){
+                        const e = parseValue(endValue, property)
+                        const s = parseValue(currentStartValue, property);
+
+                        if( s.unit === "px" && e.unit === "%"){
+                            const newValue = convertHeightUnit(e.number, s.unit, this.uID)
+                            currentStartValue = newValue + "%"
+                        }else if(s.unit === "%" && e.unit === "px"){
+                            const newValue = convertHeightUnit(s.number, s.unit, this.uID)
+                            currentStartValue = newValue + "px"
+                        }
+                    }
+
+                    console.log(currentStartValue)
                     effect.setStartValue(property, currentStartValue);
                 }
             }
