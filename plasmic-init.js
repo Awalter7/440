@@ -1,7 +1,10 @@
 // plasmic-init.js
 import { initPlasmicLoader } from "@plasmicapp/loader-nextjs";
+
 import ThreeCanvas from "./components/three/canvas/ThreeCanvas"
-import { CustomScroll } from "./components/effects/CustomScroll2";
+import { CustomScroll } from "./components/effects/CustomScroll";
+import { StickerPeel } from "./components/effects/StickerPeel";
+
 import dynamic from 'next/dynamic';
 import MapTilerMap from "./components/maps/map"
 
@@ -14,6 +17,8 @@ export const PLASMIC = initPlasmicLoader({
   ],
   preview: true,
 });
+
+
 
 
 PLASMIC.registerComponent(MapTilerMap, {
@@ -226,6 +231,81 @@ PLASMIC.registerComponent(GuitarLoader, {
   importPath: "./components/loaders/GuitarLoader",
   isDefaultExport: true,
 })
+
+PLASMIC.registerComponent(StickerPeel, {
+  name: "StickerPeel",
+  displayName: "Sticker Peel",
+  description: "Sticker peel effect for images",
+
+  props: {
+    imageSrc: {
+      type: "image",
+      displayName: "Image",
+      description: "Image used as the sticker"
+    },
+
+    rotate: {
+      type: "number",
+      displayName: "Rotate",
+      defaultValue: 30
+    },
+
+    peelBackHoverPct: {
+      type: "number",
+      displayName: "Peel Back (Hover) %",
+      defaultValue: 30
+    },
+
+    peelBackActivePct: {
+      type: "number",
+      displayName: "Peel Back (Active) %",
+      defaultValue: 40
+    },
+
+    peelEasing: {
+      type: "string",
+      displayName: "Peel Easing",
+      defaultValue: "power3.out",
+      enumValues: ["power1.out", "power2.out", "power3.out", "power4.out", "expo.out"]
+    },
+
+    peelHoverEasing: {
+      type: "string",
+      displayName: "Peel Hover Easing",
+      defaultValue: "power2.out",
+      enumValues: ["power1.out", "power2.out", "power3.out", "power4.out", "expo.out"]
+    },
+
+    width: {
+      type: "number",
+      displayName: "Width (px)",
+      defaultValue: 200
+    },
+
+    shadowIntensity: {
+      type: "number",
+      displayName: "Shadow Intensity",
+      defaultValue: 0.6
+    },
+
+    lightingIntensity: {
+      type: "number",
+      displayName: "Lighting Intensity",
+      defaultValue: 0.1
+    },
+
+    peelDirection: {
+      type: "number",
+      displayName: "Peel Direction (deg)",
+      defaultValue: 0
+    },
+
+    className: "class"
+  },
+  importPath: "./components/effects/StickerPeel",
+  isDefaultExport: false,
+});
+
 
 PLASMIC.registerComponent(ThreeCanvas, {
   name: "TheeCanvas",
@@ -1157,9 +1237,12 @@ PLASMIC.registerComponent(CustomScroll, {
       description: "Stacking order",
     },
   },
-  importPath: "./components/effects/CustomScroll2",
+  importPath: "./components/effects/CustomScroll",
   isDefaultExport: false,
 });
+
+
+
 
  // Legacy props for backwards compatibility (hidden when breakpoints are used)
     // startTop: {

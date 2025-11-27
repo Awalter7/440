@@ -30,6 +30,8 @@ export default class Effect extends Component{
 
         this._active = false;
         this._progress = 0;
+
+        this._uID = props.uID ?? "example-id"
     }
 
 
@@ -100,6 +102,13 @@ export default class Effect extends Component{
     }
     set active(value) {
         this._active = value;
+    }
+
+    get uID() {
+        return this._uID;
+    }
+    set uID(value) {
+        this._uID = value;
     }
 
     // progress

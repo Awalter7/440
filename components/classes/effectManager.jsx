@@ -43,6 +43,7 @@ export default class EffectManager extends Component{
             if(effect !== null){
                 effect.onProgressChange = this._onProgressChange.bind(this);
                 effect.stopOthers = this._stopOthers.bind(this)
+                effect.uID = props.uID ?? "example-id";
             }
         });
 
