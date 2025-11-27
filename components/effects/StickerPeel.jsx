@@ -1,6 +1,6 @@
 import { useRef, useEffect, useMemo } from 'react';
 import { gsap } from 'gsap';
-// import './StickerPeel.css';
+import styles from './sticker.module.css';
 
 export const StickerPeel = ({
   imageSrc,
@@ -12,7 +12,6 @@ export const StickerPeel = ({
   width = 200,
   shadowIntensity = 0.6,
   lightingIntensity = 0.1,
-  initialPosition = 'center',
   peelDirection = 0,
   className = ''
 }) => {
@@ -22,10 +21,9 @@ export const StickerPeel = ({
 
   const defaultPadding = 10;
 
-  useEffect(() => {
-    // No draggable initial position logic anymore
-  }, []);
-
+  /* ============================================================
+     LIGHT MOVEMENT
+  ============================================================ */
   useEffect(() => {
     const updateLight = e => {
       const rect = containerRef.current?.getBoundingClientRect();
@@ -38,9 +36,13 @@ export const StickerPeel = ({
 
       const normalizedAngle = Math.abs(peelDirection % 360);
       if (normalizedAngle !== 180) {
-        gsap.set(pointLightFlippedRef.current, { attr: { x, y: rect.height - y } });
+        gsap.set(pointLightFlippedRef.current, {
+          attr: { x, y: rect.height - y }
+        });
       } else {
-        gsap.set(pointLightFlippedRef.current, { attr: { x: -1000, y: -1000 } });
+        gsap.set(pointLightFlippedRef.current, {
+          attr: { x: -9999, y: -9999 }
+        });
       }
     };
 
@@ -51,24 +53,30 @@ export const StickerPeel = ({
     }
   }, [peelDirection]);
 
+  /* ============================================================
+     TOUCH STATE
+  ============================================================ */
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
-    const handleTouchStart = () => container.classList.add('touch-active');
-    const handleTouchEnd = () => container.classList.remove('touch-active');
+    const activate = () => container.classList.add(styles.touchActive);
+    const deactivate = () => container.classList.remove(styles.touchActive);
 
-    container.addEventListener('touchstart', handleTouchStart);
-    container.addEventListener('touchend', handleTouchEnd);
-    container.addEventListener('touchcancel', handleTouchEnd);
+    container.addEventListener('touchstart', activate);
+    container.addEventListener('touchend', deactivate);
+    container.addEventListener('touchcancel', deactivate);
 
     return () => {
-      container.removeEventListener('touchstart', handleTouchStart);
-      container.removeEventListener('touchend', handleTouchEnd);
-      container.removeEventListener('touchcancel', handleTouchEnd);
+      container.removeEventListener('touchstart', activate);
+      container.removeEventListener('touchend', deactivate);
+      container.removeEventListener('touchcancel', deactivate);
     };
   }, []);
 
+  /* ============================================================
+     CSS VARIABLES
+  ============================================================ */
   const cssVars = useMemo(
     () => ({
       '--sticker-rotate': `${rotate}deg`,
@@ -95,10 +103,14 @@ export const StickerPeel = ({
     ]
   );
 
+  /* ============================================================
+     RENDER
+  ============================================================ */
   return (
-    <div className={`${className}`} style={cssVars}>
+    <div className={`${styles.stickerRoot} ${className}`} style={cssVars}>
       <svg width="0" height="0">
         <defs>
+
           <filter id="pointLight">
             <feGaussianBlur stdDeviation="1" result="blur" />
             <feSpecularLighting
@@ -144,30 +156,29 @@ export const StickerPeel = ({
             <feFlood floodColor="rgb(179,179,179)" result="flood" />
             <feComposite operator="in" in="flood" in2="shape" />
           </filter>
+
         </defs>
       </svg>
 
-      <div className="sticker-container" ref={containerRef}>
-        <div className="sticker-main">
-          <div className="sticker-lighting">
+      <div className={styles.stickerContainer} ref={containerRef}>
+        <div className={styles.stickerMain}>
+          <div className={styles.stickerLighting}>
             <img
               src={imageSrc}
               alt=""
-              className="sticker-image"
+              className={styles.stickerImage}
               draggable="false"
-              onContextMenu={e => e.preventDefault()}
             />
           </div>
         </div>
 
-        <div className="flap">
-          <div className="flap-lighting">
+        <div className={styles.flap}>
+          <div className={styles.flapLighting}>
             <img
               src={imageSrc}
               alt=""
-              className="flap-image"
+              className={styles.flapImage}
               draggable="false"
-              onContextMenu={e => e.preventDefault()}
             />
           </div>
         </div>
@@ -175,4 +186,3 @@ export const StickerPeel = ({
     </div>
   );
 };
-
