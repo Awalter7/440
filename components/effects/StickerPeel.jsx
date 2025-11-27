@@ -160,7 +160,7 @@ export const StickerPeel = ({
         </defs>
       </svg>
 
-      <div className={styles.stickerContainer} ref={containerRef}>
+      <div className={styles.stickerContainer} style={{width: width, height: height}} ref={containerRef}>
         <div className={styles.stickerMain}>
           <div className={styles.stickerLighting}>
             <img
@@ -168,6 +168,7 @@ export const StickerPeel = ({
               alt=""
               className={styles.stickerImage}
               draggable="false"
+              style={{width: width, height: width}}
             />
           </div>
         </div>
@@ -178,6 +179,7 @@ export const StickerPeel = ({
               src={imageSrc}
               alt=""
               className={styles.flapImage}
+              style={{width: width, height: height}}
               draggable="false"
             />
           </div>

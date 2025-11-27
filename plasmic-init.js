@@ -275,6 +275,11 @@ PLASMIC.registerComponent(StickerPeel, {
       displayName: "Width (px)",
       defaultValue: 200
     },
+    height: {
+      type: "number",
+      displayName: "Width (px)",
+      defaultValue: 200
+    },
     shadowIntensity: {
       type: "number",
       displayName: "Shadow Intensity",
