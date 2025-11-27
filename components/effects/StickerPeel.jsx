@@ -10,6 +10,7 @@ export const StickerPeel = ({
   peelEasing = 'power3.out',
   peelHoverEasing = 'power2.out',
   width = 200,
+  height = 200,
   shadowIntensity = 0.6,
   lightingIntensity = 0.1,
   peelDirection = 0,
