@@ -243,64 +243,57 @@ PLASMIC.registerComponent(StickerPeel, {
       displayName: "Image",
       description: "Image used as the sticker"
     },
-
     rotate: {
       type: "number",
       displayName: "Rotate",
       defaultValue: 30
     },
-
     peelBackHoverPct: {
       type: "number",
       displayName: "Peel Back (Hover) %",
       defaultValue: 30
     },
-
     peelBackActivePct: {
       type: "number",
       displayName: "Peel Back (Active) %",
       defaultValue: 40
     },
-
     peelEasing: {
       type: "string",
       displayName: "Peel Easing",
       defaultValue: "power3.out",
       enumValues: ["power1.out", "power2.out", "power3.out", "power4.out", "expo.out"]
     },
-
     peelHoverEasing: {
       type: "string",
       displayName: "Peel Hover Easing",
       defaultValue: "power2.out",
       enumValues: ["power1.out", "power2.out", "power3.out", "power4.out", "expo.out"]
     },
-
     width: {
       type: "number",
       displayName: "Width (px)",
       defaultValue: 200
     },
-
     shadowIntensity: {
       type: "number",
       displayName: "Shadow Intensity",
       defaultValue: 0.6
     },
-
     lightingIntensity: {
       type: "number",
       displayName: "Lighting Intensity",
       defaultValue: 0.1
     },
-
     peelDirection: {
       type: "number",
       displayName: "Peel Direction (deg)",
       defaultValue: 0
     },
-
-    className: "class"
+    className: {
+      type: "class",
+      displayName: "CSS Class",
+    },
   },
   importPath: "./components/effects/StickerPeel",
   isDefaultExport: false,
