@@ -239,7 +239,7 @@ PLASMIC.registerComponent(StickerPeel, {
 
   props: {
     imageSrc: {
-      type: "image",
+      type: "imageUrl",
       displayName: "Image",
       description: "Image used as the sticker"
     },
