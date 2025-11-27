@@ -1,6 +1,6 @@
 import { useRef, useEffect, useMemo } from 'react';
 import { gsap } from 'gsap';
-import './StickerPeel.css';
+// import './StickerPeel.css';
 
 export const StickerPeel = ({
   imageSrc,
