@@ -169,7 +169,7 @@ export const StickerPeel = ({
               alt=""
               className={styles.stickerImage}
               draggable="false"
-              style={{width: width, height: width}}
+              style={{width: width, height: height}}
             />
           </div>
         </div>
