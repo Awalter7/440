@@ -20,7 +20,7 @@ export function CustomScroll({
   children,
   className,
   positionType = "fixed",
-  gravity = false,
+  gravity = {},
   isButton = false,
   autoTriggerPoints,
   // Initial Styles
