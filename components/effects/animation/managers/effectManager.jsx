@@ -1,6 +1,6 @@
 import React, { Component } from "react";
-import easingFunctions from "../utils/easingFunctions";
-import { interpolate, parseValue, convertWidthUnit, convertHeightUnit} from "../effects/utils";
+import easingFunctions from "../../../utils/easingFunctions"
+import { interpolate, parseValue, convertWidthUnit, convertHeightUnit} from "../../../effects/utils"
 
 
 export default class EffectManager extends Component{
@@ -261,6 +261,15 @@ export default class EffectManager extends Component{
     }
 
     componentDidMount() {
+        // Fire triggers that are already true on first render
+        for (const category in this.props.customTriggers) {
+            for (const key in this.props.customTriggers[category]) {
+                if (this.props.customTriggers[category][key]) {
+                    this._resolveAndRunFunction([category, key]);
+                }
+            }
+        }
+
         this._effects.forEach(effect => {
             if (effect.componentDidMount) effect.componentDidMount();
         });

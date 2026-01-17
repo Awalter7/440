@@ -1,12 +1,13 @@
 // plasmic-init.js
 import { initPlasmicLoader } from "@plasmicapp/loader-nextjs";
+import { CustomScroll } from "./components/effects/animation/CustomScroll";
+import GradualBlur from './components/effects/visual/gradualBlur';
 
-import ThreeCanvas from "./components/three/canvas/ThreeCanvas"
-import { CustomScroll } from "./components/effects/CustomScroll";
-import { StickerPeel } from "./components/effects/StickerPeel";
+// import { StickerPeel } from "./components/effects/StickerPeel";
+// import ThreeCanvas from "./components/three/canvas/ThreeCanvas"
+// import MapTilerMap from "./components/maps/map"
 
 import dynamic from 'next/dynamic';
-import MapTilerMap from "./components/maps/map"
 
 export const PLASMIC = initPlasmicLoader({
   projects: [
@@ -18,568 +19,659 @@ export const PLASMIC = initPlasmicLoader({
   preview: true,
 });
 
+// PLASMIC.registerComponent(MapTilerMap, {
+//   name: 'MapTilerMap',
+//   displayName: 'MapTiler Map',
+//   description: 'Interactive map powered by MapTiler and MapLibre GL JS',
+//   importPath: './MapTilerMap',
+//   props: {
+//     apiKey: {
+//       type: 'string',
+//       displayName: 'API Key',
+//       description: 'Your MapTiler API key from https://cloud.maptiler.com',
+//       defaultValue: 'YOUR_MAPTILER_API_KEY',
+//     },
+//     mapStyle: {
+//       type: 'choice',
+//       displayName: 'Map Style',
+//       description: 'MapTiler map style to use',
+//       options: [
+//         { value: 'streets-v2', label: 'Streets' },
+//         { value: 'satellite', label: 'Satellite' },
+//         { value: 'hybrid', label: 'Hybrid' },
+//         { value: 'outdoor-v2', label: 'Outdoor' },
+//         { value: 'winter-v2', label: 'Winter' },
+//         { value: 'basic-v2', label: 'Basic' },
+//         { value: 'basic-v2-dark', label: 'Basic' },
+//         { value: 'bright-v2', label: 'Bright' },
+//         { value: 'pastel', label: 'Pastel' },
+//         { value: 'topo-v2', label: 'Topographic' },
+//         { value: 'voyager', label: 'Voyager' },
+//         { value: 'toner-v2', label: 'Toner' },
+//         { value: 'backdrop', label: 'Backdrop' },
+//         { value: 'dataviz', label: 'Data Visualization' },
+//         { value: 'ocean', label: 'Ocean' },
+//       ],
+//       defaultValue: 'streets-v2',
+//     },
+//     longitude: {
+//       type: 'number',
+//       displayName: 'Longitude',
+//       description: 'Center longitude coordinate',
+//       defaultValue: -81.9748,
+//     },
+//     latitude: {
+//       type: 'number',
+//       displayName: 'Latitude',
+//       description: 'Center latitude coordinate',
+//       defaultValue: 33.4735,
+//     },
+//     zoom: {
+//       type: 'number',
+//       displayName: 'Zoom Level',
+//       description: 'Map zoom level (0-22)',
+//       defaultValue: 12,
+//       min: 0,
+//       max: 22,
+//       step: 0.1,
+//     },
+//     pitch: {
+//       type: 'number',
+//       displayName: 'Pitch',
+//       description: 'Map pitch/tilt angle in degrees (0-85)',
+//       defaultValue: 0,
+//       min: 0,
+//       max: 85,
+//       step: 1,
+//     },
+//     bearing: {
+//       type: 'number',
+//       displayName: 'Bearing',
+//       description: 'Map rotation bearing in degrees (0-360)',
+//       defaultValue: 0,
+//       min: 0,
+//       max: 360,
+//       step: 1,
+//     },
+//     minZoom: {
+//       type: 'number',
+//       displayName: 'Min Zoom',
+//       description: 'Minimum zoom level allowed',
+//       defaultValue: 0,
+//       min: 0,
+//       max: 22,
+//       step: 1,
+//     },
+//     maxZoom: {
+//       type: 'number',
+//       displayName: 'Max Zoom',
+//       description: 'Maximum zoom level allowed',
+//       defaultValue: 22,
+//       min: 0,
+//       max: 22,
+//       step: 1,
+//     },
+//     width: {
+//       type: 'string',
+//       displayName: 'Width',
+//       description: 'Map container width (CSS value)',
+//       defaultValue: '100%',
+//     },
+//     height: {
+//       type: 'string',
+//       displayName: 'Height',
+//       description: 'Map container height (CSS value)',
+//       defaultValue: '400px',
+//     },
+//     showControls: {
+//       type: 'boolean',
+//       displayName: 'Show Controls',
+//       description: 'Show zoom and rotation controls',
+//       defaultValue: true,
+//     },
+//     showScale: {
+//       type: 'boolean',
+//       displayName: 'Show Scale',
+//       description: 'Show map scale indicator',
+//       defaultValue: false,
+//     },
+//     interactive: {
+//       type: 'boolean',
+//       displayName: 'Interactive',
+//       description: 'Enable map interactions (zoom, pan, rotate)',
+//       defaultValue: true,
+//     },
+//     markers: {
+//       type: 'array',
+//       displayName: 'Markers',
+//       description: 'Array of marker objects',
+//       defaultValue: [],
+//       itemType: {
+//         type: 'object',
+//         fields: {
+//           longitude: {
+//             type: 'number',
+//             displayName: 'Longitude',
+//           },
+//           latitude: {
+//             type: 'number',
+//             displayName: 'Latitude',
+//           },
+//           color: {
+//             type: 'string',
+//             displayName: 'Color',
+//             defaultValue: '#3b82f6',
+//           },
+//           popup: {
+//             type: 'string',
+//             displayName: 'Popup Text',
+//           },
+//         },
+//       },
+//     },
+//     className: {
+//       type: 'string',
+//       displayName: 'CSS Class',
+//       description: 'Additional CSS class name',
+//       defaultValue: '',
+//     },
+//   },
+//   importPath: "./components/maps/map",
+//   isDefaultExport: true,
+// })
+
+// const GuitarLoader = dynamic(() => import('./components/loaders/GuitarLoader'), { ssr: false });
+// PLASMIC.registerComponent(GuitarLoader, {
+//   name: "Guitar Loader",
+//   displayName: "Guitar Loader",
+//   description: "A Guitar loader to show loading progress",
+//   props: {
+//     children: {
+//       type: "slot",
+//       defaultValue: {
+//         type: "text",
+//         value: "Content to load",
+//       },
+//     },
+//     showLoader: {
+//       type: "boolean",
+//       displayName: "Display Loader?",
+//       defaultValue: true,
+//     }
+//   },
+//   styleProps: [
+//     "width",
+//     "height",
+//     "minWidth",
+//     "maxWidth", 
+//     "minHeight",
+//     "maxHeight",
+//     "position",
+//     "top",
+//     "left",
+//     "right",
+//     "bottom",
+//     "zIndex",
+//     "display",
+//     "flexDirection",
+//     "flexWrap",
+//     "justifyContent",
+//     "alignItems",
+//     "gap",
+//     "padding",
+//     "margin",
+//     "background",
+//     "backgroundColor",
+//     "border",
+//     "borderRadius",
+//     "overflow",
+//   ],
+//   importPath: "./components/loaders/GuitarLoader",
+//   isDefaultExport: true,
+// })
+
+// PLASMIC.registerComponent(StickerPeel, {
+//   name: "StickerPeel",
+//   displayName: "Sticker Peel",
+//   description: "Sticker peel effect for images",
+
+//   props: {
+//     imageSrc: {
+//       type: "imageUrl",
+//       displayName: "Image",
+//       description: "Image used as the sticker"
+//     },
+//     rotate: {
+//       type: "number",
+//       displayName: "Rotate",
+//       defaultValue: 30
+//     },
+//     peelBackHoverPct: {
+//       type: "number",
+//       displayName: "Peel Back (Hover) %",
+//       defaultValue: 30
+//     },
+//     peelBackActivePct: {
+//       type: "number",
+//       displayName: "Peel Back (Active) %",
+//       defaultValue: 40
+//     },
+//     peelEasing: {
+//       type: "string",
+//       displayName: "Peel Easing",
+//       defaultValue: "power3.out",
+//       enumValues: ["power1.out", "power2.out", "power3.out", "power4.out", "expo.out"]
+//     },
+//     peelHoverEasing: {
+//       type: "string",
+//       displayName: "Peel Hover Easing",
+//       defaultValue: "power2.out",
+//       enumValues: ["power1.out", "power2.out", "power3.out", "power4.out", "expo.out"]
+//     },
+//     width: {
+//       type: "number",
+//       displayName: "Width (px)",
+//       defaultValue: 200
+//     },
+//     height: {
+//       type: "number",
+//       displayName: "Height (px)",
+//       defaultValue: 200
+//     },
+//     shadowIntensity: {
+//       type: "number",
+//       displayName: "Shadow Intensity",
+//       defaultValue: 0.6
+//     },
+//     lightingIntensity: {
+//       type: "number",
+//       displayName: "Lighting Intensity",
+//       defaultValue: 0.1
+//     },
+//     peelDirection: {
+//       type: "number",
+//       displayName: "Peel Direction (deg)",
+//       defaultValue: 0
+//     },
+//     className: {
+//       type: "class",
+//       displayName: "CSS Class",
+//     },
+//   },
+//   importPath: "./components/effects/StickerPeel",
+//   isDefaultExport: false,
+// });
 
 
+// PLASMIC.registerComponent(ThreeCanvas, {
+//   name: "TheeCanvas",
+//   displayName: "Three.js Scroll Effect",
+//   description: "Animate camera and 3D objects with initial positions, load effects, and click-triggered effects",
+//   props: {
 
-PLASMIC.registerComponent(MapTilerMap, {
-  name: 'MapTilerMap',
-  displayName: 'MapTiler Map',
-  description: 'Interactive map powered by MapTiler and MapLibre GL JS',
-  importPath: './MapTilerMap',
-  props: {
-    apiKey: {
-      type: 'string',
-      displayName: 'API Key',
-      description: 'Your MapTiler API key from https://cloud.maptiler.com',
-      defaultValue: 'YOUR_MAPTILER_API_KEY',
-    },
-    mapStyle: {
-      type: 'choice',
-      displayName: 'Map Style',
-      description: 'MapTiler map style to use',
-      options: [
-        { value: 'streets-v2', label: 'Streets' },
-        { value: 'satellite', label: 'Satellite' },
-        { value: 'hybrid', label: 'Hybrid' },
-        { value: 'outdoor-v2', label: 'Outdoor' },
-        { value: 'winter-v2', label: 'Winter' },
-        { value: 'basic-v2', label: 'Basic' },
-        { value: 'basic-v2-dark', label: 'Basic' },
-        { value: 'bright-v2', label: 'Bright' },
-        { value: 'pastel', label: 'Pastel' },
-        { value: 'topo-v2', label: 'Topographic' },
-        { value: 'voyager', label: 'Voyager' },
-        { value: 'toner-v2', label: 'Toner' },
-        { value: 'backdrop', label: 'Backdrop' },
-        { value: 'dataviz', label: 'Data Visualization' },
-        { value: 'ocean', label: 'Ocean' },
-      ],
-      defaultValue: 'streets-v2',
-    },
-    longitude: {
-      type: 'number',
-      displayName: 'Longitude',
-      description: 'Center longitude coordinate',
-      defaultValue: -81.9748,
-    },
-    latitude: {
-      type: 'number',
-      displayName: 'Latitude',
-      description: 'Center latitude coordinate',
-      defaultValue: 33.4735,
-    },
-    zoom: {
-      type: 'number',
-      displayName: 'Zoom Level',
-      description: 'Map zoom level (0-22)',
-      defaultValue: 12,
-      min: 0,
-      max: 22,
-      step: 0.1,
-    },
-    pitch: {
-      type: 'number',
-      displayName: 'Pitch',
-      description: 'Map pitch/tilt angle in degrees (0-85)',
-      defaultValue: 0,
-      min: 0,
-      max: 85,
-      step: 1,
-    },
-    bearing: {
-      type: 'number',
-      displayName: 'Bearing',
-      description: 'Map rotation bearing in degrees (0-360)',
-      defaultValue: 0,
-      min: 0,
-      max: 360,
-      step: 1,
-    },
-    minZoom: {
-      type: 'number',
-      displayName: 'Min Zoom',
-      description: 'Minimum zoom level allowed',
-      defaultValue: 0,
-      min: 0,
-      max: 22,
-      step: 1,
-    },
-    maxZoom: {
-      type: 'number',
-      displayName: 'Max Zoom',
-      description: 'Maximum zoom level allowed',
-      defaultValue: 22,
-      min: 0,
-      max: 22,
-      step: 1,
-    },
-    width: {
-      type: 'string',
-      displayName: 'Width',
-      description: 'Map container width (CSS value)',
-      defaultValue: '100%',
-    },
-    height: {
-      type: 'string',
-      displayName: 'Height',
-      description: 'Map container height (CSS value)',
-      defaultValue: '400px',
-    },
-    showControls: {
-      type: 'boolean',
-      displayName: 'Show Controls',
-      description: 'Show zoom and rotation controls',
-      defaultValue: true,
-    },
-    showScale: {
-      type: 'boolean',
-      displayName: 'Show Scale',
-      description: 'Show map scale indicator',
-      defaultValue: false,
-    },
-    interactive: {
-      type: 'boolean',
-      displayName: 'Interactive',
-      description: 'Enable map interactions (zoom, pan, rotate)',
-      defaultValue: true,
-    },
-    markers: {
-      type: 'array',
-      displayName: 'Markers',
-      description: 'Array of marker objects',
-      defaultValue: [],
-      itemType: {
-        type: 'object',
-        fields: {
-          longitude: {
-            type: 'number',
-            displayName: 'Longitude',
-          },
-          latitude: {
-            type: 'number',
-            displayName: 'Latitude',
-          },
-          color: {
-            type: 'string',
-            displayName: 'Color',
-            defaultValue: '#3b82f6',
-          },
-          popup: {
-            type: 'string',
-            displayName: 'Popup Text',
-          },
-        },
+//     initialPositions: {
+//       type: "array",
+//       displayName: "Initial Positions",
+//       description: "Set initial position, rotation, and FOV for objects",
+//       itemType: {
+//         type: "object",
+//         fields: {
+//           object: {
+//             type: "string",
+//             displayName: "Object Name",
+//             description: "Name of the object (e.g., 'camera')",
+//             defaultValue: "camera",
+//           },
+//           position: {
+//             type: "object",
+//             displayName: "Position",
+//             description: "Position {x, y, z}",
+//             fields: {
+//               x: { type: "number", defaultValue: 0 },
+//               y: { type: "number", defaultValue: 1 },
+//               z: { type: "number", defaultValue: 1 }
+//             }
+//           },
+//           rotation: {
+//             type: "object",
+//             displayName: "Rotation",
+//             description: "Rotation {x, y, z} in radians",
+//             fields: {
+//               x: { type: "number", defaultValue: 0 },
+//               y: { type: "number", defaultValue: 0 },
+//               z: { type: "number", defaultValue: 0 }
+//             }
+//           },
+//           fov: {
+//             type: "number",
+//             displayName: "FOV (camera only)",
+//             description: "Field of view for camera",
+//             defaultValue: 25,
+//           }
+//         }
+//       }
+//     },
+//     loadEffect: {
+//       type: "array",
+//       displayName: "Load Effects",
+//       description: "Animations triggered when scene loads (progress reaches 100%)",
+//       itemType: {
+//         type: "object",
+//         fields: {
+//           object: {
+//             type: "string",
+//             displayName: "Object Name",
+//             description: "Name of the object (e.g., 'camera')",
+//             defaultValue: "camera",
+//           },
+//           duration: {
+//             type: "number",
+//             displayName: "Duration (ms)",
+//             description: "Animation duration in milliseconds",
+//             defaultValue: 1000,
+//           },
+//           delay: {
+//             type: "number",
+//             displayName: "Delay (ms)",
+//             description: "Delay before animation starts",
+//             defaultValue: 0,
+//           },
+//           easingFunction: {
+//             type: "choice",
+//             options: [
+//               "linear",
+//               "easeInQuad",
+//               "easeOutQuad",
+//               "easeInOutQuad",
+//               "easeInCubic",
+//               "easeOutCubic",
+//               "easeInOutCubic",
+//               "easeInQuart",
+//               "easeOutQuart",
+//               "easeInOutQuart",
+//               "easeInQuint",
+//               "easeOutQuint",
+//               "easeInOutQuint",
+//               "easeInSine",
+//               "easeOutSine",
+//               "easeInOutSine",
+//               "easeInExpo",
+//               "easeOutExpo",
+//               "easeInOutExpo",
+//               "easeInCirc",
+//               "easeOutCirc",
+//               "easeInOutCirc",
+//               "easeInBack",
+//               "easeOutBack",
+//               "easeInOutBack",
+//               "easeInElastic",
+//               "easeOutElastic",
+//               "easeInOutElastic",
+//               "easeInBounce",
+//               "easeOutBounce",
+//               "easeInOutBounce",
+//             ],
+//             displayName: "Easing Function",
+//             defaultValue: "linear",
+//           },
+//           position: {
+//             type: "object",
+//             displayName: "Target Position",
+//             description: "End position {x, y, z}",
+//             fields: {
+//               x: { type: "number", defaultValue: 0 },
+//               y: { type: "number", defaultValue: 1 },
+//               z: { type: "number", defaultValue: 1 }
+//             }
+//           },
+//           rotation: {
+//             type: "object",
+//             displayName: "Target Rotation",
+//             description: "End rotation {x, y, z} in radians",
+//             fields: {
+//               x: { type: "number", defaultValue: 0 },
+//               y: { type: "number", defaultValue: 0 },
+//               z: { type: "number", defaultValue: 0 }
+//             }
+//           },
+//           fov: {
+//             type: "number",
+//             displayName: "Target FOV",
+//             description: "End field of view (camera only)",
+//             defaultValue: 25,
+//           }
+//         }
+//       }
+//     },
+//     clickEffects: {
+//       type: "array",
+//       displayName: "Click Effects",
+//       description: "Animations triggered by clicking elements with specific IDs",
+//       itemType: {
+//         type: "object",
+//         fields: {
+//           object: {
+//             type: "string",
+//             displayName: "Object Name",
+//             description: "Name of the object (e.g., 'camera')",
+//             defaultValue: "camera",
+//           },
+//           triggerId: {
+//             type: "string",
+//             displayName: "Trigger Element ID",
+//             description: "ID of the element that triggers this effect when clicked",
+//             defaultValue: "",
+//           },
+//           duration: {
+//             type: "number",
+//             displayName: "Duration (ms)",
+//             description: "Animation duration in milliseconds",
+//             defaultValue: 1000,
+//           },
+//           delay: {
+//             type: "number",
+//             displayName: "Delay (ms)",
+//             description: "Delay before animation starts",
+//             defaultValue: 0,
+//           },
+//           easingFunction: {
+//             type: "choice",
+//             options: [
+//               "linear",
+//               "easeInQuad",
+//               "easeOutQuad",
+//               "easeInOutQuad",
+//               "easeInCubic",
+//               "easeOutCubic",
+//               "easeInOutCubic",
+//               "easeInQuart",
+//               "easeOutQuart",
+//               "easeInOutQuart",
+//               "easeInQuint",
+//               "easeOutQuint",
+//               "easeInOutQuint",
+//               "easeInSine",
+//               "easeOutSine",
+//               "easeInOutSine",
+//               "easeInExpo",
+//               "easeOutExpo",
+//               "easeInOutExpo",
+//               "easeInCirc",
+//               "easeOutCirc",
+//               "easeInOutCirc",
+//               "easeInBack",
+//               "easeOutBack",
+//               "easeInOutBack",
+//               "easeInElastic",
+//               "easeOutElastic",
+//               "easeInOutElastic",
+//               "easeInBounce",
+//               "easeOutBounce",
+//               "easeInOutBounce",
+//             ],
+//             displayName: "Easing Function",
+//             defaultValue: "linear",
+//           },
+//           position: {
+//             type: "object",
+//             displayName: "Target Position",
+//             description: "End position {x, y, z}",
+//             fields: {
+//               x: { type: "number", defaultValue: 0 },
+//               y: { type: "number", defaultValue: 1 },
+//               z: { type: "number", defaultValue: 1 }
+//             }
+//           },
+//           rotation: {
+//             type: "object",
+//             displayName: "Target Rotation",
+//             description: "End rotation {x, y, z} in radians",
+//             fields: {
+//               x: { type: "number", defaultValue: 0 },
+//               y: { type: "number", defaultValue: 0 },
+//               z: { type: "number", defaultValue: 0 }
+//             }
+//           },
+//           fov: {
+//             type: "number",
+//             displayName: "Target FOV",
+//             description: "End field of view (camera only)",
+//             defaultValue: 25,
+//           }
+//         }
+//       }
+//     },
+//     className: {
+//       type: "class",
+//       displayName: "CSS Class",
+//     },
+//   },
+//   styleProps: [
+//     "width",
+//     "height",
+//     "minWidth",
+//     "maxWidth", 
+//     "minHeight",
+//     "maxHeight",
+//     "position",
+//     "top",
+//     "left",
+//     "right",
+//     "bottom",
+//     "zIndex",
+//     "display",
+//     "flexDirection",
+//     "flexWrap",
+//     "justifyContent",
+//     "alignItems",
+//     "gap",
+//     "padding",
+//     "margin",
+//     "background",
+//     "backgroundColor",
+//     "border",
+//     "borderRadius",
+//     "overflow",
+//   ],
+//   importPath: "../components/three/canvas/ThreeCanvas",
+//   isDefaultExport: true,
+// });
+
+PLASMIC.registerComponent(GradualBlur, {
+    name: 'GradualBlur',
+    props: {
+      preset: {
+        type: 'choice',
+        options: [
+          '', 'top', 'bottom', 'left', 'right', 'subtle', 'intense', 'smooth', 'sharp',
+          'header', 'footer', 'sidebar', 'page-header', 'page-footer'
+        ],
+        defaultValue: ''
       },
-    },
-    className: {
-      type: 'string',
-      displayName: 'CSS Class',
-      description: 'Additional CSS class name',
-      defaultValue: '',
-    },
-  },
-  importPath: "./components/maps/map",
-  isDefaultExport: true,
-})
-
-const GuitarLoader = dynamic(() => import('./components/loaders/GuitarLoader'), { ssr: false });
-PLASMIC.registerComponent(GuitarLoader, {
-  name: "Guitar Loader",
-  displayName: "Guitar Loader",
-  description: "A Guitar loader to show loading progress",
-  props: {
-    children: {
-      type: "slot",
-      defaultValue: {
-        type: "text",
-        value: "Content to load",
+      position: {
+        type: 'choice',
+        options: ['top', 'bottom', 'left', 'right'],
+        defaultValue: 'bottom'
       },
+      strength: {
+        type: 'number',
+        defaultValue: 2
+      },
+      height: {
+        type: 'string',
+        defaultValue: '6rem'
+      },
+      width: {
+        type: 'string'
+      },
+      divCount: {
+        type: 'number',
+        defaultValue: 5
+      },
+      exponential: {
+        type: 'boolean',
+        defaultValue: false
+      },
+      zIndex: {
+        type: 'number',
+        defaultValue: 1000
+      },
+      animated: {
+        type: 'choice',
+        options: [false, true, 'scroll'],
+        defaultValue: false
+      },
+      duration: {
+        type: 'string',
+        defaultValue: '0.3s'
+      },
+      easing: {
+        type: 'choice',
+        options: ['linear', 'ease-in', 'ease-out', 'ease-in-out'],
+        defaultValue: 'ease-out'
+      },
+      opacity: {
+        type: 'number',
+        defaultValue: 1
+      },
+      curve: {
+        type: 'choice',
+        options: ['linear', 'bezier', 'ease-in', 'ease-out', 'ease-in-out'],
+        defaultValue: 'linear'
+      },
+      responsive: {
+        type: 'boolean',
+        defaultValue: false
+      },
+      target: {
+        type: 'choice',
+        options: ['parent', 'page'],
+        defaultValue: 'parent'
+      },
+      className: {
+        type: 'string'
+      },
+      style: {
+        type: 'object'
+      },
+      hoverIntensity: {
+        type: 'number'
+      },
+      onAnimationComplete: {
+        type: 'event'
+      }
     },
-    showLoader: {
-      type: "boolean",
-      displayName: "Display Loader?",
-      defaultValue: true,
-    }
-  },
-  styleProps: [
-    "width",
-    "height",
-    "minWidth",
-    "maxWidth", 
-    "minHeight",
-    "maxHeight",
-    "position",
-    "top",
-    "left",
-    "right",
-    "bottom",
-    "zIndex",
-    "display",
-    "flexDirection",
-    "flexWrap",
-    "justifyContent",
-    "alignItems",
-    "gap",
-    "padding",
-    "margin",
-    "background",
-    "backgroundColor",
-    "border",
-    "borderRadius",
-    "overflow",
-  ],
-  importPath: "./components/loaders/GuitarLoader",
+    defaultStyles: {
+      display: 'block'
+    },
+    states: ['isHovered'],
+  importPath: "./components/effects/visual/gradualBlur';",
   isDefaultExport: true,
-})
-
-PLASMIC.registerComponent(StickerPeel, {
-  name: "StickerPeel",
-  displayName: "Sticker Peel",
-  description: "Sticker peel effect for images",
-
-  props: {
-    imageSrc: {
-      type: "imageUrl",
-      displayName: "Image",
-      description: "Image used as the sticker"
-    },
-    rotate: {
-      type: "number",
-      displayName: "Rotate",
-      defaultValue: 30
-    },
-    peelBackHoverPct: {
-      type: "number",
-      displayName: "Peel Back (Hover) %",
-      defaultValue: 30
-    },
-    peelBackActivePct: {
-      type: "number",
-      displayName: "Peel Back (Active) %",
-      defaultValue: 40
-    },
-    peelEasing: {
-      type: "string",
-      displayName: "Peel Easing",
-      defaultValue: "power3.out",
-      enumValues: ["power1.out", "power2.out", "power3.out", "power4.out", "expo.out"]
-    },
-    peelHoverEasing: {
-      type: "string",
-      displayName: "Peel Hover Easing",
-      defaultValue: "power2.out",
-      enumValues: ["power1.out", "power2.out", "power3.out", "power4.out", "expo.out"]
-    },
-    width: {
-      type: "number",
-      displayName: "Width (px)",
-      defaultValue: 200
-    },
-    height: {
-      type: "number",
-      displayName: "Height (px)",
-      defaultValue: 200
-    },
-    shadowIntensity: {
-      type: "number",
-      displayName: "Shadow Intensity",
-      defaultValue: 0.6
-    },
-    lightingIntensity: {
-      type: "number",
-      displayName: "Lighting Intensity",
-      defaultValue: 0.1
-    },
-    peelDirection: {
-      type: "number",
-      displayName: "Peel Direction (deg)",
-      defaultValue: 0
-    },
-    className: {
-      type: "class",
-      displayName: "CSS Class",
-    },
-  },
-  importPath: "./components/effects/StickerPeel",
-  isDefaultExport: false,
 });
 
 
-PLASMIC.registerComponent(ThreeCanvas, {
-  name: "TheeCanvas",
-  displayName: "Three.js Scroll Effect",
-  description: "Animate camera and 3D objects with initial positions, load effects, and click-triggered effects",
-  props: {
 
-    initialPositions: {
-      type: "array",
-      displayName: "Initial Positions",
-      description: "Set initial position, rotation, and FOV for objects",
-      itemType: {
-        type: "object",
-        fields: {
-          object: {
-            type: "string",
-            displayName: "Object Name",
-            description: "Name of the object (e.g., 'camera')",
-            defaultValue: "camera",
-          },
-          position: {
-            type: "object",
-            displayName: "Position",
-            description: "Position {x, y, z}",
-            fields: {
-              x: { type: "number", defaultValue: 0 },
-              y: { type: "number", defaultValue: 1 },
-              z: { type: "number", defaultValue: 1 }
-            }
-          },
-          rotation: {
-            type: "object",
-            displayName: "Rotation",
-            description: "Rotation {x, y, z} in radians",
-            fields: {
-              x: { type: "number", defaultValue: 0 },
-              y: { type: "number", defaultValue: 0 },
-              z: { type: "number", defaultValue: 0 }
-            }
-          },
-          fov: {
-            type: "number",
-            displayName: "FOV (camera only)",
-            description: "Field of view for camera",
-            defaultValue: 25,
-          }
-        }
-      }
-    },
-    loadEffect: {
-      type: "array",
-      displayName: "Load Effects",
-      description: "Animations triggered when scene loads (progress reaches 100%)",
-      itemType: {
-        type: "object",
-        fields: {
-          object: {
-            type: "string",
-            displayName: "Object Name",
-            description: "Name of the object (e.g., 'camera')",
-            defaultValue: "camera",
-          },
-          duration: {
-            type: "number",
-            displayName: "Duration (ms)",
-            description: "Animation duration in milliseconds",
-            defaultValue: 1000,
-          },
-          delay: {
-            type: "number",
-            displayName: "Delay (ms)",
-            description: "Delay before animation starts",
-            defaultValue: 0,
-          },
-          easingFunction: {
-            type: "choice",
-            options: [
-              "linear",
-              "easeInQuad",
-              "easeOutQuad",
-              "easeInOutQuad",
-              "easeInCubic",
-              "easeOutCubic",
-              "easeInOutCubic",
-              "easeInQuart",
-              "easeOutQuart",
-              "easeInOutQuart",
-              "easeInQuint",
-              "easeOutQuint",
-              "easeInOutQuint",
-              "easeInSine",
-              "easeOutSine",
-              "easeInOutSine",
-              "easeInExpo",
-              "easeOutExpo",
-              "easeInOutExpo",
-              "easeInCirc",
-              "easeOutCirc",
-              "easeInOutCirc",
-              "easeInBack",
-              "easeOutBack",
-              "easeInOutBack",
-              "easeInElastic",
-              "easeOutElastic",
-              "easeInOutElastic",
-              "easeInBounce",
-              "easeOutBounce",
-              "easeInOutBounce",
-            ],
-            displayName: "Easing Function",
-            defaultValue: "linear",
-          },
-          position: {
-            type: "object",
-            displayName: "Target Position",
-            description: "End position {x, y, z}",
-            fields: {
-              x: { type: "number", defaultValue: 0 },
-              y: { type: "number", defaultValue: 1 },
-              z: { type: "number", defaultValue: 1 }
-            }
-          },
-          rotation: {
-            type: "object",
-            displayName: "Target Rotation",
-            description: "End rotation {x, y, z} in radians",
-            fields: {
-              x: { type: "number", defaultValue: 0 },
-              y: { type: "number", defaultValue: 0 },
-              z: { type: "number", defaultValue: 0 }
-            }
-          },
-          fov: {
-            type: "number",
-            displayName: "Target FOV",
-            description: "End field of view (camera only)",
-            defaultValue: 25,
-          }
-        }
-      }
-    },
-    clickEffects: {
-      type: "array",
-      displayName: "Click Effects",
-      description: "Animations triggered by clicking elements with specific IDs",
-      itemType: {
-        type: "object",
-        fields: {
-          object: {
-            type: "string",
-            displayName: "Object Name",
-            description: "Name of the object (e.g., 'camera')",
-            defaultValue: "camera",
-          },
-          triggerId: {
-            type: "string",
-            displayName: "Trigger Element ID",
-            description: "ID of the element that triggers this effect when clicked",
-            defaultValue: "",
-          },
-          duration: {
-            type: "number",
-            displayName: "Duration (ms)",
-            description: "Animation duration in milliseconds",
-            defaultValue: 1000,
-          },
-          delay: {
-            type: "number",
-            displayName: "Delay (ms)",
-            description: "Delay before animation starts",
-            defaultValue: 0,
-          },
-          easingFunction: {
-            type: "choice",
-            options: [
-              "linear",
-              "easeInQuad",
-              "easeOutQuad",
-              "easeInOutQuad",
-              "easeInCubic",
-              "easeOutCubic",
-              "easeInOutCubic",
-              "easeInQuart",
-              "easeOutQuart",
-              "easeInOutQuart",
-              "easeInQuint",
-              "easeOutQuint",
-              "easeInOutQuint",
-              "easeInSine",
-              "easeOutSine",
-              "easeInOutSine",
-              "easeInExpo",
-              "easeOutExpo",
-              "easeInOutExpo",
-              "easeInCirc",
-              "easeOutCirc",
-              "easeInOutCirc",
-              "easeInBack",
-              "easeOutBack",
-              "easeInOutBack",
-              "easeInElastic",
-              "easeOutElastic",
-              "easeInOutElastic",
-              "easeInBounce",
-              "easeOutBounce",
-              "easeInOutBounce",
-            ],
-            displayName: "Easing Function",
-            defaultValue: "linear",
-          },
-          position: {
-            type: "object",
-            displayName: "Target Position",
-            description: "End position {x, y, z}",
-            fields: {
-              x: { type: "number", defaultValue: 0 },
-              y: { type: "number", defaultValue: 1 },
-              z: { type: "number", defaultValue: 1 }
-            }
-          },
-          rotation: {
-            type: "object",
-            displayName: "Target Rotation",
-            description: "End rotation {x, y, z} in radians",
-            fields: {
-              x: { type: "number", defaultValue: 0 },
-              y: { type: "number", defaultValue: 0 },
-              z: { type: "number", defaultValue: 0 }
-            }
-          },
-          fov: {
-            type: "number",
-            displayName: "Target FOV",
-            description: "End field of view (camera only)",
-            defaultValue: 25,
-          }
-        }
-      }
-    },
-    className: {
-      type: "class",
-      displayName: "CSS Class",
-    },
-  },
-  styleProps: [
-    "width",
-    "height",
-    "minWidth",
-    "maxWidth", 
-    "minHeight",
-    "maxHeight",
-    "position",
-    "top",
-    "left",
-    "right",
-    "bottom",
-    "zIndex",
-    "display",
-    "flexDirection",
-    "flexWrap",
-    "justifyContent",
-    "alignItems",
-    "gap",
-    "padding",
-    "margin",
-    "background",
-    "backgroundColor",
-    "border",
-    "borderRadius",
-    "overflow",
-  ],
-  importPath: "../components/three/canvas/ThreeCanvas",
-  isDefaultExport: true,
-});
 
-// Plasmic Registration
 // Plasmic Registration
 PLASMIC.registerComponent(CustomScroll, {
   name: "CustomScroll",
@@ -1259,7 +1351,7 @@ PLASMIC.registerComponent(CustomScroll, {
       description: "Stacking order",
     },
   },
-  importPath: "./components/effects/CustomScroll",
+  importPath: "./components/effects/animation/CustomScroll",
   isDefaultExport: false,
 });
 

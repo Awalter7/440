@@ -1,12 +1,14 @@
 //CustomScroll
 
-import { useState, useMemo, useEffect, useRef} from "react";
+import { useState, useMemo, useRef} from "react";
 import { useProgress } from "@react-three/drei";
-import EffectManager from "../classes/effectManager";
-import LoadEffect from "../classes/loadEffect";
-import ClickEffect from "../classes/clickEffect";
-import ScrollEffect from "../classes/scrollEffect";
-import GravityEffect from "../classes/gravityEffect"
+import {
+  ClickEffect,
+  ScrollEffect,
+  LoadEffect,
+} from "./effects"
+
+import EffectManager from "./managers/effectManager";
 
 // Generate unique ID for component instances
 let instanceCounter = 0;
@@ -35,7 +37,9 @@ export function CustomScroll({
   loadEffect = null,
   zIndex = 1000,
 }) {
-    const { progress } = useProgress();
+    const { progress, total } = useProgress();
+
+    console.log(progress === 100 || total === 0)
 
     const [uID] = useState(() => generateUniqueId());
 
@@ -107,10 +111,10 @@ export function CustomScroll({
                     uID={uID}
                     customTriggers={{
                         start: {
-                            'load-0': progress === 100,
+                            'load-0': progress === 100 || total === 0,
                         }
                     }}
-                >
+                >   
                     <div className={className} data-attribute-unique-id={uID} style={{position: positionType, zIndex: zIndex, transition: "none", transformStyle: "preserve-3d"}}>
                         {children}
                     </div>
