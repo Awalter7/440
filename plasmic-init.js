@@ -579,8 +579,8 @@ export const PLASMIC = initPlasmicLoader({
 
 PLASMIC.registerComponent(GradualBlur, {
   name: 'GradualBlur',
-  importPath: './components/effects/visual/gradualBlur',
-  isDefaultExport: true,
+  displayName: "Gradual Blur",
+  description: "Gradual Blur Effect",
   props: {
     preset: {
       type: 'choice',
@@ -613,10 +613,8 @@ PLASMIC.registerComponent(GradualBlur, {
     style: { type: 'object' },
     hoverIntensity: { type: 'number' },
   },
-  defaultStyles: {
-    display: 'block',
-  },
-  states: ['isHovered'],
+  importPath: './components/effects/visual/gradualBlur',
+  isDefaultExport: true,
 });
 
 

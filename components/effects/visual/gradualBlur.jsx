@@ -1,8 +1,6 @@
 import React, { useEffect, useRef, useState, useMemo } from 'react';
 import * as math from 'mathjs';
 
-import './gradualBlur.module.css';
-
 const DEFAULT_CONFIG = {
   position: 'bottom',
   strength: 2,
@@ -205,6 +203,28 @@ function GradualBlur(props) {
     }
   }, [isVisible, animated, onAnimationComplete, duration]);
 
+  // Inject styles on mount
+  useEffect(() => {
+    const styleId = 'gradual-blur-styles';
+    if (document.getElementById(styleId)) return;
+
+    const styleElement = document.createElement('style');
+    styleElement.id = styleId;
+    styleElement.textContent = `
+      .gradual-blur { pointer-events: none; transition: opacity 0.3s ease-out; }
+      .gradual-blur-parent { overflow: hidden; }
+      .gradual-blur-inner { pointer-events: none; }
+    `;
+
+    document.head.appendChild(styleElement);
+
+    return () => {
+      // Optionally clean up on unmount
+      const el = document.getElementById(styleId);
+      if (el) el.remove();
+    };
+  }, []);
+
   return (
     <div
       ref={containerRef}
@@ -227,28 +247,9 @@ function GradualBlur(props) {
   );
 }
 
-const GradualBlurMemo = React.memo(GradualBlur);
-GradualBlurMemo.displayName = 'GradualBlur';
-GradualBlurMemo.PRESETS = PRESETS;
-GradualBlurMemo.CURVE_FUNCTIONS = CURVE_FUNCTIONS;
-export default GradualBlurMemo;
+// Add static properties to the component
+GradualBlur.PRESETS = PRESETS;
+GradualBlur.CURVE_FUNCTIONS = CURVE_FUNCTIONS;
 
-const injectStyles = () => {
-  if (typeof document === 'undefined') return;
-
-  const styleId = 'gradual-blur-styles';
-  if (document.getElementById(styleId)) return;
-
-  const styleElement = document.createElement('style');
-  styleElement.id = styleId;
-  styleElement.textContent = `
-  .gradual-blur { pointer-events: none; transition: opacity 0.3s ease-out; }
-  .gradual-blur-parent { overflow: hidden; }
-  .gradual-blur-inner { pointer-events: none; }`;
-
-  document.head.appendChild(styleElement);
-};
-
-if (typeof document !== 'undefined') {
-  injectStyles();
-}
+// Export as default
+export default GradualBlur;
