@@ -310,12 +310,7 @@ PLASMIC.registerComponent(ThreeCanvas, {
   displayName: "Three.js Scroll Effect",
   description: "Animate camera and 3D objects with initial positions, load effects, and click-triggered effects",
   props: {
-    gravity: {
-      type: "boolean",
-      displayName: "Has Gravity",
-      description: "Treat this component with gravity",
-      defaultValue: false,
-    },
+
     initialPositions: {
       type: "array",
       displayName: "Initial Positions",
@@ -597,6 +592,12 @@ PLASMIC.registerComponent(CustomScroll, {
         type: "text",
         value: "Scroll to animate",
       },
+    },
+    gravity: {
+      type: "boolean",
+      displayName: "Has Gravity",
+      description: "Treat this component with gravity",
+      defaultValue: false,
     },
     // isButton: {
     //   type: "boolean",
