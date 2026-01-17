@@ -608,10 +608,10 @@ PLASMIC.registerComponent(CustomScroll, {
           description: "Treat this component with colision",
           defaultValue: false,
         },
-        container: {
+        isContainer: {
           type: "string",
-          displayName: "Bounding Container ID",
-          description: "Container that you want the gravity element to be contained within",
+          displayName: "Bounding Container",
+          description: "Use this container to give other animation elements physics",
           defaultValue: null,
         }
       }

@@ -88,7 +88,7 @@ export function CustomScroll({
                 stableLoadEffect, 
                 ...stableClickEffects, 
                 ...stableScrollEffect, 
-                ...(physics.hasGravity ? [new GravityEffect({ id: 'gravity-1' })] : []),
+                // ...(physics.hasGravity ? [new GravityEffect({ id: 'gravity-1', objectId: uID, containerId: physics.container })] : []),
             ].filter(effect => effect != null),
         [stableLoadEffect, stableClickEffects]
     );

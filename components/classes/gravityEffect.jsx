@@ -4,6 +4,9 @@ export default class ScrollEffect extends Effect {
   constructor(props = {}) {
     super(props);
 
+    this.objectId = props.objectId ?? null;
+    this.containerId = props.containerId ?? null;
+
     // Position
     this.x = props.startX || 0;
     this.y = props.startY || 0;
@@ -29,14 +32,17 @@ export default class ScrollEffect extends Effect {
     // const el = this._el; // assuming Effect stores ref in this._el
     // if (!el) return;
 
-    // this.elementRect = el.getBoundingClientRect();
-    // if (el.parentElement) {
-    //   this.containerRect = el.parentElement.getBoundingClientRect();
-    // }
+    const el = document.querySelector(`[data-attribute-unique-id="${this.objectId}"]`);
+    console.log(this.objectId)
+    this.elementRect = el.getBoundingClientRect();
+
+    if (el.parentElement) {
+      this.containerRect = el.parentElement.getBoundingClientRect();
+    }
 
     // console.log
 
-    // this.raf = requestAnimationFrame(this.update);
+    this.raf = requestAnimationFrame(this.update);
   }
 
   componentWillUnmount() {
