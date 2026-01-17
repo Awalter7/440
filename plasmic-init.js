@@ -578,95 +578,46 @@ export const PLASMIC = initPlasmicLoader({
 // });
 
 PLASMIC.registerComponent(GradualBlur, {
-    name: 'GradualBlur',
-    props: {
-      preset: {
-        type: 'choice',
-        options: [
-          '', 'top', 'bottom', 'left', 'right', 'subtle', 'intense', 'smooth', 'sharp',
-          'header', 'footer', 'sidebar', 'page-header', 'page-footer'
-        ],
-        defaultValue: ''
-      },
-      position: {
-        type: 'choice',
-        options: ['top', 'bottom', 'left', 'right'],
-        defaultValue: 'bottom'
-      },
-      strength: {
-        type: 'number',
-        defaultValue: 2
-      },
-      height: {
-        type: 'string',
-        defaultValue: '6rem'
-      },
-      width: {
-        type: 'string'
-      },
-      divCount: {
-        type: 'number',
-        defaultValue: 5
-      },
-      exponential: {
-        type: 'boolean',
-        defaultValue: false
-      },
-      zIndex: {
-        type: 'number',
-        defaultValue: 1000
-      },
-      animated: {
-        type: 'choice',
-        options: [false, true, 'scroll'],
-        defaultValue: false
-      },
-      duration: {
-        type: 'string',
-        defaultValue: '0.3s'
-      },
-      easing: {
-        type: 'choice',
-        options: ['linear', 'ease-in', 'ease-out', 'ease-in-out'],
-        defaultValue: 'ease-out'
-      },
-      opacity: {
-        type: 'number',
-        defaultValue: 1
-      },
-      curve: {
-        type: 'choice',
-        options: ['linear', 'bezier', 'ease-in', 'ease-out', 'ease-in-out'],
-        defaultValue: 'linear'
-      },
-      responsive: {
-        type: 'boolean',
-        defaultValue: false
-      },
-      target: {
-        type: 'choice',
-        options: ['parent', 'page'],
-        defaultValue: 'parent'
-      },
-      className: {
-        type: 'string'
-      },
-      style: {
-        type: 'object'
-      },
-      hoverIntensity: {
-        type: 'number'
-      },
-    },
-    defaultStyles: {
-      display: 'block'
-    },
-    states: ['isHovered'],
-  importPath: "./components/effects/visual/gradualBlur';",
+  name: 'GradualBlur',
+  importPath: './components/effects/visual/gradualBlur',
   isDefaultExport: true,
+  props: {
+    preset: {
+      type: 'choice',
+      options: [
+        '', 'top', 'bottom', 'left', 'right',
+        'subtle', 'intense', 'smooth', 'sharp',
+        'header', 'footer', 'sidebar', 'page-header', 'page-footer'
+      ],
+      defaultValue: ''
+    },
+    position: {
+      type: 'choice',
+      options: ['top', 'bottom', 'left', 'right'],
+      defaultValue: 'bottom'
+    },
+    strength: { type: 'number', defaultValue: 2 },
+    height: { type: 'string', defaultValue: '6rem' },
+    width: { type: 'string' },
+    divCount: { type: 'number', defaultValue: 5 },
+    exponential: { type: 'boolean', defaultValue: false },
+    zIndex: { type: 'number', defaultValue: 1000 },
+    animated: { type: 'choice', options: [false, true, 'scroll'], defaultValue: false },
+    duration: { type: 'string', defaultValue: '0.3s' },
+    easing: { type: 'choice', options: ['linear', 'ease-in', 'ease-out', 'ease-in-out'], defaultValue: 'ease-out' },
+    opacity: { type: 'number', defaultValue: 1 },
+    curve: { type: 'choice', options: ['linear', 'bezier', 'ease-in', 'ease-out', 'ease-in-out'], defaultValue: 'linear' },
+    responsive: { type: 'boolean', defaultValue: false },
+    target: { type: 'choice', options: ['parent', 'page'], defaultValue: 'parent' },
+    className: { type: 'string' },
+    style: { type: 'object' },
+    hoverIntensity: { type: 'number' },
+  },
+  defaultStyles: {
+    display: 'block',
+  },
+  states: ['isHovered'],
 });
-
-
 
 
 // Plasmic Registration
@@ -705,36 +656,6 @@ PLASMIC.registerComponent(CustomScroll, {
         }
       }
     },
-    // isButton: {
-    //   type: "boolean",
-    //   displayName: "Is Button",
-    //   description: "Treat this component as a button",
-    //   defaultValue: false,
-    // },
-    // autoTriggerPoints: {
-    //   type: "object",
-    //   fields: {
-    //     start: {
-    //       type: "number",
-    //       displayName: "Trigger Start (%)",
-    //       description: "Scroll position where this button should auto trigger ~ Start",
-    //       defaultValue: 0,
-    //     },
-    //     end: {
-    //       type: "number",
-    //       displayName: "Trigger End (%)",
-    //       description: "Scroll position where this button should auto trigger ~ End",
-    //       defaultValue: 0,
-    //     },
-    //     buttonId: {
-    //       type: "string",
-    //       displayName: "Button Id",
-    //       description: "The name of the button you want auto triggered",
-    //       defaultValue: "example-id"
-    //     }
-    //   },
-    //   hidden: (props) => props.isButton !== true,
-    // },
     positionType: {
       type: "choice",
       options: ["fixed", "absolute", "relative"],
