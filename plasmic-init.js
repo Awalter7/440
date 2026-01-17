@@ -609,10 +609,10 @@ PLASMIC.registerComponent(CustomScroll, {
           defaultValue: false,
         },
         isContainer: {
-          type: "string",
+          type: "boolean",
           displayName: "Bounding Container",
           description: "Use this container to give other animation elements physics",
-          defaultValue: null,
+          defaultValue: false,
         }
       }
     },
