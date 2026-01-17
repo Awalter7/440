@@ -657,9 +657,6 @@ PLASMIC.registerComponent(GradualBlur, {
       hoverIntensity: {
         type: 'number'
       },
-      onAnimationComplete: {
-        type: 'event'
-      }
     },
     defaultStyles: {
       display: 'block'
