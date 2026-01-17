@@ -20,7 +20,7 @@ export function CustomScroll({
   children,
   className,
   positionType = "fixed",
-  gravity = {},
+  physics = {},
   isButton = false,
   autoTriggerPoints,
   // Initial Styles
@@ -88,7 +88,7 @@ export function CustomScroll({
                 stableLoadEffect, 
                 ...stableClickEffects, 
                 ...stableScrollEffect, 
-                ...(gravity.gravity ? [new GravityEffect({ id: 'gravity-1' })] : []),
+                ...(physics.hasGravity ? [new GravityEffect({ id: 'gravity-1' })] : []),
             ].filter(effect => effect != null),
         [stableLoadEffect, stableClickEffects]
     );

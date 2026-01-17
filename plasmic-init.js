@@ -593,16 +593,16 @@ PLASMIC.registerComponent(CustomScroll, {
         value: "Scroll to animate",
       },
     },
-    gravity: {
+    physics: {
       type: "object",
       fields: {
-        gravity: {
+        hasGravity: {
           type: "boolean",
           displayName: "Gravity",
           description: "Treat this component with gravity",
           defaultValue: false,
         },
-        collision: {
+        hasCollision: {
           type: "boolean",
           displayName: "Colision",
           description: "Treat this component with colision",
