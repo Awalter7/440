@@ -594,10 +594,27 @@ PLASMIC.registerComponent(CustomScroll, {
       },
     },
     gravity: {
-      type: "boolean",
-      displayName: "Has Gravity",
-      description: "Treat this component with gravity",
-      defaultValue: false,
+      type: "object",
+      fields: {
+        gravity: {
+          type: "boolean",
+          displayName: "Gravity",
+          description: "Treat this component with gravity",
+          defaultValue: false,
+        },
+        collision: {
+          type: "boolean",
+          displayName: "Colision",
+          description: "Treat this component with colision",
+          defaultValue: false,
+        },
+        container: {
+          type: "string",
+          displayName: "Bounding Container ID",
+          description: "Container that you want the gravity element to be contained within",
+          defaultValue: null,
+        }
+      }
     },
     // isButton: {
     //   type: "boolean",

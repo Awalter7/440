@@ -6,6 +6,7 @@ import EffectManager from "../classes/effectManager";
 import LoadEffect from "../classes/loadEffect";
 import ClickEffect from "../classes/clickEffect";
 import ScrollEffect from "../classes/scrollEffect";
+import GravityEffect from "../classes/gravityEffect"
 
 // Generate unique ID for component instances
 let instanceCounter = 0;
@@ -19,6 +20,7 @@ export function CustomScroll({
   children,
   className,
   positionType = "fixed",
+  gravity = false,
   isButton = false,
   autoTriggerPoints,
   // Initial Styles
@@ -82,7 +84,12 @@ export function CustomScroll({
     );
 
     const effects = useMemo(
-        () => [stableLoadEffect, ...stableClickEffects, ...stableScrollEffect].filter(effect => effect != null),
+        () => [
+                stableLoadEffect, 
+                ...stableClickEffects, 
+                ...stableScrollEffect, 
+                ...(gravity.gravity ? [new GravityEffect({ id: 'gravity-1' })] : []),
+            ].filter(effect => effect != null),
         [stableLoadEffect, stableClickEffects]
     );
 

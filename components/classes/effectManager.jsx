@@ -41,9 +41,11 @@ export default class EffectManager extends Component{
 
         this._effects.forEach(effect => {
             if(effect !== null){
+                console.log(effect)
                 effect.onProgressChange = this._onProgressChange.bind(this);
                 effect.stopOthers = this._stopOthers.bind(this)
                 effect.uID = props.uID ?? "example-id";
+                effect.setStyle = this._setStyle.bind(this);
             }
         });
 
@@ -76,6 +78,14 @@ export default class EffectManager extends Component{
 
     set styles(value){
         this._styles = value;
+    }
+
+    _setStyle(key, value) {
+        console.log("here")
+        this.setState({styles: {
+            ...this._styles,
+            [key]: value
+        }})
     }
 
     componentDidUpdate(prevProps) {

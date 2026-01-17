@@ -27,6 +27,7 @@ export default class Effect extends Component{
 
         this._onProgressChange = () => {};
         this._stopOthers = () => {};
+        this._setStyle = () => {};
 
         this._active = false;
         this._progress = 0;
@@ -140,6 +141,18 @@ export default class Effect extends Component{
             this._stopOthers = callback;
         } else {
             console.warn("onProgressChange must be a function");
+        }
+    }
+
+    get setStyle(){
+        return this._setStyle();
+    }
+
+    set setStyle(callback){
+        if(typeof callback === "function"){
+            this._setStyle = callback;
+        }else{
+            console.warn("setStyle must be a function")
         }
     }
 
