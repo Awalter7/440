@@ -161,7 +161,7 @@ export const StickerPeel = ({
         </defs>
       </svg>
 
-      <div className={styles.stickerContainer} style={{width: width, height: height}} ref={containerRef}>
+      <div className={styles.stickerContainer} style={{width: width + 1-0, height: height + 100}} ref={containerRef}>
         <div className={styles.stickerMain}>
           <div className={styles.stickerLighting}>
             <img

@@ -5,6 +5,7 @@ export default class ClickEffect extends Effect{
         super(props)
 
         this._type = "click"
+        this.stopOnEnd = true
     }
 
     // type

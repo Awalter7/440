@@ -144,7 +144,6 @@ export default class Effect extends Component{
     }
 
     // --- Animation control ---
-
     start() {
         if (this._active) return;
 

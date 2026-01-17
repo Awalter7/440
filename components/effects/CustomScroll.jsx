@@ -5,6 +5,7 @@ import { useProgress } from "@react-three/drei";
 import EffectManager from "../classes/effectManager";
 import LoadEffect from "../classes/loadEffect";
 import ClickEffect from "../classes/clickEffect";
+import ScrollEffect from "../classes/scrollEffect";
 
 // Generate unique ID for component instances
 let instanceCounter = 0;
@@ -26,6 +27,8 @@ export function CustomScroll({
   clickEffects = [],
   // Hover effects
   hoverEffects = [],
+
+  breakpoints = [],
   // Load effects
   loadEffect = null,
   zIndex = 1000,
@@ -62,8 +65,24 @@ export function CustomScroll({
         [loadEffect]
     );
 
+    const stableScrollEffect = useMemo(
+        () => (breakpoints ? breakpoints.map((obj, idx) => (
+            
+            new ScrollEffect({
+                scrollStart: obj.scrollStart,
+                scrollEnd: obj.scrollEnd,
+                easingFunction: obj.easingFunction,
+                styles: obj.styles,
+                delay: null,
+                trigger: null,
+                id: `scroll-${idx}`
+            })
+        )) : null),
+        [breakpoints]
+    );
+
     const effects = useMemo(
-        () => [stableLoadEffect, ...stableClickEffects].filter(effect => effect != null),
+        () => [stableLoadEffect, ...stableClickEffects, ...stableScrollEffect].filter(effect => effect != null),
         [stableLoadEffect, stableClickEffects]
     );
 

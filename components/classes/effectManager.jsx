@@ -23,9 +23,9 @@ export default class EffectManager extends Component{
                 property = property.trim();
 
                 if (transformProps.includes(property)) {
-                transformValues.push(`${property}(${startValue})`);
+                    transformValues.push(`${property}(${startValue})`);
                 } else {
-                baseStyles[property] = startValue;
+                    baseStyles[property] = startValue;
                 }
             });
 
@@ -137,7 +137,6 @@ export default class EffectManager extends Component{
         }
     }
 
-
     _stopOthers(current){
         this._effects.map((effect) => {
             if(effect.trigger !== current.trigger && effect.active === true){
@@ -173,18 +172,16 @@ export default class EffectManager extends Component{
         effect.styles.forEach(({ property, endValue, startValue }) => {
             let currentStartValue = startValue;
 
-            console.log(endValue)
-            if(property === "width"){
-                console.log(currentStartValue)
-            }
+            // console.log(endValue)
+            // if(property === "width"){
+            //     console.log(currentStartValue)
+            // }
             
 
             // 🧠 For transform props, pull starting value from the parsed transform map
             if (transformProps.includes(property)) {
                 if (!currentStartValue) {
                     currentStartValue = existingTransforms[property] || 0;
-
-                
 
                     effect.setStartValue(property, currentStartValue);
                 }
@@ -216,7 +213,7 @@ export default class EffectManager extends Component{
                         }
                     }
 
-                    console.log(currentStartValue)
+                    // console.log(currentStartValue)
                     effect.setStartValue(property, currentStartValue);
                 }
             }
@@ -237,9 +234,9 @@ export default class EffectManager extends Component{
                 }
             }
 
-            if (progress === 1) {
+            if(effect.stopOnEnd === true && progress === 1){
                 effect.stop();
-                effect.setStartValue(property, undefined);
+                effect.setStartValue(property, undefined)
             }
         });
 
