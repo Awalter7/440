@@ -2,6 +2,8 @@
 import { initPlasmicLoader } from "@plasmicapp/loader-nextjs";
 import { CustomScroll } from "./components/effects/animation/CustomScroll";
 import GradualBlur from './components/effects/visual/gradualBlur';
+import { GravityWrapper } from "./components/effects/physics/gravity"
+import { Object } from "./components/effects/physics/object"
 
 // import { StickerPeel } from "./components/effects/StickerPeel";
 // import ThreeCanvas from "./components/three/canvas/ThreeCanvas"
@@ -17,6 +19,204 @@ export const PLASMIC = initPlasmicLoader({
     },
   ],
   preview: true,
+});
+
+
+PLASMIC.registerComponent(GravityWrapper, {
+  name: "GravityWrapper",
+  displayName: "Gravity Wrapper",
+  description: "A wrapper component for creating physics-based gravity animations with Matter.js",
+  props: {
+    children: {
+      type: "slot",
+      defaultValue: {
+        type: "text",
+        value: "Add objects here",
+      },
+    },
+    debug: {
+      type: "boolean",
+      defaultValue: false,
+      description: "Show physics bodies and vertices overlay for debugging",
+    },
+    gravity: {
+      type: "object",
+      defaultValue: { x: 0, y: 1 },
+      description: "Gravity direction vector (x, y). Default is downward: {x: 0, y: 1}",
+    },
+    resetOnResize: {
+      type: "boolean",
+      defaultValue: true,
+      description: "Reset physics world when window resizes",
+    },
+    grabCursor: {
+      type: "boolean",
+      defaultValue: true,
+      description: "Show grab/grabbing cursor when interacting with bodies",
+    },
+    addTopWall: {
+      type: "boolean",
+      defaultValue: true,
+      description: "Add invisible wall at top to prevent objects from escaping",
+    },
+    autoStart: {
+      type: "boolean",
+      defaultValue: true,
+      description: "Automatically start the physics simulation on mount",
+    },
+    className: {
+      type: "string",
+      description: "Additional CSS classes",
+    },
+  },
+  importPath: "./components/effects/physics/gravity",
+  isDefaultExport: false,
+});
+
+// Register the Object (MatterBody wrapper) component
+PLASMIC.registerComponent(Object, {
+  name: "PhysicsObject",
+  displayName: "Physics Object",
+  description: "A physics-enabled object that responds to gravity and collisions",
+  props: {
+    children: {
+      type: "slot",
+      defaultValue: {
+        type: "box",
+        styles: {
+          width: "80px",
+          height: "80px",
+          background: "#3b82f6",
+          borderRadius: "8px",
+        },
+      },
+    },
+    // Position props
+    x: {
+      type: "string",
+      defaultValue: "50%",
+      description: "X position (number or percentage string like '50%')",
+    },
+    y: {
+      type: "string",
+      defaultValue: "20%",
+      description: "Y position (number or percentage string like '20%')",
+    },
+    angle: {
+      type: "number",
+      defaultValue: 0,
+      description: "Initial rotation angle in degrees",
+    },
+    // Body type
+    bodyType: {
+      type: "choice",
+      options: ["rectangle", "circle", "svg"],
+      defaultValue: "rectangle",
+      description: "Physics body shape type",
+    },
+    // Interaction
+    isDraggable: {
+      type: "boolean",
+      defaultValue: true,
+      description: "Whether the body can be dragged with the mouse",
+    },
+    // Physics properties - Basic
+    friction: {
+      type: "number",
+      defaultValue: 0.1,
+      min: 0,
+      max: 1,
+      description: "Surface friction (0-1). Higher = more friction",
+    },
+    restitution: {
+      type: "number",
+      defaultValue: 0.1,
+      min: 0,
+      max: 1,
+      description: "Bounciness (0-1). Higher = more bouncy",
+    },
+    density: {
+      type: "number",
+      defaultValue: 0.001,
+      description: "Density/weight. Higher = heavier",
+    },
+    isStatic: {
+      type: "boolean",
+      defaultValue: false,
+      description: "If true, object won't move but can be collided with",
+    },
+    // Air resistance
+    frictionAir: {
+      type: "number",
+      defaultValue: 0.01,
+      min: 0,
+      max: 1,
+      description: "Air resistance (0-1). Higher = slower movement",
+    },
+    frictionStatic: {
+      type: "number",
+      defaultValue: 0.5,
+      min: 0,
+      max: 1,
+      description: "Static friction before object starts moving",
+    },
+    // Advanced physics
+    mass: {
+      type: "number",
+      description: "Mass of the body (auto-calculated if not set)",
+      advanced: true,
+    },
+    isSleeping: {
+      type: "boolean",
+      defaultValue: false,
+      description: "Whether body starts in sleep state",
+      advanced: true,
+    },
+    motion: {
+      type: "number",
+      defaultValue: 0,
+      description: "Amount of motion in the body",
+      advanced: true,
+    },
+    sleepThreshold: {
+      type: "number",
+      defaultValue: 60,
+      description: "Threshold for putting body to sleep",
+      advanced: true,
+    },
+    restitutionThreshold: {
+      type: "number",
+      defaultValue: 4,
+      description: "Velocity threshold for restitution",
+      advanced: true,
+    },
+    slop: {
+      type: "number",
+      defaultValue: 0.05,
+      description: "Allowed penetration amount for stability",
+      advanced: true,
+    },
+    timeScale: {
+      type: "number",
+      defaultValue: 1,
+      description: "Time scale for this body's simulation",
+      advanced: true,
+    },
+    // SVG specific
+    sampleLength: {
+      type: "number",
+      defaultValue: 15,
+      description: "Sampling distance for SVG path vertices (only for SVG bodyType)",
+      advanced: true,
+    },
+    // Styling
+    className: {
+      type: "string",
+      description: "Additional CSS classes",
+    },
+  },
+  importPath: "./components/effects/physics/object",
+  isDefaultExport: false,
 });
 
 // PLASMIC.registerComponent(MapTilerMap, {

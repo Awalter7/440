@@ -6,6 +6,7 @@ import {
   ClickEffect,
   ScrollEffect,
   LoadEffect,
+  HoverEffect,
 } from "./effects"
 
 import EffectManager from "./managers/effectManager";
@@ -39,8 +40,6 @@ export function CustomScroll({
 }) {
     const { progress, total } = useProgress();
 
-    console.log(progress === 100 || total === 0)
-
     const [uID] = useState(() => generateUniqueId());
 
 
@@ -56,6 +55,20 @@ export function CustomScroll({
             })
         )) : null),
         [clickEffects]
+    );
+
+    const stableHoverEffects = useMemo(
+        () => (hoverEffects ? hoverEffects.map((obj, idx) => (
+            new HoverEffect({
+                trigger: obj?.triggerId,
+                duration: obj.duration,
+                delay: obj.delay,
+                easingFunction: obj.easingFunction,
+                styles: obj.styles,
+                id: `hover-${idx}`
+            })
+        )) : null),
+        [hoverEffects]
     );
 
     const stableLoadEffect = useMemo(
@@ -87,11 +100,14 @@ export function CustomScroll({
         [breakpoints]
     );
 
+    console.log(stableHoverEffects)
+
     const effects = useMemo(
         () => [
                 stableLoadEffect, 
                 ...stableClickEffects, 
                 ...stableScrollEffect, 
+                ...stableHoverEffects,
                 // ...(physics.hasGravity ? [new GravityEffect({ id: 'gravity-1', objectId: uID, containerId: physics.container })] : []),
             ].filter(effect => effect != null),
         [stableLoadEffect, stableClickEffects]

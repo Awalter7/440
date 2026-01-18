@@ -31,6 +31,7 @@ export default class Effect extends Component{
 
         this._active = false;
         this._progress = 0;
+        this._useReverse = false;
 
         this._uID = props.uID ?? "example-id"
     }
@@ -162,8 +163,9 @@ export default class Effect extends Component{
 
         this._stopOthers(this);
         this._active = true;
-        this._progress = 0;
+        const startProgress = this._progress;
         this._startTime = null;
+        this._useReverse = false;
 
         const animate = (timestamp) => {
             if (!this._active) return; // Stop if animation stopped
@@ -176,17 +178,58 @@ export default class Effect extends Component{
                 return;
             }
 
-            const progress = Math.min(elapsed / this._duration, 1);
+            // Calculate progress from startProgress to 1
+            const progressDelta = elapsed / this._duration;
+            const progress = Math.min(startProgress + progressDelta, 1);
             this._progress = progress;
 
             if (this._onProgressChange) {
                 this._onProgressChange(progress, this);
             }
 
-
             if (progress < 1) {
                 this._animationFrame = requestAnimationFrame(animate);
-                // this._dispatchProgressEvent()
+            } else {
+                this._active = false;
+            }
+        };
+
+        this._animationFrame = requestAnimationFrame(animate);
+    }
+
+    reverse() {
+        this._stopOthers(this);
+        this._active = true;
+        const startProgress = this._progress;
+        this._startTime = null;
+        this._useReverse = true;
+
+        const animate = (timestamp) => {
+            if (!this._active) return;
+            if (!this._startTime) this._startTime = timestamp;
+
+            console.log("reversing");
+            console.log(this._progress);
+
+            const elapsed = timestamp - this._startTime - this._delay;
+
+            if (elapsed < 0) { 
+                requestAnimationFrame(animate); 
+                return; 
+            }
+
+            // Scale the progress based on how far we need to go
+            // If startProgress is 0.5, we only need half the duration to reach 0
+            const progressDelta = elapsed / this._duration;
+            const reverseProgress = Math.max(0, startProgress * (1 - elapsed / this._duration));
+            this._progress = reverseProgress;
+
+            if (this._onProgressChange) {
+                this._onProgressChange(reverseProgress, this);
+            }
+
+            if (reverseProgress > 0) {
+                this._animationFrame = requestAnimationFrame(animate);
             } else {
                 this._active = false;
             }

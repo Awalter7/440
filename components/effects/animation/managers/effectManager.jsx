@@ -41,13 +41,13 @@ export default class EffectManager extends Component{
 
         this._effects.forEach(effect => {
             if(effect !== null){
-                console.log(effect)
                 effect.onProgressChange = this._onProgressChange.bind(this);
                 effect.stopOthers = this._stopOthers.bind(this)
                 effect.uID = props.uID ?? "example-id";
                 effect.setStyle = this._setStyle.bind(this);
             }
         });
+
 
         this.children = props.children;
 
@@ -244,7 +244,7 @@ export default class EffectManager extends Component{
                 }
             }
 
-            if(effect.stopOnEnd === true && progress === 1){
+            if(effect.stopOnEnd === true && !effect.active){
                 effect.stop();
                 effect.setStartValue(property, undefined)
             }
