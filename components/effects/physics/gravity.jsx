@@ -23,7 +23,7 @@ export function GravityWrapper({
       grabCursor={grabCursor}
       addTopWall={addTopWall}
       autoStart={autoStart}
-      className={"absolute top-0 left-0 w-full h-full"}
+      className={className}
       {...restProps}
     >
       {children}
