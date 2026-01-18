@@ -59,6 +59,8 @@ export function Object({
     ...matterBodyOptions, // Allow override via matterBodyOptions prop
   };
 
+  console.log(x, y)
+
   return (
     <MatterBody
       x={x}
@@ -71,7 +73,10 @@ export function Object({
       matterBodyOptions={combinedMatterOptions}
       {...restProps}
     >
-      {children}
+        <div className="relative">
+            {children}
+        </div>
+      
     </MatterBody>
   );
 }
