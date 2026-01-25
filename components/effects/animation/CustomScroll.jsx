@@ -7,6 +7,7 @@ import {
   ScrollEffect,
   LoadEffect,
   HoverEffect,
+  DistanceEffect,
 } from "./effects"
 
 import EffectManager from "./managers/effectManager";
@@ -34,6 +35,7 @@ export function CustomScroll({
   hoverEffects = [],
 
   breakpoints = [],
+  distanceEffects = [],
   // Load effects
   loadEffect = null,
   zIndex = 1000,
@@ -61,6 +63,21 @@ export function CustomScroll({
         () => (hoverEffects ? hoverEffects.map((obj, idx) => (
             new HoverEffect({
                 trigger: obj?.triggerId,
+                duration: obj.duration,
+                delay: obj.delay,
+                easingFunction: obj.easingFunction,
+                styles: obj.styles,
+                id: `hover-${idx}`
+            })
+        )) : null),
+        [hoverEffects]
+    );
+
+    const stableDistanceEffects = useMemo(
+        () => (distanceEffects ? distanceEffects.map((obj, idx) => (
+            new DistanceEffect({
+                trigger: uID,
+                distance: obj.distance,
                 duration: obj.duration,
                 delay: obj.delay,
                 easingFunction: obj.easingFunction,
@@ -108,6 +125,7 @@ export function CustomScroll({
                 ...stableClickEffects, 
                 ...stableScrollEffect, 
                 ...stableHoverEffects,
+                ...stableDistanceEffects,
                 // ...(physics.hasGravity ? [new GravityEffect({ id: 'gravity-1', objectId: uID, containerId: physics.container })] : []),
             ].filter(effect => effect != null),
         [stableLoadEffect, stableClickEffects]
