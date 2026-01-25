@@ -1214,7 +1214,7 @@ PLASMIC.registerComponent(CustomScroll, {
     },
     clickEffects: {
       type: "array",
-      displayName: "Click-Triggered Effects",
+      displayName: "Click Effects",
       description: "Define effects that trigger when specific elements are clicked (works alongside scroll animations)",
       itemType: {
         type: "object",
@@ -1338,7 +1338,7 @@ PLASMIC.registerComponent(CustomScroll, {
     },   
     hoverEffects: {
       type: "array",
-      displayName: "Click-Triggered Effects",
+      displayName: "Hover Effects",
       description: "Define effects that trigger when specific elements are clicked (works alongside scroll animations)",
       itemType: {
         type: "object",

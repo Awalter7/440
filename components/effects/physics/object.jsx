@@ -71,12 +71,10 @@ export function Object({
       sampleLength={sampleLength}
       className={className}
       matterBodyOptions={combinedMatterOptions}
+      
       {...restProps}
     >
-        <div className="relative">
-            {children}
-        </div>
-      
+        {children}
     </MatterBody>
   );
 }
