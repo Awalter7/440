@@ -1504,7 +1504,7 @@ PLASMIC.registerComponent(CustomScroll, {
         },
       },
     },  
-    hoverEffects: {
+    valueChangeEffects: {
       type: "array",
       displayName: "Value Change Effects",
       description: "Define effects that trigger when the prop value changes (requires parent to be custom code component)",
@@ -1627,7 +1627,7 @@ PLASMIC.registerComponent(CustomScroll, {
           },
         },
       },
-    },  
+    }, 
     distanceEffects: {
       type: "array",
       displayName: "Distance Effects",
