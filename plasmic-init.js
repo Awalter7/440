@@ -881,6 +881,20 @@ PLASMIC.registerComponent(CustomScroll, {
       displayName: "Use Prop Value",
       description: "Should the component replace children with the value passed by the custom code component (requires parent to be custom code component)"
     },
+    useSpecificProp: {
+      type: "boolean",
+      defaultValue: false,
+      displayName: "Use Specific Prop",
+      description: "Should the component use only one specific prop provided by the custom code component. (requires parent to be custom code component)",
+      hidden: (props) => props.usePropValue !== false,
+    },
+    propToUse:{
+      type: "string",
+      defaultValue: "",
+      displayName: "Prop To Use",
+      description: "which specific prop will be used. (requires parent to be custom code component)",
+      hidden: (props) => props.useSpecificProp !== false,
+    },
     positionType: {
       type: "choice",
       options: ["fixed", "absolute", "relative"],

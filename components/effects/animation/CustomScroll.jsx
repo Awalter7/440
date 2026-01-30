@@ -1,6 +1,6 @@
 //CustomScroll
 
-import { useState, useMemo, useRef} from "react";
+import { useState, useMemo, useRef, useEffect} from "react";
 import { useProgress } from "@react-three/drei";
 import {
   ClickEffect,
@@ -26,27 +26,27 @@ export function CustomScroll({
   className,
   positionType = "fixed",
   usePropValue = false,
-  isButton = false,
-  autoTriggerPoints,
-  // Initial Styles
   initialStyles = [],
-  // Click-triggered effects
+
   clickEffects = [],
-  // Hover effects
   hoverEffects = [],
-
   valueChangeEffects = [],
-
   breakpoints = [],
   distanceEffects = [],
-  // Load effects
   loadEffect = null,
-  customValue = [],
+
+  customValue = {},
 }) {
     const { progress, total } = useProgress();
 
     const [uID] = useState(() => generateUniqueId());
-    console.log(customValue)
+
+    const [values, setValues] = useState({});
+    const [oldValues, setOldValues] = useState({})
+
+    useEffect(() => {
+        setValues(customValue)
+    }, [customValue])
 
 
     const stableClickEffects = useMemo(
@@ -122,18 +122,21 @@ export function CustomScroll({
     );
 
     const stableValueChangeEffects = useMemo(
-        () => (valueChangeEffects? valueChangeEffects.map((obj, idx) => (
-            new ValueChangeEffect({
-                useOldValue: obj.useOldValue,
-                value: customValue,
-                duration: obj.duration,
-                delay: obj.delay,
-                easingFunction: obj.easingFunction,
-                styles: obj.styles,
-                id: `click-${idx}`
-            })
-        )) : null),
-        [clickEffects]
+        () =>
+            valueChangeEffects
+            ? valueChangeEffects.map((obj, idx) => (
+                new ValueChangeEffect({
+                    useOldValue: obj.useOldValue,
+                    value: customValue,
+                    duration: obj.duration,
+                    delay: obj.delay,
+                    easingFunction: obj.easingFunction,
+                    styles: obj.styles,
+                    id: `value-${idx}`,
+                })
+                ))
+            : null,
+        [valueChangeEffects, customValue]
     );
 
     const effects = useMemo(
@@ -168,7 +171,17 @@ export function CustomScroll({
                     }}
                 >   
                     <div className={className} data-attribute-unique-id={uID} style={{position: positionType, transition: "none", transformStyle: "preserve-3d"}}>
-                        {children}
+                        {
+                            usePropValue 
+                                ?
+                                    values
+                                    &&
+                                    Object.values(values).map((value, idx) => (
+                                        <span key={idx}>{value}</span>
+                                    ))
+                                :
+                                    children
+                        }
                     </div>
                 </EffectManager>
             {/* } */}
