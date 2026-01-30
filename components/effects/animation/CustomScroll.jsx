@@ -216,7 +216,7 @@ export function CustomScroll({
                                     values
                                     &&
                                     Object.values(values).map((value, idx) => (
-                                        <span key={idx}>{value}</span>
+                                        value
                                     ))
                                 :
                                     children

@@ -1474,6 +1474,12 @@ PLASMIC.registerComponent(CustomScroll, {
             displayName: "Use Old Value",
             description: "should element animate with the old value or the new one?",
           },
+          resetOnEnd: {
+            type: "boolean",
+            defaultValue: false,
+            displayName: "Reset On End",
+            description: "Revert styles to initial styles on animation end."
+          },
           duration: {
             type: "number",
             displayName: "Duration (ms)",
