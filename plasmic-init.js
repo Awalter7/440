@@ -4,6 +4,7 @@ import { CustomScroll } from "./components/effects/animation/CustomScroll";
 import GradualBlur from './components/effects/visual/gradualBlur';
 import { GravityWrapper } from "./components/effects/physics/gravity"
 import { Object } from "./components/effects/physics/object"
+import { CustomCode } from "./components/code/customCode"
 
 // import { StickerPeel } from "./components/effects/StickerPeel";
 // import ThreeCanvas from "./components/three/canvas/ThreeCanvas"
@@ -20,6 +21,49 @@ export const PLASMIC = initPlasmicLoader({
   ],
   preview: true,
 });
+
+PLASMIC.registerComponent(CustomCode, {
+  name: "CustomCode",
+  displayName: "Custom Code",
+  description: "A wrapper component for passing props using custom code",
+  props: {
+    children: {
+      type: "slot",
+      defaultValue: {
+        type: "text",
+        value: "Add children here",
+      },
+    },
+    className: {
+      type: "string",
+      description: "Additional CSS classes",
+    },
+    code: {
+      type: "string",
+      displayName: "Code",
+      description: "JavaScript code executed on mount and when dependencies change",
+      defaultValue: `// Example:
+        setValue({
+          hr1: 0,
+          hr2: 3,
+          min1: 3,
+          min2: 0,
+        });`,
+        control: "code",
+    },
+    deps: {
+      type: "array",
+      displayName: "Dependencies",
+      description:"Values that trigger the code to re-run when changed",
+      itemType: {
+        type: "string",
+      },
+      defaultValue: [],
+    },
+  },
+  importPath: "./components/code/customCode",
+  isDefaultExport: false,
+})
 
 
 PLASMIC.registerComponent(GravityWrapper, {
