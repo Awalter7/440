@@ -244,17 +244,42 @@ export default class EffectManager extends Component{
                 }
             }
 
-            if(effect.stopOnEnd === true && !effect.active){
-                effect.stop();
-                effect.setStartValue(property, undefined)
+            if(progress === 1 && effect.stopOnEnd === false){
+                const originalStyle = effect.styles.find(s => s.property === property);
+                if (originalStyle && originalStyle.startValue !== undefined) {
+                    if (transformProps.includes(property)) {
+                        updatedTransforms[property] = originalStyle.startValue;
+                    } else {
+                        newStyles[property] = originalStyle.startValue;
+                    }
+                }
             }
+
+            // if(effect.stopOnEnd === true && !effect.active){
+            //     effect.stop();
+            //     effect.setStartValue(property, undefined)
+            // }else if(effect.stopOnEnd === false && !effect.active){
+            //     effect.stop();
+            //     console.log("here")
+            //     // Reset to original startValue when stopOnEnd is false
+            //     const originalStyle = effect.styles.find(s => s.property === property);
+            //     if (originalStyle && originalStyle.startValue !== undefined) {
+            //         if (transformProps.includes(property)) {
+            //             updatedTransforms[property] = originalStyle.startValue;
+            //         } else {
+            //             newStyles[property] = originalStyle.startValue;
+            //         }
+            //     }
+            // }
         });
+        
 
         // 🌀 Rebuild transform string from updatedTransforms
         const transformString = Object.entries(updatedTransforms)
             .map(([key, value]) => `${key}(${value})`)
             .join(" ");
 
+    
         newStyles.transform = transformString;
 
         this.setState({ styles: newStyles });

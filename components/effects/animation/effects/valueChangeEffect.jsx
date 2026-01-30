@@ -5,6 +5,8 @@ export default class ValueChangeEffect extends Effect{
         super(props)
 
         this._type = "value";
+        this.stopOnEnd = false;
+        this.useOldValue = props.useOldValue ?? false;
 
         this._useSpecificProp = props.useSpecificProp ?? false;
         this._propToUse = props.propToUse ?? null;
@@ -59,12 +61,17 @@ export default class ValueChangeEffect extends Effect{
             this._oldValues = this._values;
             this._values = nextValues;
 
-            this.start().then(() => {
+            if(this.useOldValue){
+                this.start().then(() => {
+                    this._setOldValues?.(this._oldValues);
+                    this._setValues?.(this._values);
+                });
+            }else{
                 this._setOldValues?.(this._oldValues);
                 this._setValues?.(this._values);
-            });
-
-
+                
+                this.start()
+            }
         }
     }
 

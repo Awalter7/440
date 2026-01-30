@@ -23,7 +23,7 @@ export function CustomCode({
       `
       );
 
-      console.log(fn)
+      console.log(fn);
       fn(
         setValue,
         () => value,
@@ -34,20 +34,47 @@ export function CustomCode({
     }
   }, [code, ...deps]);
 
-  return (
-    <div className={className}>
-      {React.Children.map(children, (child, index) => {
-        if (!React.isValidElement(child)) return child;
+  // Recursive function to inject props into CustomScroll components
+  const injectPropsRecursively = (children) => {
+    return React.Children.map(children, (child, index) => {
+      if (!React.isValidElement(child)) return child;
 
+      // Check if this is a CustomScroll component
+      const isCustomScroll = 
+        child.type?.name === 'CustomScroll' || 
+        child.type?.displayName === 'CustomScroll';
+
+      // Prepare props to inject
+      const injectedProps = {
+        customValue: value,
+        customRefs: refs.current,
+      };
+
+      // If it's a CustomScroll, inject the props and also process its children
+      if (isCustomScroll) {
         return React.cloneElement(child, {
           ...child.props,
-          customValue: value,
-          customRefs: refs.current,
-          ref: (el) => {
-            refs.current[index] = el;
-          },
+          ...injectedProps,
+          children: child.props.children ? injectPropsRecursively(child.props.children) : child.props.children,
         });
-      })}
+      }
+
+      // If it's not CustomScroll but has children, recursively process those children
+      if (child.props?.children) {
+        return React.cloneElement(child, {
+          ...child.props,
+          children: injectPropsRecursively(child.props.children),
+        });
+      }
+
+      // Return the child as-is if no processing needed
+      return child;
+    });
+  };
+
+  return (
+    <div className={className}>
+      {injectPropsRecursively(children)}
     </div>
   );
 }

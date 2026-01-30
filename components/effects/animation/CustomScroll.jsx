@@ -203,6 +203,7 @@ export function CustomScroll({
                     effects={effects}
                     initialStyles={initialStyles}
                     uID={uID}
+                    data-attibute-elm-type={"effectManager"}
                     customTriggers={{
                         start: {
                             'load-0': progress === 100 || total === 0,
