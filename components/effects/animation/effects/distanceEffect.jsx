@@ -7,7 +7,7 @@ export default class DistanceEffect extends Effect {
         this._type = "distance";
         this.stopOnEnd = false;
 
-        // distance from top of viewport (px)
+        // Distance in pixels from top of viewport
         this._distance = props.distance ?? 100;
 
         this._hasTriggered = false;
@@ -19,22 +19,27 @@ export default class DistanceEffect extends Effect {
 
     componentDidMount() {
         window.addEventListener("scroll", this.handleScroll, { passive: true });
-        this.handleScroll(); // run once in case it's already in position
+        this.handleScroll(); // run immediately in case it's already in range
     }
 
     componentWillUnmount() {
         window.removeEventListener("scroll", this.handleScroll);
     }
 
+    getTargetElement() {
+        return document.querySelector(
+            `[data-attribute-unique-id="${this._trigger}"]`
+        );
+    }
+
     handleScroll = () => {
         if (this._hasTriggered && this.stopOnEnd) return;
 
-        const element = document.getElementById(this._trigger);
+        const element = this.getTargetElement();
         if (!element) return;
 
         const rect = element.getBoundingClientRect();
 
-        // trigger when element is at or above target distance
         if (rect.top <= this._distance) {
             this.start();
             this._hasTriggered = true;
