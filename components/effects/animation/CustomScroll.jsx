@@ -25,7 +25,7 @@ export function CustomScroll({
   children,
   className,
   positionType = "fixed",
-  physics = {},
+  usePropValue = false,
   isButton = false,
   autoTriggerPoints,
   // Initial Styles
