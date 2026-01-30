@@ -886,14 +886,14 @@ PLASMIC.registerComponent(CustomScroll, {
       defaultValue: false,
       displayName: "Use Specific Prop",
       description: "Should the component use only one specific prop provided by the custom code component. (requires parent to be custom code component)",
-      hidden: (props) => props.usePropValue !== false,
+      hidden: (props) => props.usePropValue !== true,
     },
     propToUse:{
       type: "string",
       defaultValue: "",
       displayName: "Prop To Use",
       description: "which specific prop will be used. (requires parent to be custom code component)",
-      hidden: (props) => props.useSpecificProp !== false,
+      hidden: (props) => props.useSpecificProp !== true,
     },
     positionType: {
       type: "choice",

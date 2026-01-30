@@ -22,20 +22,24 @@ const generateUniqueId = () => {
 
 
 export function CustomScroll({
-  children,
-  className,
-  positionType = "fixed",
-  usePropValue = false,
-  initialStyles = [],
+    children,
+    className,
+    positionType = "fixed",
+    
+    usePropValue = false,
+    useSpecificProp = false,
+    propToUse = null,
 
-  clickEffects = [],
-  hoverEffects = [],
-  valueChangeEffects = [],
-  breakpoints = [],
-  distanceEffects = [],
-  loadEffect = null,
+    initialStyles = [],
 
-  customValue = {},
+    clickEffects = [],
+    hoverEffects = [],
+    valueChangeEffects = [],
+    breakpoints = [],
+    distanceEffects = [],
+    loadEffect = null,
+
+    customValue = {},
 }) {
     const { progress, total } = useProgress();
 
