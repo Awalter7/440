@@ -165,28 +165,70 @@ export default class Effect extends Component{
         this._startTime = null;
         this._useReverse = false;
 
+        return new Promise((resolve) => {
+            const animate = (timestamp) => {
+                if (!this._active) {
+                    resolve(); // Resolve if animation stopped early
+                    return;
+                }
+                if (!this._startTime) this._startTime = timestamp;
+
+                const elapsed = timestamp - this._startTime - this._delay;
+
+                if (elapsed < 0) {
+                    this._animationFrame = requestAnimationFrame(animate);
+                    return;
+                }
+
+                // Calculate progress from startProgress to 1
+                const progressDelta = elapsed / this._duration;
+                const progress = Math.min(startProgress + progressDelta, 1);
+                this._progress = progress;
+
+                if (this._onProgressChange) {
+                    this._onProgressChange(progress, this);
+                }
+
+                if (progress < 1) {
+                    this._animationFrame = requestAnimationFrame(animate);
+                } else {
+                    this._active = false;
+                    resolve(); // Resolve when animation completes
+                }
+            };
+
+            this._animationFrame = requestAnimationFrame(animate);
+        });
+    }
+
+    reverse() {
+        this._stopOthers(this);
+        this._active = true;
+        const startProgress = this._progress;
+        this._startTime = null;
+        this._useReverse = true;
 
         const animate = (timestamp) => {
-            if (!this._active) return; // Stop if animation stopped
+            if (!this._active) return;
             if (!this._startTime) this._startTime = timestamp;
 
             const elapsed = timestamp - this._startTime - this._delay;
 
-            if (elapsed < 0) {
-                this._animationFrame = requestAnimationFrame(animate);
-                return;
+            if (elapsed < 0) { 
+                this._animationFrame = requestAnimationFrame(animate); 
+                return; 
             }
 
-            // Calculate progress from startProgress to 1
+            // Calculate how much progress to subtract based on elapsed time
             const progressDelta = elapsed / this._duration;
-            const progress = Math.min(startProgress + progressDelta, 1);
-            this._progress = progress;
+            const reverseProgress = Math.max(0, startProgress - progressDelta);
+            this._progress = reverseProgress;
 
             if (this._onProgressChange) {
-                this._onProgressChange(progress, this);
+                this._onProgressChange(reverseProgress, this);
             }
 
-            if (progress < 1) {
+            if (reverseProgress > 0) {
                 this._animationFrame = requestAnimationFrame(animate);
             } else {
                 this._active = false;
@@ -195,43 +237,6 @@ export default class Effect extends Component{
 
         this._animationFrame = requestAnimationFrame(animate);
     }
-
-reverse() {
-    this._stopOthers(this);
-    this._active = true;
-    const startProgress = this._progress;
-    this._startTime = null;
-    this._useReverse = true;
-
-    const animate = (timestamp) => {
-        if (!this._active) return;
-        if (!this._startTime) this._startTime = timestamp;
-
-        const elapsed = timestamp - this._startTime - this._delay;
-
-        if (elapsed < 0) { 
-            this._animationFrame = requestAnimationFrame(animate); 
-            return; 
-        }
-
-        // Calculate how much progress to subtract based on elapsed time
-        const progressDelta = elapsed / this._duration;
-        const reverseProgress = Math.max(0, startProgress - progressDelta);
-        this._progress = reverseProgress;
-
-        if (this._onProgressChange) {
-            this._onProgressChange(reverseProgress, this);
-        }
-
-        if (reverseProgress > 0) {
-            this._animationFrame = requestAnimationFrame(animate);
-        } else {
-            this._active = false;
-        }
-    };
-
-    this._animationFrame = requestAnimationFrame(animate);
-}
 
     stop() {
         if (this._animationFrame) {

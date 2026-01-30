@@ -4,38 +4,69 @@ export default class ValueChangeEffect extends Effect{
     constructor(props = {}){
         super(props)
 
-        this._type = "value"
-        this.useOldValue = props.useOldValue ?? false;
-        this.value = props.value ?? null;
-        this.newValue = null;
+        this._type = "value";
+
+        this._useSpecificProp = props.useSpecificProp ?? false;
+        this._propToUse = props.propToUse ?? null;
+
+        this._values = null;
+        this._setValues = props.setValues ?? null;
+
+        this._oldValues = null;
+        this._setOldValues = props.setOldValues ?? null;
+
+        this._customValues = props.customValues ?? null;
     }
 
-    // type
-    get type() {
+    get type(){
         return this._type;
     }
-    
-    set type(value) {
+
+    set type(value){
         this._type = value;
     }
 
-    componentDidMount() {
-        const element = document.getElementById(this._trigger);
+    get customValues(){
+        return this._customValues;
+    }
 
-        if (element) {
-            element.addEventListener('click', this.handleClick);
+    set customValues(values){
+        this.checkValueChange(values);
+    }
+
+    checkValueChange(values){
+        if(!values) return;
+
+        if(this._values === null && this._propToUse && values[this._propToUse] !== undefined){
+            this._values = { [this._propToUse]: values[this._propToUse] };
+            this._setValues?.(this._values);
+            return;
+        }
+
+        const nextValues = this._useSpecificProp && this._propToUse
+            ? { [this._propToUse]: values[this._propToUse] }
+            : { ...values };
+
+        let changed = false;
+        for(const key in nextValues){
+            if(!this._values || nextValues[key] !== this._values[key]){
+                changed = true;
+                break;
+            }
+        }
+
+        if(changed){
+            this._oldValues = this._values;
+            this._values = nextValues;
+
+            this.start().then(() => {
+                this._setOldValues?.(this._oldValues);
+                this._setValues?.(this._values);
+            });
+
+
         }
     }
 
-    componentWillUnmount() {
-        const element = document.getElementById(this._trigger);
-
-        if (element) {
-            element.removeEventListener('click', this.handleClick);
-        }
-    }
-
-    handleClick = (event) => {
-        this.start();
-    }
+    
 }

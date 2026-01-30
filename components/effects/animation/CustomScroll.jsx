@@ -45,12 +45,12 @@ export function CustomScroll({
 
     const [uID] = useState(() => generateUniqueId());
 
-    const [values, setValues] = useState({});
+    const [values, setValues] = useState(null);
     const [oldValues, setOldValues] = useState({})
 
-    useEffect(() => {
-        setValues(customValue)
-    }, [customValue])
+
+
+
 
 
     const stableClickEffects = useMemo(
@@ -111,7 +111,6 @@ export function CustomScroll({
 
     const stableScrollEffect = useMemo(
         () => (breakpoints ? breakpoints.map((obj, idx) => (
-            
             new ScrollEffect({
                 scrollStart: obj.scrollStart,
                 scrollEnd: obj.scrollEnd,
@@ -125,13 +124,29 @@ export function CustomScroll({
         [breakpoints]
     );
 
+    function handleSetVales(value){
+        setValues(value)
+    }
+
+    function handleSetOldValues(value){
+        setOldValues(value)
+    }
+
+
     const stableValueChangeEffects = useMemo(
         () =>
             valueChangeEffects
-            ? valueChangeEffects.map((obj, idx) => (
+            ? 
+            valueChangeEffects.map((obj, idx) => (
                 new ValueChangeEffect({
+                    useSpecificProp: useSpecificProp,
+                    propToUse: propToUse,
                     useOldValue: obj.useOldValue,
-                    value: customValue,
+                    customValue: customValue,
+                    values: values,
+                    setValues: (values) =>  handleSetVales(values),
+                    oldValues: oldValues,
+                    setOldValues: (values) =>  handleSetOldValues(values), 
                     duration: obj.duration,
                     delay: obj.delay,
                     easingFunction: obj.easingFunction,
@@ -139,7 +154,8 @@ export function CustomScroll({
                     id: `value-${idx}`,
                 })
                 ))
-            : null,
+            : 
+            null,
         [valueChangeEffects, customValue]
     );
 
@@ -156,7 +172,26 @@ export function CustomScroll({
         [stableLoadEffect, stableClickEffects]
     );
 
+
     const effectManagerRef = useRef(null);
+
+
+    useEffect(() => {
+        if(!effectManagerRef.current) return;
+
+        const effects = effectManagerRef.current.effects;
+
+        effects.map((effect) => {
+            if(effect.type === `value`){
+                effect.customValues = customValue;
+            }
+        })
+     }, [customValue])
+
+     useEffect(() => {
+        console.log(values)
+     }, [values])
+
 
     return (
         <>
@@ -171,7 +206,7 @@ export function CustomScroll({
                     customTriggers={{
                         start: {
                             'load-0': progress === 100 || total === 0,
-                        }
+                        },
                     }}
                 >   
                     <div className={className} data-attribute-unique-id={uID} style={{position: positionType, transition: "none", transformStyle: "preserve-3d"}}>

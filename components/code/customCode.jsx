@@ -35,7 +35,7 @@ export function CustomCode({
   }, [code, ...deps]);
 
   return (
-    <>
+    <div className={className}>
       {React.Children.map(children, (child, index) => {
         if (!React.isValidElement(child)) return child;
 
@@ -48,6 +48,6 @@ export function CustomCode({
           },
         });
       })}
-    </>
+    </div>
   );
 }

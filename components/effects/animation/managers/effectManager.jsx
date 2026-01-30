@@ -287,7 +287,7 @@ export default class EffectManager extends Component{
         return( 
             <>
                 {
-                    React.cloneElement(this.children, {
+                    React.cloneElement(this.props.children, {
                         style: {...this.children.props.style, ...styles},
                         'data-attribute-tag': "custom-animation-box",
                     })
