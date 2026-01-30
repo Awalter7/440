@@ -5,3 +5,4 @@ export { default as LoadEffect } from "./loadEffect";
 export { default as ScrollEffect } from "./scrollEffect";
 export { default as HoverEffect } from "./hoverEffect"
 export { default as DistanceEffect } from "./distanceEffect"
+export { default as ValueChangeEffect } from "./valueChangeEffect"

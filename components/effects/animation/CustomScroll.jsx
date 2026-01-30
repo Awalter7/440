@@ -8,6 +8,7 @@ import {
   LoadEffect,
   HoverEffect,
   DistanceEffect,
+  ValueChangeEffect
 } from "./effects"
 
 import EffectManager from "./managers/effectManager";
@@ -34,15 +35,18 @@ export function CustomScroll({
   // Hover effects
   hoverEffects = [],
 
+  valueChangeEffects = [],
+
   breakpoints = [],
   distanceEffects = [],
   // Load effects
   loadEffect = null,
-  zIndex = 1000,
+  customValue = [],
 }) {
     const { progress, total } = useProgress();
 
     const [uID] = useState(() => generateUniqueId());
+    console.log(customValue)
 
 
     const stableClickEffects = useMemo(
@@ -117,7 +121,20 @@ export function CustomScroll({
         [breakpoints]
     );
 
-    console.log(stableHoverEffects)
+    const stableValueChangeEffects = useMemo(
+        () => (valueChangeEffects? valueChangeEffects.map((obj, idx) => (
+            new ValueChangeEffect({
+                useOldValue: obj.useOldValue,
+                value: customValue,
+                duration: obj.duration,
+                delay: obj.delay,
+                easingFunction: obj.easingFunction,
+                styles: obj.styles,
+                id: `click-${idx}`
+            })
+        )) : null),
+        [clickEffects]
+    );
 
     const effects = useMemo(
         () => [
@@ -126,6 +143,7 @@ export function CustomScroll({
                 ...stableScrollEffect, 
                 ...stableHoverEffects,
                 ...stableDistanceEffects,
+                ...stableValueChangeEffects,
                 // ...(physics.hasGravity ? [new GravityEffect({ id: 'gravity-1', objectId: uID, containerId: physics.container })] : []),
             ].filter(effect => effect != null),
         [stableLoadEffect, stableClickEffects]
@@ -149,7 +167,7 @@ export function CustomScroll({
                         }
                     }}
                 >   
-                    <div className={className} data-attribute-unique-id={uID} style={{position: positionType, zIndex: zIndex, transition: "none", transformStyle: "preserve-3d"}}>
+                    <div className={className} data-attribute-unique-id={uID} style={{position: positionType, transition: "none", transformStyle: "preserve-3d"}}>
                         {children}
                     </div>
                 </EffectManager>

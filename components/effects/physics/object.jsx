@@ -59,8 +59,6 @@ export function Object({
     ...matterBodyOptions, // Allow override via matterBodyOptions prop
   };
 
-  console.log(x, y)
-
   return (
     <MatterBody
       x={x}
