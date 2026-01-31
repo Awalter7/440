@@ -875,6 +875,10 @@ PLASMIC.registerComponent(CustomScroll, {
         value: "Scroll to animate",
       },
     },
+    id: {
+      type: "string",
+      displayName: "id"
+    },
     usePropValue: {
       type: "boolean",
       defaultValue: false,

@@ -24,6 +24,7 @@ const generateUniqueId = () => {
 export function CustomScroll({
     children,
     className,
+    id,
     usePropValue = false,
     useSpecificProp = false,
     propToUse = null,
@@ -204,7 +205,7 @@ export function CustomScroll({
                         },
                     }}
                 >   
-                    <div className={className} data-attribute-unique-id={uID}  style={{ transition: "none", transformStyle: "preserve-3d"}}>
+                    <div className={className} data-attribute-unique-id={uID} id={id} style={{ transition: "none", transformStyle: "preserve-3d"}}>
                         {
                             usePropValue 
                                 ?
