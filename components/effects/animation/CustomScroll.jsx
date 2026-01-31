@@ -24,8 +24,6 @@ const generateUniqueId = () => {
 export function CustomScroll({
     children,
     className,
-    positionType = "fixed",
-    
     usePropValue = false,
     useSpecificProp = false,
     propToUse = null,
@@ -84,7 +82,7 @@ export function CustomScroll({
     const stableDistanceEffects = useMemo(
         () => (distanceEffects ? distanceEffects.map((obj, idx) => (
             new DistanceEffect({
-                trigger: uID,
+                trigger: obj.targetId,
                 distance: obj.distance,
                 duration: obj.duration,
                 delay: obj.delay,
@@ -188,10 +186,6 @@ export function CustomScroll({
         })
      }, [customValue])
 
-     useEffect(() => {
-        console.log(values)
-     }, [values])
-
 
     return (
         <>
@@ -210,7 +204,7 @@ export function CustomScroll({
                         },
                     }}
                 >   
-                    <div className={className} data-attribute-unique-id={uID} style={{position: positionType, transition: "none", transformStyle: "preserve-3d"}}>
+                    <div className={className} data-attribute-unique-id={uID}  style={{ transition: "none", transformStyle: "preserve-3d"}}>
                         {
                             usePropValue 
                                 ?

@@ -895,13 +895,6 @@ PLASMIC.registerComponent(CustomScroll, {
       description: "which specific prop will be used. (requires parent to be custom code component)",
       hidden: (props) => props.useSpecificProp !== true,
     },
-    positionType: {
-      type: "choice",
-      options: ["fixed", "absolute", "relative"],
-      defaultValue: "relative",
-      displayName: "Position Type",
-      description: "Position type (fixed, absolute, or relative. In studio, always shows as relative)",
-    },
     animationMode: {
       type: "choice",
       options: ["interpolation", "duration"],
@@ -1598,6 +1591,11 @@ PLASMIC.registerComponent(CustomScroll, {
       itemType: {
         type: "object",
         fields: {
+          targetId: {
+            type: "string",
+            displayName: "Element ID",
+            description: "The ID of THIS element",
+          },
           distance: {
             type: "number",
             displayName: "Distance (px)",

@@ -67,8 +67,6 @@ export default class ScrollEffect extends Effect{
             this.progress = 1
         }
 
-        console.log(this._progress)
-
         this._onProgressChange(this.progress, this)
     }
 }

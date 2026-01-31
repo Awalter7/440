@@ -27,6 +27,7 @@ export default class DistanceEffect extends Effect {
     }
 
     getTargetElement() {
+        console.log(this._trigger)
         return document.querySelector(
             `[data-attribute-unique-id="${this._trigger}"]`
         );
@@ -35,12 +36,17 @@ export default class DistanceEffect extends Effect {
     handleScroll = () => {
         if (this._hasTriggered && this.stopOnEnd) return;
 
+        console.log("here")
+
         const element = this.getTargetElement();
+        console.log(element)
         if (!element) return;
 
         const rect = element.getBoundingClientRect();
 
+        console.log(rect.top)
         if (rect.top <= this._distance) {
+            console.log("here1")
             this.start();
             this._hasTriggered = true;
         }
