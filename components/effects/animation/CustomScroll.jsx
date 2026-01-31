@@ -84,6 +84,7 @@ export function CustomScroll({
         () => (distanceEffects ? distanceEffects.map((obj, idx) => (
             new DistanceEffect({
                 trigger: obj.targetId,
+                qualifyer: obj.qualifyer,
                 distance: obj.distance,
                 duration: obj.duration,
                 delay: obj.delay,

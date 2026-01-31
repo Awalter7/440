@@ -1606,6 +1606,13 @@ PLASMIC.registerComponent(CustomScroll, {
             description: "How far away should the animation trigger",
             defaultValue: 200,
           },
+          qualifyer: {
+            type: "choice",
+            options: ["===", ">==", "<==", "<", ">", "!=="],
+            defaultValue: "===",
+            displayName: "Qualifyer",
+            description: "How should the animation be triggered based on the distance.",
+          },
           duration: {
             type: "number",
             displayName: "Duration (ms)",

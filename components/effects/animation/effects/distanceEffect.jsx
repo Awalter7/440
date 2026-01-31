@@ -6,6 +6,7 @@ export default class DistanceEffect extends Effect {
 
         this._type = "distance";
         this.stopOnEnd = false;
+        this.qualifyer = props.qualifyer ?? "==="
 
         // Distance in pixels from top of viewport
         this._distance = props.distance ?? 100;
@@ -26,29 +27,49 @@ export default class DistanceEffect extends Effect {
         window.removeEventListener("scroll", this.handleScroll);
     }
 
-    getTargetElement() {
-        console.log(this._trigger)
-        return document.querySelector(
-            `[data-attribute-unique-id="${this._trigger}"]`
-        );
-    }
 
     handleScroll = () => {
         if (this._hasTriggered && this.stopOnEnd) return;
 
-        console.log("here")
 
-        const element = this.getTargetElement();
+        const element = document.getElementById(this._trigger);
         console.log(element)
         if (!element) return;
 
         const rect = element.getBoundingClientRect();
 
         console.log(rect.top)
-        if (rect.top <= this._distance) {
-            console.log("here1")
-            this.start();
-            this._hasTriggered = true;
+        switch(this.qualifyer){
+            case "===":
+                if (rect.top === this._distance) {
+                    this.start();
+                    this._hasTriggered = true;
+                }
+            case ">==":
+                if (rect.top >= this._distance) {
+                    this.start();
+                    this._hasTriggered = true;
+                }
+            case "<==":
+                if (rect.top <= this._distance) {
+                    this.start();
+                    this._hasTriggered = true;
+                }
+            case "<":
+                if (rect.top < this._distance) {
+                    this.start();
+                    this._hasTriggered = true;
+                }
+            case ">":
+                if (rect.top > this._distance) {
+                    this.start();
+                    this._hasTriggered = true;
+                }
+            case "!==":
+                if (rect.top !== this._distance) {
+                    this.start();
+                    this._hasTriggered = true;
+                }
         }
     };
 }
