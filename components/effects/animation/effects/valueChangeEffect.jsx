@@ -5,7 +5,7 @@ export default class ValueChangeEffect extends Effect{
         super(props)
 
         this._type = "value";
-        this.stopOnEnd = false;
+        this.loop = true;
         this.useOldValue = props.useOldValue ?? false;
 
         this._useSpecificProp = props.useSpecificProp ?? false;

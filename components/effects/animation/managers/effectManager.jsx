@@ -244,7 +244,8 @@ export default class EffectManager extends Component{
                 }
             }
 
-            if(progress === 1 && effect.stopOnEnd === false){
+
+            if(progress === 1 && effect.loop === true){
                 const originalStyle = effect.styles.find(s => s.property === property);
                 if (originalStyle && originalStyle.startValue !== undefined) {
                     if (transformProps.includes(property)) {
@@ -253,6 +254,12 @@ export default class EffectManager extends Component{
                         newStyles[property] = originalStyle.startValue;
                     }
                 }
+
+                effect._progress = 0;
+                effect.stop();
+            }else if(!effect.active){
+                effect.stop();
+                effect.setStartValue(property, undefined)
             }
 
             // if(effect.stopOnEnd === true && !effect.active){
