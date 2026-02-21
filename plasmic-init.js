@@ -899,6 +899,12 @@ PLASMIC.registerComponent(CustomScroll, {
       description: "which specific prop will be used. (requires parent to be custom code component)",
       hidden: (props) => props.useSpecificProp !== true,
     },
+    position: {
+      type: "choice",
+      options: ["relative", "absolute", "fixed", "sticky"],
+      defaultValue: "relative",
+      displayName: "Position"
+    },
     animationMode: {
       type: "choice",
       options: ["interpolation", "duration"],

@@ -33,7 +33,6 @@ export default class DistanceEffect extends Effect {
 
 
         const element = document.getElementById(this._trigger);
-        console.log(element)
         if (!element) return;
 
         const rect = element.getBoundingClientRect();

@@ -25,6 +25,7 @@ export function CustomScroll({
     children,
     className,
     id,
+    position,
     usePropValue = false,
     useSpecificProp = false,
     propToUse = null,
@@ -206,7 +207,7 @@ export function CustomScroll({
                         },
                     }}
                 >   
-                    <div className={className} data-attribute-unique-id={uID} id={id} style={{ transition: "none", transformStyle: "preserve-3d"}}>
+                    <div className={className} data-attribute-unique-id={uID} id={id} style={{ position: position, transition: "none", transformStyle: "preserve-3d"}}>
                         {
                             usePropValue 
                                 ?
