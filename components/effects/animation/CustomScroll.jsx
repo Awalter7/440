@@ -1,6 +1,6 @@
 //CustomScroll
 
-import { useState, useMemo, useRef, useEffect} from "react";
+import React, { useState, useMemo, useRef, useEffect} from "react";
 import { useProgress } from "@react-three/drei";
 import {
   ClickEffect,
@@ -188,6 +188,7 @@ export function CustomScroll({
             }
         })
      }, [customValue])
+
 
 
     return (

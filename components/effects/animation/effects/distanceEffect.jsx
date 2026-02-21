@@ -37,38 +37,67 @@ export default class DistanceEffect extends Effect {
 
         const rect = element.getBoundingClientRect();
 
-        console.log(rect.top)
         switch(this.qualifyer){
             case "===":
                 if (rect.top === this._distance) {
                     this.start();
                     this._hasTriggered = true;
+                }else if (rect.top !== this._distance && this._hasTriggered) {
+                    this.reverse();
+                    this._hasTriggered = false;
                 }
+
+                break;
+            case "<==":
+                if (rect.top <= this._distance && !this._hasTriggered) {
+                    this.start();
+                    this._hasTriggered = true;
+                } else if (rect.top > this._distance && this._hasTriggered) {
+                    this.reverse();
+                    this._hasTriggered = false;
+                }
+
+                break;
             case ">==":
                 if (rect.top >= this._distance) {
                     this.start();
                     this._hasTriggered = true;
+                } else if (rect.top < this._distance && this._hasTriggered) {
+                    this.reverse();
+                    this._hasTriggered = false;
                 }
-            case "<==":
-                if (rect.top <= this._distance) {
-                    this.start();
-                    this._hasTriggered = true;
-                }
+
+                break;
             case "<":
                 if (rect.top < this._distance) {
                     this.start();
                     this._hasTriggered = true;
+                } else if (rect.top > this._distance && this._hasTriggered) {
+                    this.reverse();
+                    this._hasTriggered = false;
                 }
+
+                break;
             case ">":
                 if (rect.top > this._distance) {
                     this.start();
                     this._hasTriggered = true;
+                } else if (rect.top < this._distance && this._hasTriggered) {
+                    this.reverse();
+                    this._hasTriggered = false;
                 }
+
+                break;
             case "!==":
                 if (rect.top !== this._distance) {
                     this.start();
                     this._hasTriggered = true;
+                } else if (rect.top === this._distance && this._hasTriggered) {
+                    this.reverse();
+                    this._hasTriggered = false;
                 }
+
+                break;
         }
     };
 }

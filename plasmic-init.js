@@ -868,12 +868,19 @@ PLASMIC.registerComponent(CustomScroll, {
   displayName: "Custom Scroll Effect",
   description: "Animate any CSS properties based on scroll with multiple breakpoints, easing functions, and click-triggered effects",
   props: {
+    text: {
+      type: "string",
+      displayName: "Text",
+      description: "Use text instead of elements.",
+      defaultValue: "",
+    },
     children: {
       type: "slot",
       defaultValue: {
         type: "text",
         value: "Scroll to animate",
       },
+      hidden: (props) => props.text !== "",
     },
     id: {
       type: "string",
@@ -1606,6 +1613,7 @@ PLASMIC.registerComponent(CustomScroll, {
             displayName: "Element ID",
             description: "The ID of THIS element",
           },
+
           distance: {
             type: "number",
             displayName: "Distance (px)",
