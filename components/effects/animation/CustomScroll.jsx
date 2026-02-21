@@ -38,6 +38,7 @@ export function CustomScroll({
     breakpoints = [],
     distanceEffects = [],
     loadEffect = null,
+    text = "",
 
     customValue = {},
 }) {
@@ -218,7 +219,7 @@ export function CustomScroll({
                                         value
                                     ))
                                 :
-                                    children
+                                    text ? text : children
                         }
                     </div>
                 </EffectManager>
