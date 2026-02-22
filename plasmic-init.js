@@ -977,6 +977,7 @@ PLASMIC.registerComponent(CustomScroll, {
               "textShadow",
               "filter",
               "backdropFilter",
+              "position",
             ],
             defaultValue: "opacity",
           },

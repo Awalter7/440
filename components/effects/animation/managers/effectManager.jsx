@@ -198,8 +198,10 @@ export default class EffectManager extends Component{
             } else {
                 if (!currentStartValue) {
                     currentStartValue = newStyles[property];
-                    
-                    if(property === "width"){
+
+                    if(property === "position"){
+                        effect.setStartValue(property, currentStartValue)
+                    }else if(property === "width"){
                         const e = parseValue(endValue, property)
                         const s = parseValue(currentStartValue, property);
 
