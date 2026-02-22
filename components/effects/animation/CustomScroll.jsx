@@ -1,6 +1,6 @@
 //CustomScroll
 
-import React, { useState, useMemo, useRef, useEffect} from "react";
+import React, { useState, useMemo, useRef, useEffect, useId} from "react";
 import { useProgress } from "@react-three/drei";
 import {
   ClickEffect,
@@ -44,7 +44,7 @@ export function CustomScroll({
 }) {
     const { progress, total } = useProgress();
 
-    const [uID] = useState(() => generateUniqueId());
+    const uID = useId(); // guaranteed stable, no module-level state needed
 
     const [values, setValues] = useState(null);
     const [oldValues, setOldValues] = useState({})
