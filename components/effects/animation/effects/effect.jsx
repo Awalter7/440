@@ -31,10 +31,11 @@ export default class Effect extends Component{
 
         this._active = false;
         this._progress = 0;
-        this._useReverse = false;
+        this._elapsed;
 
         this._uID = props.uID ?? "example-id"
     }
+
 
 
     setStartValue(property, value) {
@@ -157,13 +158,18 @@ export default class Effect extends Component{
         }
     }
 
+
+
     // --- Animation control ---
     start() {
-        this._stopOthers(this);
+        if (this._animationFrame) {
+            cancelAnimationFrame(this._animationFrame);
+            this._animationFrame = null;
+        }
+
         this._active = true;
         const startProgress = this._progress;
         this._startTime = null;
-        this._useReverse = false;
 
         return new Promise((resolve) => {
             const animate = (timestamp) => {
@@ -171,9 +177,11 @@ export default class Effect extends Component{
                     resolve(); // Resolve if animation stopped early
                     return;
                 }
+
                 if (!this._startTime) this._startTime = timestamp;
 
                 const elapsed = timestamp - this._startTime - this._delay;
+                this._elapsed = elapsed;
 
                 if (elapsed < 0) {
                     this._animationFrame = requestAnimationFrame(animate);
@@ -193,26 +201,31 @@ export default class Effect extends Component{
                     this._animationFrame = requestAnimationFrame(animate);
                 } else {
                     this._active = false;
+                    this._elapsed = this._duration;
                     resolve(); // Resolve when animation completes
                 }
             };
 
             this._animationFrame = requestAnimationFrame(animate);
-        });
+        });        
     }
 
     reverse() {
-        this._stopOthers(this);
+        if (this._animationFrame) {
+            cancelAnimationFrame(this._animationFrame);
+            this._animationFrame = null;
+        } 
+
         this._active = true;
         const startProgress = this._progress;
         this._startTime = null;
-        this._useReverse = true;
-
+        
         const animate = (timestamp) => {
             if (!this._active) return;
             if (!this._startTime) this._startTime = timestamp;
 
             const elapsed = timestamp - this._startTime - this._delay;
+            this._elapsed = elapsed;
 
             if (elapsed < 0) { 
                 this._animationFrame = requestAnimationFrame(animate); 
@@ -232,6 +245,7 @@ export default class Effect extends Component{
                 this._animationFrame = requestAnimationFrame(animate);
             } else {
                 this._active = false;
+                this._elapsed = this._duration;
             }
         };
 

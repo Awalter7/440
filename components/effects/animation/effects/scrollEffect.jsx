@@ -59,6 +59,8 @@ export default class ScrollEffect extends Effect{
     handleScroll = (event) => {
         let y = window.scrollY;
 
+        console.log(y)
+
         if(y < this.scrollStart){
             this.progress = 0
         }else if(y > this.scrollStart && y < this.scrollEnd){

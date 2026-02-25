@@ -13,13 +13,6 @@ import {
 
 import EffectManager from "./managers/effectManager";
 
-// Generate unique ID for component instances
-let instanceCounter = 0;
-const generateUniqueId = () => {
-  instanceCounter += 1;
-  return `custom-scroll-${instanceCounter}-${Date.now()}`;
-};
-
 
 export function CustomScroll({
     children,
@@ -74,7 +67,9 @@ export function CustomScroll({
                 trigger: obj?.triggerId,
                 duration: obj.duration,
                 delay: obj.delay,
+                exitDelay: 300,
                 easingFunction: obj.easingFunction,
+                fullCycle: obj.fullCycle,
                 styles: obj.styles,
                 id: `hover-${idx}`
             })

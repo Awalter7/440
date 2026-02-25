@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useId} from "react";
 
 export function CustomCode({
   children,
@@ -8,6 +8,7 @@ export function CustomCode({
 }) {
   const [value, setValue] = useState(null);
   const refs = useRef({});
+  const uID = useId(); // guaranteed stable, no module-level state needed
 
   useEffect(() => {
     if (!code) return;
@@ -17,6 +18,7 @@ export function CustomCode({
         "setValue",
         "getValue",
         "refs",
+        "uID",
         `
         "use strict";
         ${code}
@@ -27,7 +29,8 @@ export function CustomCode({
       fn(
         setValue,
         () => value,
-        refs.current
+        refs.current,
+        uID,
       );
     } catch (err) {
       console.error("[CustomCode Error]", err);
@@ -73,7 +76,7 @@ export function CustomCode({
   };
 
   return (
-    <div className={className}>
+    <div className={className} id={uID}>
       {injectPropsRecursively(children)}
     </div>
   );

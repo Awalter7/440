@@ -37,7 +37,7 @@ export default class DistanceEffect extends Effect {
 
         const rect = element.getBoundingClientRect();
 
-        console.log(rect.top)
+
         switch(this.qualifyer){
             case "===":
                 if (rect.top === this._distance) {

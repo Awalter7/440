@@ -874,6 +874,13 @@ PLASMIC.registerComponent(CustomScroll, {
       description: "Use text instead of elements.",
       defaultValue: "",
     },
+    animateChars: {
+      type: "boolean",
+      displayName: "Animate Characters",
+      description: "Animate each character of the provided text",
+      defaultValue: false,
+      hidden: (props) => props.text === "",
+    },
     children: {
       type: "slot",
       defaultValue: {
@@ -1360,6 +1367,12 @@ PLASMIC.registerComponent(CustomScroll, {
             description: "ID of the element that triggers this effect when clicked",
             defaultValue: "",
           },
+          fullCycle: {
+            type: "boolean",
+            displayName: "Full Cycle",
+            description: "Should the animation reverse imediatly after mouse exit.",
+            defaultValue: true,
+          },
           duration: {
             type: "number",
             displayName: "Duration (ms)",
@@ -1371,6 +1384,12 @@ PLASMIC.registerComponent(CustomScroll, {
             displayName: "Delay (ms)",
             description: "How long should this effect wait to animate",
             defaultValue: 0,
+          },
+          exitDelay: {
+            type: "number",
+            displayName: "Exit Delay (ms)",
+            description: "How long should this effect wait to revert the animation",
+            defaultValue: 1000,
           },
           easingFunction: {
             type: "choice",

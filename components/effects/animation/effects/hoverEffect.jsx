@@ -5,6 +5,8 @@ export default class HoverEffect extends Effect {
     super(props);
 
     this._type = "hover";
+    this._exitDelay = props.exitDelay ?? 0
+    this._fullCycle = props.fullCycle ?? true;
     this.stopOnEnd = true;
   }
 
@@ -17,28 +19,57 @@ export default class HoverEffect extends Effect {
   }
 
   componentDidMount() {
-    const element = document.getElementById(this._trigger);
-    if (element) {
-      // Use mouseenter and mouseleave for hover detection
-      element.addEventListener('mouseenter', this.handleHoverEnter);
-      element.addEventListener('mouseleave', this.handleHoverLeave);
-    }
+    this._attachWhenReady();
   }
 
-  componentWillUnmount() {
-    const element = document.getElementById(this._trigger);
-    if (element) {
-      element.removeEventListener('mouseenter', this.handleHoverEnter);
-      element.removeEventListener('mouseleave', this.handleHoverLeave);
+  _attachWhenReady = () => {
+    if (!this._uID || this._uID === "") {
+      // Retry on next frame
+      this._raf = requestAnimationFrame(this._attachWhenReady);
+      return;
     }
-  }
+
+    let element;
+
+    if (this._trigger !== "") {
+      element = document.getElementById(this._trigger ?? this._uID);
+    } else {
+      element = document.querySelector(
+        `[data-attribute-unique-id="${this._uID}"]`
+      );
+    }
+
+    if (element) {
+      this._element = element; // store reference for cleanup
+      element.addEventListener("mouseenter", this.handleHoverEnter);
+      element.addEventListener("mouseleave", this.handleHoverLeave);
+    }
+  };
 
   handleHoverEnter = () => {
+    if (this._exitTimeout) {
+      clearTimeout(this._exitTimeout);
+      this._exitTimeout = null;
+    }
     this.start();
   }
 
   handleHoverLeave = () => {
-    // If you want the effect to stop when the mouse leaves:
-    this.reverse();
+    if (this._exitTimeout) {
+      clearTimeout(this._exitTimeout);
+    }
+
+    if (this._active && this._fullCycle) {
+      // Wait for forward animation to finish before reversing
+      const waitTime = this._duration - (this._elapsed ?? 0);
+      this._exitTimeout = setTimeout(() => {
+        this.reverse();
+      }, Math.max(0, waitTime));
+    } else {
+      // Reverse immediately (after exitDelay if set)
+      this._exitTimeout = setTimeout(() => {
+        this.reverse();
+      }, this._exitDelay);
+    }
   }
 }
