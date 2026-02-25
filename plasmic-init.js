@@ -881,6 +881,13 @@ PLASMIC.registerComponent(CustomScroll, {
       defaultValue: false,
       hidden: (props) => props.text === "",
     },
+    characterDelayOffset: {
+      type: "number",
+      diplayName: "Character Delay Offset (ms)",
+      description: "delay characters to be animated after proceeding character.",
+      defaultValue: 0,
+      hidden: (props) => props.animateChars === false,
+    },
     children: {
       type: "slot",
       defaultValue: {

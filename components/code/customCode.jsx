@@ -25,7 +25,7 @@ export function CustomCode({
       `
       );
 
-      console.log(fn);
+
       fn(
         setValue,
         () => value,
