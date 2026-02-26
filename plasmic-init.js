@@ -5,7 +5,7 @@ import GradualBlur from './components/effects/visual/gradualBlur';
 import { GravityWrapper } from "./components/effects/physics/gravity"
 import { Object } from "./components/effects/physics/object"
 import { CustomCode } from "./components/code/customCode"
-import Planets from "./components/three/scenes/planets"
+import { Planets } from "./components/three/scenes/planets"
 
 // import { StickerPeel } from "./components/effects/StickerPeel";
 // import ThreeCanvas from "./components/three/canvas/ThreeCanvas"
@@ -827,7 +827,7 @@ PLASMIC.registerComponent(Planets, {
   displayName: "Planet Scene",
   props: {},
   importPath: "./components/three/scenes/planets",
-  isDefaultExport: true,
+  isDefaultExport: false,
 })
 
 PLASMIC.registerComponent(GradualBlur, {
