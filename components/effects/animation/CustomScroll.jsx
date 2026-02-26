@@ -32,6 +32,8 @@ export function CustomScroll({
     distanceEffects = [],
     loadEffect = null,
     text = "",
+    animateChars = false,
+    characterDelayOffset = 0,
 
     customValue = {},
 }) {
@@ -87,10 +89,10 @@ export function CustomScroll({
                 delay: obj.delay,
                 easingFunction: obj.easingFunction,
                 styles: obj.styles,
-                id: `hover-${idx}`
+                id: `distance-${idx}`
             })
         )) : null),
-        [hoverEffects]
+        [distanceEffects]
     );
 
     const stableLoadEffect = useMemo(
@@ -115,6 +117,7 @@ export function CustomScroll({
                 styles: obj.styles,
                 delay: null,
                 trigger: null,
+                reversable: obj.reversable,
                 id: `scroll-${idx}`
             })
         )) : null),
@@ -166,8 +169,9 @@ export function CustomScroll({
                 ...stableValueChangeEffects,
                 // ...(physics.hasGravity ? [new GravityEffect({ id: 'gravity-1', objectId: uID, containerId: physics.container })] : []),
             ].filter(effect => effect != null),
-        [stableLoadEffect, stableClickEffects]
+        [stableLoadEffect, stableClickEffects, stableScrollEffect]
     );
+
 
 
     const effectManagerRef = useRef(null);
@@ -189,37 +193,84 @@ export function CustomScroll({
 
     return (
         <>
-            {/* {
-                effects
-                && */}
-                <EffectManager 
-                    ref={effectManagerRef}
-                    effects={effects}
-                    initialStyles={initialStyles}
-                    uID={uID}
-                    data-attibute-elm-type={"effectManager"}
-                    customTriggers={{
-                        start: {
-                            'load-0': progress === 100 || total === 0,
-                        },
-                    }}
-                >   
-                    <div className={className} data-attribute-unique-id={uID} id={id} style={{ position: position, transition: "none", transformStyle: "preserve-3d"}}>
-                        {
-                            usePropValue 
-                                ?
-                                    values
-                                    &&
-                                    Object.values(values).map((value, idx) => (
-                                        value
-                                    ))
-                                :
-                                    text ? text : children
-                        }
-                    </div>
-                </EffectManager>
-            {/* } */}
+            {
+                !animateChars 
+                ?
+                    <EffectManager 
+                        ref={effectManagerRef}
+                        effects={effects}
+                        initialStyles={initialStyles}
+                        uID={uID}
+                        data-attibute-elm-type={"effectManager"}
+                        // customTriggers={{
+                        //     start: {
+                        //         'load-0': progress === 100 || total === 0,
+                        //     },
+                        // }}
+                    >   
+                        <div className={className} data-attribute-unique-id={uID} id={id} style={{ position: position, transition: "none", transformStyle: "preserve-3d"}}>
+                            {
+                                usePropValue 
+                                    ?
+                                        values
+                                        &&
+                                        Object.values(values).map((value, idx) => (
+                                            value
+                                        ))
+                                    :
+                                        text ? text : children
+                            }
+                        </div>
+                    </EffectManager>
+                :
+                    text
+                    &&
+                    text.split('').map((char) => (
+                        <CustomScroll
+                            children={children}
+                            className={className}
+                            id={id}
+                            position={position}
+                            usePropValue={usePropValue}
+                            useSpecificProp={useSpecificProp}
+                            propToUse={propToUse}
 
+                            initialStyles={initialStyles}
+
+                            clickEffects={clickEffects}
+                            hoverEffects={hoverEffects}
+                            valueChangeEffects={valueChangeEffects}
+                            breakpoints={breakpoints}
+                            distanceEffects={distanceEffects}
+                            loadEffect={loadEffect}
+
+                            customValue={customValue}
+
+                            text={char}
+                            animateChars={false}
+                            characterDelayOffset={characterDelayOffset}
+                        /> 
+                        // <EffectManager 
+                        //     ref={(el) => (textEffectManagerRefs.current[idx] = el)}
+                        //     effects={effects}
+                        //     initialStyles={initialStyles}
+                        //     uID={uID}
+                        //     data-attibute-elm-type={"effectManager"}
+                        //     // customTriggers={{
+                        //     //     start: {
+                        //     //         'load-0': progress === 100 || total === 0,
+                        //     //     },
+                        //     // }}
+                        // >
+                        //     <div className={className} data-attribute-unique-id={uID} id={id} style={{ position: position, transition: "none", transformStyle: "preserve-3d" }}>
+                        //         {
+                        //             char === " " ? "\u00A0" : char
+                        //         }
+                        //     </div>
+                        // </EffectManager>   
+
+                    ))
+            }
         </>
     );
 }

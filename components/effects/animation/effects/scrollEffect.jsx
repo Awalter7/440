@@ -8,7 +8,14 @@ export default class ScrollEffect extends Effect{
         this._scrollPercent = 0;
         this._scrollStart = props.scrollStart ?? 0;
         this._scrollEnd = props.scrollEnd ?? 0;
+        this._reversable = props.reversable ?? false;
         this.stopOnEnd = false;
+        
+        this.lastY = 0;
+
+        // this.firstProgress = true;
+        
+        // this.reverseEndValue = null;
 
     }
 
@@ -57,18 +64,19 @@ export default class ScrollEffect extends Effect{
     // }
 
     handleScroll = (event) => {
-        let y = window.scrollY;
+        const y = window.scrollY;
+        const range = this.scrollEnd - this.scrollStart;
 
-        console.log(y)
+        if (y <= this.scrollStart) {
+            this._progress = 0;
+        } else if (y >= this.scrollEnd) {
+            this._progress = 1;
+        } else {
+            this.firstProgress = false;
+            this.reverseEndValues = this.styles
 
-        if(y < this.scrollStart){
-            this.progress = 0
-        }else if(y > this.scrollStart && y < this.scrollEnd){
-            this.progress = ((window.scrollY - this.scrollStart) / this.scrollEnd)
-        }else if(y > this.scrollEnd){
-            this.progress = 1
+            this._progress = (y - this.scrollStart) / range;
+            this._onProgressChange(this._progress, this);
         }
-
-        this._onProgressChange(this.progress, this)
     }
 }

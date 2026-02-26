@@ -118,6 +118,7 @@ export default class Effect extends Component{
     get progress() {
         return this._progress;
     }
+
     set progress(value) {
         this._progress = Math.min(Math.max(value, 0), 1); // Clamp between 0 and 1
     }

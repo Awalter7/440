@@ -42,7 +42,7 @@ export default class EffectManager extends Component{
         this._effects.forEach(effect => {
             if(effect !== null){
                 effect.onProgressChange = this._onProgressChange.bind(this);
-                effect.stopOthers = this._stopOthers.bind(this)
+                // effect.stopOthers = this._stopOthers.bind(this)
                 effect.uID = props.uID ?? "example-id";
                 effect.setStyle = this._setStyle.bind(this);
             }
@@ -155,8 +155,15 @@ export default class EffectManager extends Component{
         })
     }
 
+    _setAllStartValues(type, property, value){
+
+    }
+
     _onProgressChange(progress, effect) {
         const easing = easingFunctions[effect.easingFunction] || easingFunctions.linear;
+        if(effect.type === "scroll"){
+            console.log(progress)
+        }
 
         const transformProps = [
             "scale", "scaleX", "scaleY", "scaleZ",
@@ -180,13 +187,7 @@ export default class EffectManager extends Component{
         const updatedTransforms = { ...existingTransforms };
 
         effect.styles.forEach(({ property, endValue, startValue }) => {
-            let currentStartValue = startValue;
-
-            // console.log(endValue)
-            // if(property === "width"){
-            //     console.log(currentStartValue)
-            // }
-            
+            let currentStartValue = startValue; 
 
             // 🧠 For transform props, pull starting value from the parsed transform map
             if (transformProps.includes(property)) {
@@ -223,7 +224,6 @@ export default class EffectManager extends Component{
                         }
                     }
 
-                    // console.log(currentStartValue)
                     effect.setStartValue(property, currentStartValue);
                 }
             }

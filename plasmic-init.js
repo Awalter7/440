@@ -1126,6 +1126,12 @@ PLASMIC.registerComponent(CustomScroll, {
       itemType: {
         type: "object",
         fields: {
+          reversable: {
+            type: "boolean",
+            displayName: "Loop",
+            description: "Make scroll animation reversable.",
+            defaultValue: true,
+          },
           scrollStart: {
             type: "number",
             displayName: "Scroll Start (px)",
@@ -1224,6 +1230,12 @@ PLASMIC.registerComponent(CustomScroll, {
                     "backdropFilter",
                   ],
                   defaultValue: "opacity",
+                },
+                startValue: {
+                  type: "string",
+                  displayName: "Start Value",
+                  description: "Initial value (e.g., '500px', '1', '0', '180deg', '#0000ff')",
+                  defaultValue: "1",
                 },
                 endValue: {
                   type: "string",
