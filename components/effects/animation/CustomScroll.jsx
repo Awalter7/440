@@ -204,6 +204,10 @@ export function CustomScroll({
         })
      }, [customValue])
 
+    useEffect(() => {
+
+    }, [children])
+
 
 
     return (

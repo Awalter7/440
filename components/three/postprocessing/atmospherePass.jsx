@@ -1,0 +1,184 @@
+import React, { Component, createRef } from "react";
+import Atmosphere from "./atmosphere"
+
+
+export default class AtmospherePass extends Component{
+    constructor(props){
+        super(props)
+        
+        this.children = props.children;
+        this.state = {meshData: []};
+        this.ref = createRef()
+
+        this._scale = .18;
+        this._wavelength = {
+            r: 550.0,
+            g: 497.0, 
+            b: 443.0
+        };
+        this._numInScatteringPoints = 10;
+        this._numOpticalDepthPoints = 10;
+        this._scatteringStrength = 20.3;
+        this._densityFallOff = 15;
+        this._blendStrength = .55;
+        this._brightness = 0;
+        this._reflectiveness = 1.6;
+        this._sunPosition = [-100, -10, 0];
+        this._sunDistance = .4;
+    }
+
+    get scale() {
+        return this._scale;
+    }
+    set scale(value) {
+        this._scale = value;
+    }
+
+    // Getter and setter for wavelength
+    get wavelength() {
+        return this._wavelength;
+    }
+    set wavelength(value) {
+        if (value && typeof value === "object" && "r" in value && "g" in value && "b" in value) {
+            this._wavelength = { ...value };
+        } else {
+            console.error("wavelength must be an object with properties r, g, and b");
+        }
+    }
+
+    // Getter and setter for numInScatteringPoints
+    get numInScatteringPoints() {
+        return this._numInScatteringPoints;
+    }
+    set numInScatteringPoints(value) {
+        this._numInScatteringPoints = value;
+    }
+
+    // Getter and setter for numOpticalDepthPoints
+    get numOpticalDepthPoints() {
+        return this._numOpticalDepthPoints;
+    }
+    set numOpticalDepthPoints(value) {
+        this._numOpticalDepthPoints = value;
+    }
+
+    // Getter and setter for scatteringStrength
+    get scatteringStrength() {
+        return this._scatteringStrength;
+    }
+    set scatteringStrength(value) {
+        this._scatteringStrength = value;
+    }
+
+    // Getter and setter for densityFallOff
+    get densityFallOff() {
+        return this._densityFallOff;
+    }
+    set densityFallOff(value) {
+        this._densityFallOff = value;
+    }
+
+    // Getter and setter for blendStrength
+    get blendStrength() {
+        return this._blendStrength;
+    }
+    set blendStrength(value) {
+        this._blendStrength = value;
+    }
+
+    // Getter and setter for brightness
+    get brightness() {
+        return this._brightness;
+    }
+    set brightness(value) {
+        this._brightness = value;
+    }
+
+    get reflectiveness() {
+        return this._reflectiveness;
+    }
+    set reflectiveness(value) {
+        this._reflectiveness = value;
+    }
+
+    get sunPosition() {
+        return this._sunPosition;
+    }
+    set sunPosition(value) {
+        if (value && value.length === 3) {
+            this._sunPosition = value;
+        } else {
+            console.error("wavelength must be an object with properties r, g, and b");
+        }
+    }
+
+    get sunDistance() {
+        return this._sunDistance;
+    }
+    set sunDistance(value) {
+        this._sunDistance = value;
+    }
+    
+    animate = () => {
+        this.initalize();
+        
+        requestAnimationFrame(this.animate)
+    }
+
+    componentDidMount() {
+        this.animate();
+    }
+
+
+
+    initalize(){
+        if(this.ref.current === undefined) return;
+        const groupMesh = this.ref.current.children
+        let arr = [];
+
+        for (let i = 0; i < groupMesh.length; i++) {
+            let mesh = groupMesh[i];
+            if (mesh.isMesh) {
+                arr.push({
+                    id: mesh.id ? mesh.id : `mesh-${i}`,
+                    radius: mesh.geometry.parameters.radius,
+                    position: [
+                        mesh.matrixWorld.elements[12],
+                        mesh.matrixWorld.elements[13],
+                        mesh.matrixWorld.elements[14],
+                    ],
+                });
+            }
+        }
+
+        this.setState({meshData: arr})
+    }
+
+    render(){
+        return(
+            <group ref={this.ref}>
+                {this.children}
+                {this.state.meshData.length > 0 &&
+                    this.state.meshData.map((data, key) => (
+                        <Atmosphere
+                            scale={this.scale}
+                            wavelengths={this.wavelengths}
+                            numInScatteringPoints={this._numInScatteringPoints}
+                            numOpticalDepthPoints={this._numOpticalDepthPoints}
+                            scatteringStrength={this._scatteringStrength}
+                            densityFallOff={this._densityFallOff}
+                            blendStrength={this._blendStrength}
+                            brightness={this._brightness}
+                            reflectiveness={this._reflectiveness}
+                            sunDistance={this._sunDistance}
+                            sunPosition={this._sunPosition}
+                            {...data}
+                            key={`atmosphere-${key}`}
+                        />
+                    ))
+                }
+            </group>
+        )
+    }
+
+}

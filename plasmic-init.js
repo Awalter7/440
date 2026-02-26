@@ -5,6 +5,7 @@ import GradualBlur from './components/effects/visual/gradualBlur';
 import { GravityWrapper } from "./components/effects/physics/gravity"
 import { Object } from "./components/effects/physics/object"
 import { CustomCode } from "./components/code/customCode"
+import { Planets } from "./components/three/scenes/planets"
 
 // import { StickerPeel } from "./components/effects/StickerPeel";
 // import ThreeCanvas from "./components/three/canvas/ThreeCanvas"
@@ -820,6 +821,13 @@ PLASMIC.registerComponent(Object, {
 //   importPath: "../components/three/canvas/ThreeCanvas",
 //   isDefaultExport: true,
 // });
+
+PLASMIC.registerComponent(Planets, {
+  name: "PlanetScene",
+  displayName: "Planet Scene",
+  importPath: "./components/three/scenes/planets",
+  isDefaultExport: true,
+})
 
 PLASMIC.registerComponent(GradualBlur, {
   name: 'GradualBlur',

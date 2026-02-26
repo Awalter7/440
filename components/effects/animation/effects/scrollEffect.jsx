@@ -66,7 +66,8 @@ export default class ScrollEffect extends Effect{
 
     handleScroll = (event) => {
         const y = window.scrollY;
-        const delayedStart = this.scrollStart - (this._pixelDelay * (this.dir === false ? this._length - this._index : this._length + this._index));
+        console.log(y)
+        const delayedStart = this.scrollStart - (this._pixelDelay * (this.dir === true ? this._index : this._length - this._index));
         const delayedEnd = this.scrollEnd
         const range = delayedEnd - delayedStart;
 
