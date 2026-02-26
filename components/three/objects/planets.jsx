@@ -6,14 +6,14 @@ import { MeshLineGeometry, MeshLineMaterial} from 'meshline'
 import * as THREE from 'three'
 
 
-import usePointPlane from "../hooks/planePosition"
+// import usePointPlane from "../hooks/planePosition"
 
 import AtmospherePass from "../postprocessing/atmospherePass"
 
 
-import Bump from "../../../../public/textures/planets/water-planet/4K/2k_earth_normal_map.jpg"
-import Specular from "../../../../public/textures/planets/water-planet/4K/2k_earth_specular_map.jpg"
-import Diffuse from "../../../../public/textures/planets/water-planet/4K/2k_earth_daymap.jpg"
+import Bump from "../../../public/images/4K/2k_earth_normal_map.jpg"
+import Specular from "../../../public/images/4K/2k_earth_specular_map.jpg"
+import Diffuse from "../../../public/images/4K/2k_earth_daymap.jpg"
 
 extend({ MeshLineGeometry, MeshLineMaterial })
 
@@ -117,14 +117,14 @@ class PlanetBase extends Component {
 
 const PlanetGroup = () => {
 
-    const {SunPositionPlane} = usePointPlane({
-      args: [100, 100, 10, 10],
-      position: [0, 0, 0],
-      rotation: [0, Math.PI, 0],
-      transparent: true,
-      planeName: "SunPositionPlane",
-      // onPointChange: (value) => setSunPosition([value.x * 5.0, Math.pow(1.1, value.y), 100]),
-    });
+    // const {SunPositionPlane} = usePointPlane({
+    //   args: [100, 100, 10, 10],
+    //   position: [0, 0, 0],
+    //   rotation: [0, Math.PI, 0],
+    //   transparent: true,
+    //   planeName: "SunPositionPlane",
+    //   // onPointChange: (value) => setSunPosition([value.x * 5.0, Math.pow(1.1, value.y), 100]),
+    // });
 
     const diffuseMap = useLoader(THREE.TextureLoader, Diffuse.src)
     const BumpMap    = useLoader(THREE.TextureLoader, Bump.src)
