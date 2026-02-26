@@ -225,9 +225,9 @@ export function CustomScroll({
                 :
                     text
                     &&
-                    text.split('').map((char) => (
+                    text.split('').map((char, idx) => (
                         <CustomScroll
-                            children={children}
+                            key={"char-" + idx}
                             className={className}
                             id={id}
                             position={position}
@@ -249,7 +249,9 @@ export function CustomScroll({
                             text={char}
                             animateChars={false}
                             characterDelayOffset={characterDelayOffset}
-                        /> 
+                        >
+                            {children}
+                        </CustomScroll>
                         // <EffectManager 
                         //     ref={(el) => (textEffectManagerRefs.current[idx] = el)}
                         //     effects={effects}
