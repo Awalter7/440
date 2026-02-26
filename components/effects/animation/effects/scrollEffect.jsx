@@ -76,7 +76,7 @@ export default class ScrollEffect extends Effect{
             this.reverseEndValues = this.styles
 
             this._progress = (y - this.scrollStart) / range;
-            this._onProgressChange(this._progress, this);
+            this._onProgressChange(this._progress, this, false);
         }
     }
 }

@@ -159,11 +159,8 @@ export default class EffectManager extends Component{
 
     }
 
-    _onProgressChange(progress, effect) {
+    _onProgressChange(progress, effect, modifyStartValue = true) {
         const easing = easingFunctions[effect.easingFunction] || easingFunctions.linear;
-        if(effect.type === "scroll"){
-            console.log(progress)
-        }
 
         const transformProps = [
             "scale", "scaleX", "scaleY", "scaleZ",
@@ -194,7 +191,9 @@ export default class EffectManager extends Component{
                 if (!currentStartValue) {
                     currentStartValue = existingTransforms[property] || 0;
 
-                    effect.setStartValue(property, currentStartValue);
+                    if(modifyStartValue){
+                        effect.setStartValue(property, currentStartValue);
+                    }
                 }
             } else {
                 if (!currentStartValue) {
@@ -224,7 +223,9 @@ export default class EffectManager extends Component{
                         }
                     }
 
-                    effect.setStartValue(property, currentStartValue);
+                    if(modifyStartValue){
+                        effect.setStartValue(property, currentStartValue);
+                    }
                 }
             }
 
@@ -259,7 +260,9 @@ export default class EffectManager extends Component{
                 effect.stop();
             }else if(!effect.active){
                 effect.stop();
-                effect.setStartValue(property, undefined)
+                if(modifyStartValue){
+                    effect.setStartValue(property, undefined)
+                }
             }
 
             // if(effect.stopOnEnd === true && !effect.active){

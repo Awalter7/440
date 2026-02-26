@@ -881,13 +881,13 @@ PLASMIC.registerComponent(CustomScroll, {
       defaultValue: false,
       hidden: (props) => props.text === "",
     },
-    characterDelayOffset: {
-      type: "number",
-      diplayName: "Character Delay Offset (ms)",
-      description: "delay characters to be animated after proceeding character.",
-      defaultValue: 0,
-      hidden: (props) => props.animateChars === false,
-    },
+    // characterDelayOffset: {
+    //   type: "number",
+    //   diplayName: "Character Delay Offset (ms)",
+    //   description: "delay characters to be animated after proceeding character.",
+    //   defaultValue: 0,
+    //   hidden: (props) => props.animateChars === false,
+    // },
     children: {
       type: "slot",
       defaultValue: {
@@ -1143,6 +1143,13 @@ PLASMIC.registerComponent(CustomScroll, {
             displayName: "Scroll End (px)",
             description: "Scroll position where this breakpoint ends (interpolation mode)",
             defaultValue: 1000,
+          },
+          pixelDelay: {
+            type: "number",
+            displayName: "delay (px)",
+            description: "Offset each characters start by a length in pixels.",
+            defaultValue: 0,
+            hidden: (props) => props.animateChars === false,
           },
           easingFunction: {
             type: "choice",
