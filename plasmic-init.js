@@ -1151,6 +1151,16 @@ PLASMIC.registerComponent(CustomScroll, {
             defaultValue: 0,
             hidden: (props) => props.animateChars === false,
           },
+          dir: {
+            type: "choice",
+            options: [
+              "up",
+              "down",
+            ],
+            displayName: "delay (px)",
+            description: "Offset each characters start by a length in pixels.",
+            defaultValue: "down",
+          },
           easingFunction: {
             type: "choice",
             options: [

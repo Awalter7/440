@@ -34,6 +34,9 @@ export default class Effect extends Component{
         this._elapsed;
 
         this._uID = props.uID ?? "example-id"
+
+        this._index = props.index ?? 0;
+        this._length = props.length ?? 1;
     }
 
 

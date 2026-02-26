@@ -36,8 +36,9 @@ export function CustomScroll({
     characterDelayOffset = 0,
 
     customValue = {},
+    compIndex = 0,
+    length=1,
 }) {
-    const { progress, total } = useProgress();
 
     const uID = useId(); // guaranteed stable, no module-level state needed
 
@@ -57,7 +58,9 @@ export function CustomScroll({
                 delay: obj.delay,
                 easingFunction: obj.easingFunction,
                 styles: obj.styles,
-                id: `click-${idx}`
+                id: `click-${idx}`,
+                index: compIndex,
+                length: length,
             })
         )) : null),
         [clickEffects]
@@ -73,7 +76,9 @@ export function CustomScroll({
                 easingFunction: obj.easingFunction,
                 fullCycle: obj.fullCycle,
                 styles: obj.styles,
-                id: `hover-${idx}`
+                id: `hover-${idx}`,
+                index: compIndex,
+                length: length,
             })
         )) : null),
         [hoverEffects]
@@ -89,7 +94,9 @@ export function CustomScroll({
                 delay: obj.delay,
                 easingFunction: obj.easingFunction,
                 styles: obj.styles,
-                id: `distance-${idx}`
+                id: `distance-${idx}`,
+                index: compIndex,
+                length: length,
             })
         )) : null),
         [distanceEffects]
@@ -103,6 +110,8 @@ export function CustomScroll({
                 easingFunction: loadEffect.easingFunction,
                 styles: loadEffect.styles,
                 id: `load-0`,
+                index: 0,
+                length: length,
             })
          : null),
         [loadEffect]
@@ -115,10 +124,14 @@ export function CustomScroll({
                 scrollEnd: obj.scrollEnd,
                 easingFunction: obj.easingFunction,
                 styles: obj.styles,
+                pixelDelay: obj.pixelDelay,
                 delay: null,
                 trigger: null,
                 reversable: obj.reversable,
-                id: `scroll-${idx}`
+                id: `scroll-${idx}`,
+                index: compIndex,
+                length: length,
+                dir: obj.dir === "up" ? true : false,
             })
         )) : null),
         [breakpoints]
@@ -138,21 +151,23 @@ export function CustomScroll({
             valueChangeEffects
             ? 
             valueChangeEffects.map((obj, idx) => (
-                new ValueChangeEffect({
-                    useSpecificProp: useSpecificProp,
-                    propToUse: propToUse,
-                    useOldValue: obj.useOldValue,
-                    customValue: customValue,
-                    values: values,
-                    setValues: (values) =>  handleSetVales(values),
-                    oldValues: oldValues,
-                    setOldValues: (values) =>  handleSetOldValues(values), 
-                    duration: obj.duration,
-                    delay: obj.delay,
-                    easingFunction: obj.easingFunction,
-                    styles: obj.styles,
-                    id: `value-${idx}`,
-                })
+                    new ValueChangeEffect({
+                        useSpecificProp: useSpecificProp,
+                        propToUse: propToUse,
+                        useOldValue: obj.useOldValue,
+                        customValue: customValue,
+                        values: values,
+                        setValues: (values) =>  handleSetVales(values),
+                        oldValues: oldValues,
+                        setOldValues: (values) =>  handleSetOldValues(values), 
+                        duration: obj.duration,
+                        delay: obj.delay,
+                        easingFunction: obj.easingFunction,
+                        styles: obj.styles,
+                        id: `value-${idx}`,
+                        index: compIndex,
+                        length: length,
+                    })
                 ))
             : 
             null,
@@ -249,6 +264,8 @@ export function CustomScroll({
                             text={char}
                             animateChars={false}
                             characterDelayOffset={characterDelayOffset}
+                            compIndex={idx}
+                            length={text.split('').length}
                         >
                             {children}
                         </CustomScroll>
