@@ -825,7 +825,16 @@ PLASMIC.registerComponent(Object, {
 PLASMIC.registerComponent(Planets, {
   name: "PlanetScene",
   displayName: "Planet Scene",
-  props: {},
+  props: {
+    className: {
+      type: "string",
+      description: "Additional CSS classes",
+    },
+    id: {
+      type: "string",
+      displayName: "id"
+    },
+  },
   importPath: "./components/three/scenes/planets",
   isDefaultExport: false,
 })

@@ -6,6 +6,7 @@ import { ComposerContext } from '../contexts/composerContext';
 import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass.js';
 import useDepthCapture from "../utils/depthCapture";
 import AtmosphereShader from '../shaders/atmosphere';
+import WeatherShader from '../shaders/weather';
 import { OpticalDepth } from '../utils/opticalDepth';
 
 
@@ -23,7 +24,9 @@ const Atmosphere = (props) => {
   const {camera, size, scene} = useThree();
   const {depthTexture} = useDepthCapture();
   const composer = useContext(ComposerContext)
-  const shaderPass = useRef();
+
+  const skyShaderPass = useRef();
+  // const weatherShaderPass = useRef();
 
   const {
     position = [0, 0, 0],
@@ -55,7 +58,7 @@ const Atmosphere = (props) => {
   useEffect(() => {
     if (!composer || !composer.current || !depthTexture) return;
 
-    const shader = AtmosphereShader.clone();
+    const skyShader = AtmosphereShader.clone();
 
 
     const rgb = getRGB(waveLengths, scatteringStrength)
@@ -64,40 +67,59 @@ const Atmosphere = (props) => {
     const aRadius = (1 + scale) * radius;
     const opticalDepth = OpticalDepth(240, 100, aRadius, radius);
 
-    shader.needsUpdate = true;
+    skyShader.needsUpdate = true;
 
-    shader.uniforms.tDepth.value = depthTexture;
-    shader.uniforms.tOpticalDepthLookup.value = opticalDepth;
+    skyShader.uniforms.tDepth.value = depthTexture;
+    skyShader.uniforms.tOpticalDepthLookup.value = opticalDepth;
 
-    shader.uniforms.uInverseProjection.value.copy(camera.projectionMatrixInverse);
-    shader.uniforms.uInverseView.value.copy(camera.matrixWorld);
-    shader.uniforms.cameraPosition = { value: camera.position };
+    skyShader.uniforms.uInverseProjection.value.copy(camera.projectionMatrixInverse);
+    skyShader.uniforms.uInverseView.value.copy(camera.matrixWorld);
+    skyShader.uniforms.cameraPosition = { value: camera.position };
 
-    shader.uniforms.pRadius.value = radius;
-    shader.uniforms.pPosition.value = new THREE.Vector3(...position);
+    skyShader.uniforms.pRadius.value = radius;
+    skyShader.uniforms.pPosition.value = new THREE.Vector3(...position);
+    skyShader.uniforms.aRadius.value = aRadius;
 
-    shader.uniforms.aRadius.value = aRadius;
+    skyShader.uniforms.sDistance.value = sunDistance;
+    skyShader.uniforms.sPosition.value = new THREE.Vector3(...sunPosition).normalize();
 
-    shader.uniforms.sDistance.value = sunDistance;
-    shader.uniforms.sPosition.value = new THREE.Vector3(...sunPosition).normalize();
-
-    shader.uniforms.numOpticalDepthPoints.value = numOpticalDepthPoints;
-    shader.uniforms.numInScatteringPoints.value = numInScatteringPoints;
-    shader.uniforms.densityFallOff.value = densityFallOff;
-    shader.uniforms.r.value = rgb.x;
-    shader.uniforms.g.value = rgb.y;
-    shader.uniforms.b.value = rgb.z;
-    shader.uniforms.uBlendStrength.value = blendStrength;
-    shader.uniforms.uBrightnessStrength.value = brightness;
-    shader.uniforms.uReflectiveStrength.value = reflectiveness;
+    skyShader.uniforms.numOpticalDepthPoints.value = numOpticalDepthPoints;
+    skyShader.uniforms.numInScatteringPoints.value = numInScatteringPoints;
+    skyShader.uniforms.densityFallOff.value = densityFallOff;
+    skyShader.uniforms.r.value = rgb.x;
+    skyShader.uniforms.g.value = rgb.y;
+    skyShader.uniforms.b.value = rgb.z;
+    skyShader.uniforms.uBlendStrength.value = blendStrength;
+    skyShader.uniforms.uBrightnessStrength.value = brightness;
+    skyShader.uniforms.uReflectiveStrength.value = reflectiveness;
     
-    shaderPass.current = new ShaderPass(shader);
-    composer.current.addPass(shaderPass.current)
+    skyShaderPass.current = new ShaderPass(skyShader);
+    composer.current.addPass(skyShaderPass.current)
 
+
+    // //Weather Texture.
+
+    // const weatherShader = WeatherShader.clone();
+
+    // weatherShader.uniforms.uInverseProjection.value.copy(camera.projectionMatrixInverse);
+    // weatherShader.uniforms.uInverseView.value.copy(camera.matrixWorld);
+    // weatherShader.uniforms.cameraPosition = { value: camera.position };
+
+    // weatherShader.uniforms.tDepth.value = depthTexture;
+
+    // weatherShader.uniforms.pRadius.value = radius;
+    // weatherShader.uniforms.pPosition.value = new THREE.Vector3(...position);
+    // weatherShader.uniforms.aRadius.value = aRadius;
+    // // weatherShader.uniforms.pRadius.value = radius;
+    // // weatherShader.uniforms.pPosition.value = new THREE.Vector3(...position);
+
+    // weatherShaderPass.current = new ShaderPass(weatherShader)
+    // composer.current.addPass(weatherShaderPass.current)
 
     return () => {
       if (composer && composer.current) {
-        composer.current.removePass(shaderPass.current);
+        composer.current.removePass(skyShaderPass.current);
+        // composer.current.removePass(weatherShaderPass.current);
       }
     };
   }, [scene, camera, depthTexture, composer, size])
@@ -110,36 +132,56 @@ const Atmosphere = (props) => {
 
   useFrame(() => {
     // Update atmosphere uniforms
-    if (composer && composer.current && shaderPass.current) {
+    if (
+      composer && composer.current 
+      && 
+      skyShaderPass.current 
+      // && 
+      // weatherShaderPass.current
+    ) {
       // Update dynamic uniforms
       // Render final
       const rgb = getRGB(waveLengths, scatteringStrength)
       const aRadius = (1 + scale) * radius;
 
 
-      shaderPass.current.material.uniforms.uInverseProjection.value.copy(camera.projectionMatrixInverse);
-      shaderPass.current.material.uniforms.uInverseView.value.copy(camera.matrixWorld);
-      shaderPass.current.material.uniforms.tDepth.value = depthTexture;
-      shaderPass.current.material.uniforms.pPosition.value = new THREE.Vector3(...position);
-      shaderPass.current.material.uniforms.cameraPosition = { value: camera.position };
+      skyShaderPass.current.material.uniforms.uInverseProjection.value.copy(camera.projectionMatrixInverse);
+      skyShaderPass.current.material.uniforms.uInverseView.value.copy(camera.matrixWorld);
+      
+      skyShaderPass.current.material.uniforms.tDepth.value = depthTexture;
+
+      skyShaderPass.current.material.uniforms.cameraPosition = { value: camera.position };
 
 
-      shaderPass.current.material.uniforms.pRadius.value = radius;
-      shaderPass.current.material.uniforms.pPosition.value = new THREE.Vector3(...position);
-      shaderPass.current.material.uniforms.aRadius.value = aRadius;
+      skyShaderPass.current.material.uniforms.pRadius.value = radius;
+      skyShaderPass.current.material.uniforms.pPosition.value = new THREE.Vector3(...position);
+      skyShaderPass.current.material.uniforms.aRadius.value = aRadius;
 
-      shaderPass.current.material.uniforms.sDistance.value = sunDistance;
-      shaderPass.current.material.uniforms.sPosition.value = new THREE.Vector3(...sunPosition).normalize();
+      skyShaderPass.current.material.uniforms.sDistance.value = sunDistance;
+      skyShaderPass.current.material.uniforms.sPosition.value = new THREE.Vector3(...sunPosition).normalize();
   
-      shaderPass.current.material.uniforms.numOpticalDepthPoints.value = numOpticalDepthPoints;
-      shaderPass.current.material.uniforms.numInScatteringPoints.value = numInScatteringPoints;
-      shaderPass.current.material.uniforms.densityFallOff.value = densityFallOff;
-      shaderPass.current.material.uniforms.r.value = rgb.x;
-      shaderPass.current.material.uniforms.g.value = rgb.y;
-      shaderPass.current.material.uniforms.b.value = rgb.z;
-      shaderPass.current.material.uniforms.uBlendStrength.value = blendStrength;
-      shaderPass.current.material.uniforms.uBrightnessStrength.value = brightness;
-      shaderPass.current.material.uniforms.uReflectiveStrength.value = reflectiveness;
+      skyShaderPass.current.material.uniforms.numOpticalDepthPoints.value = numOpticalDepthPoints;
+      skyShaderPass.current.material.uniforms.numInScatteringPoints.value = numInScatteringPoints;
+      skyShaderPass.current.material.uniforms.densityFallOff.value = densityFallOff;
+      skyShaderPass.current.material.uniforms.r.value = rgb.x;
+      skyShaderPass.current.material.uniforms.g.value = rgb.y;
+      skyShaderPass.current.material.uniforms.b.value = rgb.z;
+      skyShaderPass.current.material.uniforms.uBlendStrength.value = blendStrength;
+      skyShaderPass.current.material.uniforms.uBrightnessStrength.value = brightness;
+      skyShaderPass.current.material.uniforms.uReflectiveStrength.value = reflectiveness;
+
+      // weatherShaderPass.current.material.uniforms.sDistance.value = sunDistance;
+      // weatherShaderPass.current.material.uniforms.sPosition.value = new THREE.Vector3(...sunPosition).normalize();
+      
+      // weatherShaderPass.current.material.uniforms.uInverseProjection.value.copy(camera.projectionMatrixInverse);
+      // weatherShaderPass.current.material.uniforms.uInverseView.value.copy(camera.matrixWorld);
+      // weatherShaderPass.current.material.uniforms.cameraPosition = { value: camera.position };
+
+      // weatherShaderPass.current.material.uniforms.tDepth.value = depthTexture;
+
+      // weatherShaderPass.current.material.uniforms.pRadius.value = radius;
+      // weatherShaderPass.current.material.uniforms.pPosition.value = new THREE.Vector3(...position);
+      // weatherShaderPass.current.material.uniforms.aRadius.value = aRadius;
 
 
       composer.current.render();

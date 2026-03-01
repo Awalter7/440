@@ -1,5 +1,6 @@
-import React, { Component, createRef } from "react";
+import React, { useEffect, useRef, useState, Component, createRef } from "react";
 import Atmosphere from "./atmosphere"
+import Weather from "./weather"
 
 
 export default class AtmospherePass extends Component{
@@ -16,13 +17,13 @@ export default class AtmospherePass extends Component{
             g: 497.0, 
             b: 443.0
         };
-        this._numInScatteringPoints = 10;
-        this._numOpticalDepthPoints = 10;
+        this._numInScatteringPoints = 20;
+        this._numOpticalDepthPoints = 20;
         this._scatteringStrength = 20.3;
         this._densityFallOff = 15;
         this._blendStrength = .55;
         this._brightness = 0;
-        this._reflectiveness = 1.6;
+        this._reflectiveness = 2;
         this._sunPosition = [-100, -10, 0];
         this._sunDistance = .4;
     }
@@ -133,6 +134,7 @@ export default class AtmospherePass extends Component{
 
     initalize(){
         if(this.ref.current === undefined) return;
+        
         const groupMesh = this.ref.current.children
         let arr = [];
 
@@ -160,21 +162,24 @@ export default class AtmospherePass extends Component{
                 {this.children}
                 {this.state.meshData.length > 0 &&
                     this.state.meshData.map((data, key) => (
-                        <Atmosphere
-                            scale={this.scale}
-                            wavelengths={this.wavelengths}
-                            numInScatteringPoints={this._numInScatteringPoints}
-                            numOpticalDepthPoints={this._numOpticalDepthPoints}
-                            scatteringStrength={this._scatteringStrength}
-                            densityFallOff={this._densityFallOff}
-                            blendStrength={this._blendStrength}
-                            brightness={this._brightness}
-                            reflectiveness={this._reflectiveness}
-                            sunDistance={this._sunDistance}
-                            sunPosition={this._sunPosition}
-                            {...data}
-                            key={`atmosphere-${key}`}
-                        />
+                        <>
+                            <Atmosphere
+                                scale={this.scale}
+                                wavelengths={this.wavelengths}
+                                numInScatteringPoints={this._numInScatteringPoints}
+                                numOpticalDepthPoints={this._numOpticalDepthPoints}
+                                scatteringStrength={this._scatteringStrength}
+                                densityFallOff={this._densityFallOff}
+                                blendStrength={this._blendStrength}
+                                brightness={this._brightness}
+                                reflectiveness={this._reflectiveness}
+                                sunDistance={this._sunDistance}
+                                sunPosition={this._sunPosition}
+                                {...data}
+                                key={`atmosphere-${key}`}
+                            />
+                        </>
+
                     ))
                 }
             </group>

@@ -39,7 +39,7 @@ const AtmosphereShader = new THREE.ShaderMaterial({
       }
     `,
     fragmentShader: `
-     uniform sampler2D tDiffuse;
+      uniform sampler2D tDiffuse;
       uniform sampler2D tDepth;
       uniform sampler2D tOpticalDepthLookup;
 
@@ -107,7 +107,6 @@ const AtmosphereShader = new THREE.ShaderMaterial({
       }
 
       vec2 raySphere(vec3 sphereCenter, float radius, vec3 rayOrigin, vec3 rayDir, float maxDist) {
-  
         // If it intersects, perform the sphere intersection
         vec3 offset = rayOrigin - sphereCenter;
         float a = 1.0;
@@ -179,21 +178,20 @@ const AtmosphereShader = new THREE.ShaderMaterial({
 			}
 			
 
-      vec3 calculateLight(vec3 rayOrigin, vec3 rayDir, float rayLength, vec3 originalCol, float maxDist){
+      // In calculateLight, return vec4 with alpha representing atmosphere density
+      vec4 calculateLight(vec3 rayOrigin, vec3 rayDir, float rayLength, vec3 originalCol, float maxDist){
           vec3 inScatterPoint = rayOrigin;
           float stepSize = rayLength / (numInScatteringPoints - 1.0);
           vec3 inScatteredLight = vec3(0.0);
           float viewRayOpticalDepth = 0.0;
-  
           vec3 scatteringCoeficients = vec3(r, g, b);
-  
-          for(float i = 0.0; i < numInScatteringPoints; i ++){
+
+          for(float i = 0.0; i < numInScatteringPoints; i++){
               float sunRayLength = raySphere(pPosition, aRadius, inScatterPoint, sPosition, maxDist).y;
               float sunRayOpticalDepth = opticalDepthBaked(inScatterPoint + sPosition, sPosition);
               viewRayOpticalDepth = opticalDepthBaked2(rayOrigin, rayDir, stepSize * i);
               vec3 transmittance = exp(-(sunRayOpticalDepth + viewRayOpticalDepth) * scatteringCoeficients);
               float localDensity = densityAtPoint(inScatterPoint);
-
               inScatteredLight += localDensity * transmittance;
               inScatterPoint += rayDir * stepSize;
           }
@@ -202,59 +200,60 @@ const AtmosphereShader = new THREE.ShaderMaterial({
           inScatteredLight *= scatteringCoeficients * intensity * stepSize / pRadius;
 
           float brightnessAdaptionStrength = uBrightnessStrength;
-          float reflectedLightOutScatterStrength = uReflectiveStrength;
-          float brightnessAdaption = dot(inScatteredLight, vec3(1.0)) * brightnessAdaptionStrength ;
+          float brightnessAdaption = dot(inScatteredLight, vec3(1.0)) * brightnessAdaptionStrength;
           float brightnessSum = viewRayOpticalDepth * intensity * brightnessAdaption;
           float reflectedLightStrength = exp(-brightnessSum);
           float hdrStrength = clamp(dot(originalCol, vec3(1.0)) / intensity - 1.0, 0.0, 1.0);
           reflectedLightStrength = mix(reflectedLightStrength, 1.0, hdrStrength);
           vec3 reflectedLight = originalCol * reflectedLightStrength;
 
-          return reflectedLight + inScatteredLight ;
+          // Alpha = how much atmosphere exists along this ray (0 = pure space, 1 = full atmosphere)
+          float atmosphereAlpha = clamp(dot(inScatteredLight, vec3(0.333)), 0.0, 1.0);
+
+          return vec4(reflectedLight + inScatteredLight, atmosphereAlpha);
       }
   
   
 
 
       void main(){
-        vec4 originalCol = texture2D(tDiffuse, vUv);
-        vec4 depth = texture2D(tDepth, vUv);
+          vec4 originalCol = texture2D(tDiffuse, vUv);
+          vec4 depth = texture2D(tDepth, vUv);
+          vec3 worldPosition = reconstructWorldPosition(depth.x);
+          vec3 viewVector = worldPosition - cameraPosition;
+          float sceneDepth = linearEyeDepth(depth.x);
+          vec3 rayOrigin = cameraPosition;
+          vec3 rayDir = normalize(viewVector);
 
-        vec3 worldPosition = reconstructWorldPosition(depth.x );
+          vec2 planetHitInfo = raySphere(pPosition, pRadius, rayOrigin, rayDir, maxDist);
+          float dstToPlanet = min(sceneDepth, planetHitInfo.x);
 
-        vec3 viewVector = worldPosition - cameraPosition;
-        float vVlength = length(viewVector);
+          vec2 atmosphereHitInfo = raySphere(pPosition, aRadius, rayOrigin, rayDir, maxDist);
+          float dstToAtmosphere = atmosphereHitInfo.x;
+          float dstThroughAtmosphere = min(atmosphereHitInfo.y, dstToPlanet - dstToAtmosphere);
 
-        float sceneDepth = linearEyeDepth(depth.x);
-        
-      
-        vec3 rayOrigin = cameraPosition;
-        vec3 rayDir = normalize(viewVector);
+          if (dstThroughAtmosphere > 0.0) {
+              const float epsilon = 0.0001;
+              vec3 pointInAtmosphere = rayOrigin + rayDir * (dstToAtmosphere + epsilon);
+              vec4 light = calculateLight(pointInAtmosphere, rayDir, dstThroughAtmosphere - epsilon * 2.0, originalCol.rgb, maxDist);
 
-        vec2 planetHitInfo = raySphere(pPosition, pRadius, rayOrigin, rayDir, maxDist);
-        float dstToPlanet = min( sceneDepth, planetHitInfo.x);
+              
 
-        vec2 atmsophereHitInfo = raySphere(pPosition, aRadius, rayOrigin, rayDir, maxDist);
-  
-        float dstToAtmosphere = atmsophereHitInfo.x;
-        float dstThroughAtmosphere = min(atmsophereHitInfo.y,  dstToPlanet - dstToAtmosphere);
+              bool hitPlanet = planetHitInfo.y > 0.0; // .y is the distance through the sphere, >0 means we hit it
 
+              if(hitPlanet){
+                  // Ray hit planet surface — always fully opaque
+                  gl_FragColor = vec4(light.rgb, 1.0);
+              } else {
 
-        if (dstThroughAtmosphere > 0.0) {
-          const float epsilon = 0.0001;
-          vec3 pointInAtmosphere = rayOrigin + rayDir * (dstToAtmosphere + epsilon);
-          vec3 light = calculateLight(pointInAtmosphere, rayDir, dstThroughAtmosphere - epsilon * 2.0, originalCol.rgb, maxDist);
-
-          
-          if(dstToAtmosphere < sceneDepth){
-            gl_FragColor = vec4(light, 1.0); 
+                  // Ray passed through atmosphere into space — alpha from density
+                  gl_FragColor = vec4(light.rgb, light.a);
+              }
+          } else {
+              // No atmosphere hit — pure space, fully transparent
+              gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0);
           }
-        }else{
-            gl_FragColor = originalCol;
-        }
       }
-
-    
     `,
     transparent: true, 
     depthWrite: false, // Allow writing to depth buffer
