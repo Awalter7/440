@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState, Component, createRef } from "react";
-import Atmosphere from "./atmosphere"
+import Atmosphere from "./atmosphere";
+import * as THREE from 'three';
 import Weather from "./weather"
 
 
@@ -24,7 +25,7 @@ export default class AtmospherePass extends Component{
         this._blendStrength = .55;
         this._brightness = 0;
         this._reflectiveness = 2;
-        this._sunPosition = [-100, -10, 0];
+        this._sunPosition = new THREE.Vector3(10, 10, 5);
         this._sunDistance = .4;
     }
 
@@ -105,11 +106,17 @@ export default class AtmospherePass extends Component{
     get sunPosition() {
         return this._sunPosition;
     }
+
     set sunPosition(value) {
-        if (value && value.length === 3) {
-            this._sunPosition = value;
+        if (Array.isArray(value) && value.length === 3) {
+            // Spread creates a new array reference → React sees a changed prop
+            this._sunPosition = [...value]
+            this.forceUpdate()
+        } else if (value?.isVector3) {
+            this._sunPosition = [value.x, value.y, value.z]
+            this.forceUpdate()
         } else {
-            console.error("wavelength must be an object with properties r, g, and b");
+            console.error("sunPosition must be an array [x, y, z] or a THREE.Vector3")
         }
     }
 
@@ -157,6 +164,9 @@ export default class AtmospherePass extends Component{
     }
 
     render(){
+    //         this._renderCount = (this._renderCount || 0) + 1
+    // console.log("AtmospherePass render #", this._renderCount)
+    
         return(
             <group ref={this.ref}>
                 {this.children}

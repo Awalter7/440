@@ -216,44 +216,52 @@ const AtmosphereShader = new THREE.ShaderMaterial({
   
 
 
-      void main(){
-          vec4 originalCol = texture2D(tDiffuse, vUv);
-          vec4 depth = texture2D(tDepth, vUv);
-          vec3 worldPosition = reconstructWorldPosition(depth.x);
-          vec3 viewVector = worldPosition - cameraPosition;
-          float sceneDepth = linearEyeDepth(depth.x);
-          vec3 rayOrigin = cameraPosition;
-          vec3 rayDir = normalize(viewVector);
+  void main(){
+      vec4 originalCol = texture2D(tDiffuse, vUv);
+      vec4 depth = texture2D(tDepth, vUv);
+      vec3 worldPosition = reconstructWorldPosition(depth.x);
+      vec3 viewVector = worldPosition - cameraPosition;
+      float sceneDepth = linearEyeDepth(depth.x);
+      vec3 rayOrigin = cameraPosition;
+      vec3 rayDir = normalize(viewVector);
 
-          vec2 planetHitInfo = raySphere(pPosition, pRadius, rayOrigin, rayDir, maxDist);
-          float dstToPlanet = min(sceneDepth, planetHitInfo.x);
+      bool hitSomething = depth.x < 1.0;
 
-          vec2 atmosphereHitInfo = raySphere(pPosition, aRadius, rayOrigin, rayDir, maxDist);
-          float dstToAtmosphere = atmosphereHitInfo.x;
-          float dstThroughAtmosphere = min(atmosphereHitInfo.y, dstToPlanet - dstToAtmosphere);
+      vec2 planetHitInfo = raySphere(pPosition, pRadius, rayOrigin, rayDir, maxDist);
+      float dstToPlanet = min(sceneDepth, planetHitInfo.x);
 
-          if (dstThroughAtmosphere > 0.0) {
-              const float epsilon = 0.0001;
-              vec3 pointInAtmosphere = rayOrigin + rayDir * (dstToAtmosphere + epsilon);
-              vec4 light = calculateLight(pointInAtmosphere, rayDir, dstThroughAtmosphere - epsilon * 2.0, originalCol.rgb, maxDist);
+      vec2 atmosphereHitInfo = raySphere(pPosition, aRadius, rayOrigin, rayDir, maxDist);
+      float dstToAtmosphere = atmosphereHitInfo.x;
+      float dstThroughAtmosphere = min(atmosphereHitInfo.y, dstToPlanet - dstToAtmosphere);
 
-              
+      float dstToAtmosphereNorm = clamp(dstToAtmosphere / 2000.0, 0.0, 1.0);
 
-              bool hitPlanet = planetHitInfo.y > 0.0; // .y is the distance through the sphere, >0 means we hit it
-
-              if(hitPlanet){
-                  // Ray hit planet surface — always fully opaque
-                  gl_FragColor = vec4(light.rgb, 1.0);
-              } else {
-
-                  // Ray passed through atmosphere into space — alpha from density
-                  gl_FragColor = vec4(light.rgb, light.a);
-              }
-          } else {
-              // No atmosphere hit — pure space, fully transparent
-              gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0);
-          }
+      if(hitSomething && (sceneDepth / 3700.0) <= dstToAtmosphereNorm){
+        gl_FragColor = vec4(originalCol.rgb, 1.0);
+        return;
       }
+
+      if (dstThroughAtmosphere > 0.0) {
+          const float epsilon = 0.0001;
+          vec3 pointInAtmosphere = rayOrigin + rayDir * (dstToAtmosphere + epsilon);
+          vec4 light = calculateLight(pointInAtmosphere, rayDir, dstThroughAtmosphere - epsilon * 2.0, originalCol.rgb, maxDist);
+
+          bool hitPlanet = planetHitInfo.y > 0.0;
+          bool objectBehindAtmosphere = hitSomething && sceneDepth > dstToAtmosphere;
+
+          if(hitPlanet || objectBehindAtmosphere){
+              // Blend: atmosphere over the original pixel color using atmosphere alpha
+              vec3 blended = mix(originalCol.rgb, light.rgb, light.a);
+              gl_FragColor = vec4(blended, 1.0);
+          } else {
+              // Ray passed through atmosphere into space
+              gl_FragColor = vec4(light.rgb, light.a);
+          }
+      } else {
+          // No atmosphere hit
+          gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0);
+      }
+  }
     `,
     transparent: true, 
     depthWrite: false, // Allow writing to depth buffer

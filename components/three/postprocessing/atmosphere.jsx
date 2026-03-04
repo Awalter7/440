@@ -31,8 +31,8 @@ const Atmosphere = (props) => {
   const {
     position = [0, 0, 0],
     radius = 5,
-
     sunPosition = [0, 0, 0],
+    
     sunDistance = 10.0,
 
     scale = 0.50,
@@ -158,7 +158,7 @@ const Atmosphere = (props) => {
       skyShaderPass.current.material.uniforms.aRadius.value = aRadius;
 
       skyShaderPass.current.material.uniforms.sDistance.value = sunDistance;
-      skyShaderPass.current.material.uniforms.sPosition.value = new THREE.Vector3(...sunPosition).normalize();
+      skyShaderPass.current.material.uniforms.sPosition.value.set(...sunPosition).normalize();
   
       skyShaderPass.current.material.uniforms.numOpticalDepthPoints.value = numOpticalDepthPoints;
       skyShaderPass.current.material.uniforms.numInScatteringPoints.value = numInScatteringPoints;
