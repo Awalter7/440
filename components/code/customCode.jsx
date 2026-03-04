@@ -13,30 +13,27 @@ export function CustomCode({
   useEffect(() => {
     if (!code) return;
 
+    // Normalize smart quotes/backtick lookalikes before eval
+    const safeCode = code
+      .replace(/[\u2018\u2019]/g, "'")   // smart single quotes
+      .replace(/[\u201C\u201D]/g, '"')   // smart double quotes
+      .replace(/[\u0060\uFF40]/g, '`');  // lookalike backticks
+
     try {
       const fn = new Function(
         "setValue",
         "getValue",
         "refs",
         "uID",
-        `
-        "use strict";
-        ${code}
-      `
+        `"use strict";\n${safeCode}`
       );
 
-
-      fn(
-        setValue,
-        () => value,
-        refs.current,
-        uID,
-      );
+      fn(setValue, () => value, refs.current, uID);
     } catch (err) {
-      console.error("[CustomCode Error]", err);
+      console.error("[CustomCode Error]", err.message);
     }
   }, [code, ...deps]);
-
+  
   // Recursive function to inject props into CustomScroll components
   const injectPropsRecursively = (children) => {
     return React.Children.map(children, (child, index) => {

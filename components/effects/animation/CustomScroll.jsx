@@ -221,11 +221,11 @@ export function CustomScroll({
                         initialStyles={initialStyles}
                         uID={uID}
                         data-attibute-elm-type={"effectManager"}
-                        // customTriggers={{
-                        //     start: {
-                        //         'load-0': progress === 100 || total === 0,
-                        //     },
-                        // }}
+                        customTriggers={{
+                            start: {
+                                'load-0': true === true
+                            },
+                        }}
                     >   
                         <div className={className} data-attribute-unique-id={uID} id={id} style={{ position: position, transition: "none", transformStyle: "preserve-3d"}}>
                             {

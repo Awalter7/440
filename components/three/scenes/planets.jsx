@@ -55,9 +55,9 @@ export function useMomentumScroll() {
 const CAMERA_START_Z   = -150;
 const CAMERA_START_Y   = 18;
 const CAMERA_PEAK_Z    = -90;
-const CAMERA_PEAK_Y    = 13;
+const CAMERA_PEAK_Y    = 20;
 const CAMERA_END_Z     = -90;
-const CAMERA_END_Y     = 13;
+const CAMERA_END_Y     = 22;
 
 const ANIM_TOTAL       = 2000;
 const ANIM_BALANCE     = 0.30;

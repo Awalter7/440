@@ -106,6 +106,9 @@ const DELAY_END       = 1.0
 const SCROLL_ROTATION = Math.PI * 4
 const SCROLL_X        = -40
 
+const SCROLL_X_START = -5
+const SCROLL_X_END   = -50   // or wherever you want it to end
+
 const easedFraction = (raw) => {
   const clamped    = Math.min(Math.max(raw, DELAY_START), DELAY_END)
   const normalised = (clamped - DELAY_START) / (DELAY_END - DELAY_START)
@@ -143,8 +146,8 @@ const PlanetGroup = () => {
     spinAngle:      0,
     scrollY:        SUN_ORBIT_INITIAL_ANGLE,
     currentScrollY: SUN_ORBIT_INITIAL_ANGLE,  // ✅ start at correct angle
-    targetX:        0,
-    currentX:       0,
+    targetX:        -5,
+    currentX:       -5,
     rotationSpeed:  0.0002,
     sunOrbitAngle:  0,
   })
@@ -164,7 +167,7 @@ const PlanetGroup = () => {
       const eased = easedFraction(raw)
 
       animStateRef.current.scrollY = SUN_ORBIT_INITIAL_ANGLE + (eased * SCROLL_ROTATION)
-      animStateRef.current.targetX = eased * SCROLL_X
+      animStateRef.current.targetX = SCROLL_X_START + eased * (SCROLL_X_END - SCROLL_X_START)
     }
     window.addEventListener("scroll", handleScroll, { passive: true })
     return () => window.removeEventListener("scroll", handleScroll)
