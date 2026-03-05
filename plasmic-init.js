@@ -6,6 +6,7 @@ import { GravityWrapper } from "./components/effects/physics/gravity"
 import { Object } from "./components/effects/physics/object"
 import { CustomCode } from "./components/code/customCode"
 import { Planets } from "./components/three/scenes/planets"
+import StarFieldLoader from "./components/loaders/starFieldLoader";
 
 // import { StickerPeel } from "./components/effects/StickerPeel";
 // import ThreeCanvas from "./components/three/canvas/ThreeCanvas"
@@ -837,6 +838,23 @@ PLASMIC.registerComponent(Planets, {
   },
   importPath: "./components/three/scenes/planets",
   isDefaultExport: false,
+})
+
+PLASMIC.registerComponent(StarFieldLoader, {
+  name: "StarFieldLoader",
+  displayName: "Star Field Loader",
+  props: {
+    className: {
+      type: "string",
+      description: "Additional CSS classes",
+    },
+    id: {
+      type: "string",
+      displayName: "id"
+    },
+  },
+  importPath: "./components/loader/starFieldLoader",
+  isDefaultExport: true,
 })
 
 PLASMIC.registerComponent(GradualBlur, {
