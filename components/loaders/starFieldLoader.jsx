@@ -1,8 +1,7 @@
-import { useEffect, useRef, useState, Component, createRef } from "react";
-import { useProgress } from "@react-three/drei";
+import { Component, createRef } from "react";
 
 
-import { usePlasmicCanvasContext } from '@plasmicapp/host';
+import { usePlasmicCanvasContext } from '@plasmicapp/loader-nextjs'
 
 const NUM_STARS  = 500;
 
@@ -120,7 +119,7 @@ class Star {
 }
 
 
-export default class StarFieldLoader extends Component {
+class StarField extends Component {
     constructor(props) {
         super(props);
 
@@ -250,3 +249,16 @@ export default class StarFieldLoader extends Component {
     }
 }
 
+export default function StarFieldLoader(){
+    const inEditor = usePlasmicCanvasContext();
+
+    return(
+        <>
+            {
+                !inEditor
+                &&
+                <StarField />
+            }
+        </>
+    )
+}
