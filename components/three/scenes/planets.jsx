@@ -177,10 +177,7 @@ function CameraWrapper(){
 export function Planets({ className, id }) {
     const canvasRef = useRef(null);   // ← new ref
     const inEditor = usePlasmicCanvasContext();
-    
-    console.log(inEditor)
-    if (inEditor) {
-    }
+
         
 
   // useMomentumScroll();
@@ -210,7 +207,7 @@ export function Planets({ className, id }) {
         }}
         >
             {
-                inEditor !== true
+                !inEditor
                 &&
                 <>
                     <ComposerProvider>
