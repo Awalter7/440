@@ -177,9 +177,9 @@ function CameraWrapper(){
 export function Planets({ className, id }) {
     const canvasRef = useRef(null);   // ← new ref
     const inEditor = usePlasmicCanvasContext();
-
+    
+    console.log(inEditor)
     if (inEditor) {
-        console.log(inEditor)
     }
         
 
@@ -209,10 +209,17 @@ export function Planets({ className, id }) {
 
         }}
         >
-            <ComposerProvider>
-                <PlanetGroup />
-            </ComposerProvider>
-            <CameraWrapper/>
+            {
+                inEditor !== true
+                &&
+                <>
+                    <ComposerProvider>
+                        <PlanetGroup />
+                    </ComposerProvider>
+                    <CameraWrapper/>
+                </>
+            }
+
             {/* <OrbitControls /> */}
 
         </Canvas>
