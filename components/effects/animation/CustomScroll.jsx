@@ -33,6 +33,7 @@ export function CustomScroll({
     loadEffect = null,
     text = "",
     animateChars = false,
+    animateWords = false,
     characterDelayOffset = 0,
 
     customValue = {},
@@ -213,86 +214,105 @@ export function CustomScroll({
     return (
         <>
             {
-                !animateChars 
-                ?
-                    <EffectManager 
-                        ref={effectManagerRef}
-                        effects={effects}
-                        initialStyles={initialStyles}
-                        uID={uID}
-                        data-attibute-elm-type={"effectManager"}
-                        customTriggers={{
-                            start: {
-                                'load-0': true === true
-                            },
-                        }}
-                    >   
-                        <div className={className} data-attribute-unique-id={uID} id={id} style={{ position: position, transition: "none", transformStyle: "preserve-3d"}}>
-                            {
-                                usePropValue 
-                                    ?
-                                        values
-                                        &&
-                                        Object.values(values).map((value, idx) => (
-                                            value
-                                        ))
-                                    :
-                                        text ? text : children
-                            }
-                        </div>
-                    </EffectManager>
-                :
-                    text
-                    &&
-                    text.split('').map((char, idx) => (
-                        <CustomScroll
-                            key={"char-" + idx}
-                            className={className}
-                            id={id}
-                            position={position}
-                            usePropValue={usePropValue}
-                            useSpecificProp={useSpecificProp}
-                            propToUse={propToUse}
+                !animateWords
+                    ?
+                        !animateChars 
+                            ?
+                                <EffectManager 
+                                    ref={effectManagerRef}
+                                    effects={effects}
+                                    initialStyles={initialStyles}
+                                    uID={uID}
+                                    data-attibute-elm-type={"effectManager"}
+                                    customTriggers={{
+                                        start: {
+                                            'load-0': true === true
+                                        },
+                                    }}
+                                >   
+                                    <div className={className} data-attribute-unique-id={uID} id={id} style={{ position: position, transition: "none", transformStyle: "preserve-3d"}}>
+                                        {
+                                            usePropValue 
+                                                ?
+                                                    values
+                                                    &&
+                                                    Object.values(values).map((value, idx) => (
+                                                        value
+                                                    ))
+                                                :
+                                                    text ? text : children
+                                        }
+                                    </div>
+                                </EffectManager>
+                            :
+                                text
+                                &&
+                                text.split('').map((char, idx) => (
+                                    <CustomScroll
+                                        key={"char-" + idx}
+                                        className={className}
+                                        id={id}
+                                        position={position}
+                                        usePropValue={usePropValue}
+                                        useSpecificProp={useSpecificProp}
+                                        propToUse={propToUse}
 
-                            initialStyles={initialStyles}
+                                        initialStyles={initialStyles}
 
-                            clickEffects={clickEffects}
-                            hoverEffects={hoverEffects}
-                            valueChangeEffects={valueChangeEffects}
-                            breakpoints={breakpoints}
-                            distanceEffects={distanceEffects}
-                            loadEffect={loadEffect}
+                                        clickEffects={clickEffects}
+                                        hoverEffects={hoverEffects}
+                                        valueChangeEffects={valueChangeEffects}
+                                        breakpoints={breakpoints}
+                                        distanceEffects={distanceEffects}
+                                        loadEffect={loadEffect}
 
-                            customValue={customValue}
+                                        customValue={customValue}
 
-                            text={char}
-                            animateChars={false}
-                            characterDelayOffset={characterDelayOffset}
-                            compIndex={idx}
-                            length={text.split('').length}
-                        >
-                            {children}
-                        </CustomScroll>
-                        // <EffectManager 
-                        //     ref={(el) => (textEffectManagerRefs.current[idx] = el)}
-                        //     effects={effects}
-                        //     initialStyles={initialStyles}
-                        //     uID={uID}
-                        //     data-attibute-elm-type={"effectManager"}
-                        //     // customTriggers={{
-                        //     //     start: {
-                        //     //         'load-0': progress === 100 || total === 0,
-                        //     //     },
-                        //     // }}
-                        // >
-                        //     <div className={className} data-attribute-unique-id={uID} id={id} style={{ position: position, transition: "none", transformStyle: "preserve-3d" }}>
-                        //         {
-                        //             char === " " ? "\u00A0" : char
-                        //         }
-                        //     </div>
-                        // </EffectManager>   
+                                        text={char}
+                                        animateChars={false}
+                                        characterDelayOffset={characterDelayOffset}
+                                        compIndex={idx}
+                                        length={text.split('').length}
+                                    >
+                                        {children}
+                                    </CustomScroll>
 
-                    ))
+                                ))
+                    :
+
+                        text
+                        &&
+                        text.split(' ').map((char, idx) => (
+                            <CustomScroll
+                                key={"char-" + idx}
+                                className={className}
+                                id={id}
+                                position={position}
+                                usePropValue={usePropValue}
+                                useSpecificProp={useSpecificProp}
+                                propToUse={propToUse}
+
+                                initialStyles={initialStyles}
+
+                                clickEffects={clickEffects}
+                                hoverEffects={hoverEffects}
+                                valueChangeEffects={valueChangeEffects}
+                                breakpoints={breakpoints}
+                                distanceEffects={distanceEffects}
+                                loadEffect={loadEffect}
+
+                                customValue={customValue}
+
+                                text={char}
+                                animateChars={false}
+                                characterDelayOffset={characterDelayOffset}
+                                compIndex={idx}
+                                length={text.split(' ').length}
+                            >
+                                {children}
+                            </CustomScroll>
+                        ))
+     
             }
         </>
     );

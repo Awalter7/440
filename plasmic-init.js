@@ -915,7 +915,14 @@ PLASMIC.registerComponent(CustomScroll, {
       displayName: "Animate Characters",
       description: "Animate each character of the provided text",
       defaultValue: false,
-      hidden: (props) => props.text === "",
+      hidden: (props) => props.text === "" && props.animateWords !== true,
+    },
+    animateWords: {
+      type: "boolean",
+      displayName: "Animate Characters",
+      description: "Animate each character of the provided text",
+      defaultValue: false,
+      hidden: (props) => props.text === "" && props.animateChars !== true,
     },
     // characterDelayOffset: {
     //   type: "number",
