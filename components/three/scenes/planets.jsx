@@ -6,7 +6,7 @@ import { ComposerProvider } from "../contexts/composerContext";
 import { useRef, Component, createRef, useEffect } from "react";
 import { CurvedPath } from '../helpers/helpers';
 import { OrbitControls } from '@react-three/drei';
-import { usePlasmicCanvasContext } from '@plasmicapp/host';
+import { usePlasmicCanvasContext } from '@plasmicapp/loader-nextjs';
 
 
 class ScrollCamera extends Component{
