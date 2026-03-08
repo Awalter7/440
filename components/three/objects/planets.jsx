@@ -1,8 +1,11 @@
 "use client"
-import { useState, useRef, useEffect, Component, createRef } from "react";
+import { useRef, useEffect, Component, createRef } from "react";
 import { useLoader, extend } from "@react-three/fiber";
 import { MeshLineGeometry, MeshLineMaterial } from 'meshline'
+import { CurvedPath } from "../helpers/helpers";
 import * as THREE from 'three'
+
+
 
 import AtmospherePass from "../postprocessing/atmospherePass"
 import { SolidPlanetMaterial } from "../shaders/planet"
@@ -39,14 +42,21 @@ class PlanetBase extends Component {
     this.args = props.args || [20, 30, 30];
     this.state = { hover: false };
     this.ref = createRef();
+    this.atmosphereRef = createRef();
   }
 
   get position() {
     return this._position;
   }
 
+  set position(value){
+    this._position = value;
+  }
 
 
+  componentDidMount(){
+    this.atmosphereRef.current.sunPosition = [0, 50, 100]
+  }
 
   // Expose the inner mesh ref so PlanetGroup can drive animation
   getMeshRef() {
@@ -59,19 +69,118 @@ class PlanetBase extends Component {
 
   render() {
     return (
-      <mesh
-        ref={this.ref}
-        material={this.props.material}
-        position={[this._position.x, this._position.y, this._position.z]}
-        rotation={this._rotation}
-        castShadow
-        receiveShadow
-        onPointerEnter={this.handleHover}
-        onPointerLeave={this.handleHover}
-        userData={{sunPosition: this._sunPosition}}
-      >
-        <sphereGeometry args={this.args} />
-      </mesh>
+      <AtmospherePass ref={this.atmosphereRef}>
+          <mesh
+            ref={this.ref}
+            material={this.props.material}
+            position={[this._position.x, this._position.y, this._position.z]}
+            rotation={this._rotation}
+            castShadow
+            receiveShadow
+            onPointerEnter={this.handleHover}
+            onPointerLeave={this.handleHover}
+            userData={{sunPosition: this._sunPosition}}
+          >
+            <sphereGeometry args={this.args} />
+          </mesh>
+      </AtmospherePass>
+
+    );
+  }
+}
+
+
+
+class PlanetGroup extends Component {
+  constructor(props) {
+    super(props);
+
+    this.groupRef = createRef();
+    this.lightRef = createRef();
+    this.planetRef = createRef();
+    this.atmosphereRef = createRef();
+    this.pathRef = createRef();
+
+    this.material = this.initMaterial(); // ← call it, fix typo
+
+    this.currentT = 0;
+    this.targetT = 0;
+
+    this.targetPoint = new THREE.Vector3();
+
+    // this.handleScroll = this.handleScroll.bind(this);
+  }
+
+  initMaterial() {
+    const loader = new THREE.TextureLoader();
+
+    const dif    = loader.load(Diffuse.src,  (texture) => this.setState({ diffuseMap:  texture }));
+    const bump   = loader.load(Bump.src,     (texture) => this.setState({ bumpMap:     texture }));
+    const spec   = loader.load(Specular.src, (texture) => this.setState({ specularMap: texture }));
+    const lights = loader.load(Lights.src,   (texture) => this.setState({ lightsMap:   texture }));
+
+    return new SolidPlanetMaterial({ // ← return the material
+      map: dif,
+      bumpMap: bump,
+      bumpScale: 0.5,
+      specularIntensityMap: spec,
+      lightMap: lights,
+    });
+  }
+
+  componentDidMount() {
+    window.addEventListener("scroll", this.handleScroll, { passive: true });
+    this.currentT = 0;
+    this.targetT = 0;
+    this.animate();
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener("scroll", this.handleScroll);
+    if (this.rafId) cancelAnimationFrame(this.rafId);
+  }
+
+  animate() {
+    this.rafId = requestAnimationFrame(() => this.animate());
+
+    const mesh = this.planetRef.current?.ref?.current;
+    if (!mesh) return;
+
+    mesh.rotation.x += 0.0001;
+  }
+
+
+  render() {
+    return (
+      <>
+        <group ref={this.groupRef}>
+          <directionalLight
+            ref={this.lightRef}
+            position={[0, 50, 100]}
+            castShadow
+            intensity={4.0}
+            shadow-mapSize-width={1024}
+            shadow-mapSize-height={1024}
+            shadow-camera-far={50}
+            shadow-camera-left={-10}
+            shadow-camera-right={10}
+            shadow-camera-top={10}
+            shadow-camera-bottom={-10}
+          />
+          <mesh > 
+            <sphereGeometry args={[2, 300, 300]} />
+            <meshBasicMaterial color={"red"} />
+          </mesh>
+          <PlanetBase
+            ref={this.planetRef}
+            position={[2, 0, 0]}
+            args={[20, 300, 300]}
+            rotation={[0, 0, Math.PI / 2]}
+            material={this.material} // ← reference via this
+          />
+          {/* <CurvedPath ref={this.pathRef}/> */}
+        </group>
+      </>
     );
   }
 }
@@ -122,7 +231,7 @@ const easedFraction = (raw) => {
 }
 
 
-const PlanetGroup = () => {
+const PlanetGroup2 = () => {
   const diffuseMap  = useLoader(THREE.TextureLoader, Diffuse.src)
   const bumpMap     = useLoader(THREE.TextureLoader, Bump.src)
   const specularMap = useLoader(THREE.TextureLoader, Specular.src)

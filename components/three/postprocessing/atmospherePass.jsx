@@ -140,7 +140,7 @@ export default class AtmospherePass extends Component{
 
 
     initalize(){
-        if(this.ref.current === undefined) return;
+        if(this.ref.current === undefined && !this.ref.current.children) return;
         
         const groupMesh = this.ref.current.children
         let arr = [];

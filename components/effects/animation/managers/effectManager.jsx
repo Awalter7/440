@@ -81,7 +81,6 @@ export default class EffectManager extends Component{
     }
 
     _setStyle(key, value) {
-        console.log("here")
         this.setState({styles: {
             ...this._styles,
             [key]: value
