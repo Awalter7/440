@@ -205,10 +205,6 @@ export function CustomScroll({
         })
      }, [customValue])
 
-    useEffect(() => {
-
-    }, [children])
-
 
 
     return (
@@ -230,7 +226,7 @@ export function CustomScroll({
                                         },
                                     }}
                                 >   
-                                    <div className={className} data-attribute-unique-id={uID} id={id} style={{ position: position, transition: "none", transformStyle: "preserve-3d"}}>
+                                    <div className={className} data-attribute-unique-id={uID} id={id} style={{ position: position, transition: "none", transformStyle: "preserve-3d", width: (animateChars || animateWords) ? "max-content" : "auto"}}>
                                         {
                                             usePropValue 
                                                 ?

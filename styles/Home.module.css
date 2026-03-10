@@ -173,3 +173,7 @@ a.secondary {
   color: transparent!important;
   -webkit-text-fill-color: transparent!important; /* For older WebKit browsers */
 }
+
+.transparent-mask{
+  background: red !important;
+}

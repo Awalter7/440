@@ -1175,6 +1175,12 @@ PLASMIC.registerComponent(CustomScroll, {
             description: "Make scroll animation reversable.",
             defaultValue: true,
           },
+          timed: {
+            type: "boolean",
+            displayName: "Timed Animation",
+            description: "Should the animation be based on a duration or Y scroll value",
+            defaultValue: false,
+          },
           scrollStart: {
             type: "number",
             displayName: "Scroll Start (px)",
@@ -1186,10 +1192,11 @@ PLASMIC.registerComponent(CustomScroll, {
             displayName: "Scroll End (px)",
             description: "Scroll position where this breakpoint ends (interpolation mode)",
             defaultValue: 1000,
+            hidden: () => props.timed,
           },
           pixelDelay: {
             type: "number",
-            displayName: "delay (px)",
+            displayName: "Delay (px)",
             description: "Offset each characters start by a length in pixels.",
             defaultValue: 0,
             hidden: (props) => props.animateChars === false,
@@ -1200,9 +1207,16 @@ PLASMIC.registerComponent(CustomScroll, {
               "up",
               "down",
             ],
-            displayName: "delay (px)",
+            displayName: "Delay (px)",
             description: "Offset each characters start by a length in pixels.",
             defaultValue: "down",
+          },
+          duration: {
+            type: "number",
+            displayName: "Duration",
+            description: "How long should the animation take to complete?",
+            defaultValue: 0,
+
           },
           easingFunction: {
             type: "choice",
@@ -1242,6 +1256,7 @@ PLASMIC.registerComponent(CustomScroll, {
             displayName: "Easing Function",
             description: "Timing function for this specific breakpoint",
             defaultValue: "linear",
+            hidden: () => props.timed,
           },
           styles: {
             type: "array",
