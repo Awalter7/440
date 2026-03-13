@@ -1098,10 +1098,9 @@ PLASMIC.registerComponent(CustomScroll, {
             "easeOutBounce",
             "easeInOutBounce",
           ],
-          defaultValue: "linear",
+          defaultValue: "easeInOutExpo",
           displayName: "On Load Easing Function",
           description: "Timing function for the on load animation.",
-          hidden: (props) => props.breakpoints && props.breakpoints.length > 0,
         },
         styles: {  // Changed from itemType to styles
           type: "array",
@@ -1192,7 +1191,7 @@ PLASMIC.registerComponent(CustomScroll, {
             displayName: "Scroll End (px)",
             description: "Scroll position where this breakpoint ends (interpolation mode)",
             defaultValue: 1000,
-            hidden: () => props.timed,
+            hidden: (props) => props.timed,
           },
           pixelDelay: {
             type: "number",
@@ -1207,9 +1206,16 @@ PLASMIC.registerComponent(CustomScroll, {
               "up",
               "down",
             ],
-            displayName: "Delay (px)",
+            displayName: "Dir",
             description: "Offset each characters start by a length in pixels.",
             defaultValue: "down",
+          },
+          delay: {
+            type: "number",
+            displayName: "Delay (ms)",
+            description: "How long should this effect wait to animate",
+            defaultValue: 0,
+            hidden: (props) => props.timed !== true,
           },
           duration: {
             type: "number",
@@ -1256,7 +1262,7 @@ PLASMIC.registerComponent(CustomScroll, {
             displayName: "Easing Function",
             description: "Timing function for this specific breakpoint",
             defaultValue: "linear",
-            hidden: () => props.timed,
+            hidden: (props) => props.timed,
           },
           styles: {
             type: "array",

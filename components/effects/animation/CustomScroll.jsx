@@ -1,6 +1,6 @@
 //CustomScroll
 
-import React, { useState, useMemo, useRef, useEffect, useId} from "react";
+import React, { useState, useMemo, useRef, useEffect, useId, useCallback} from "react";
 import { useProgress } from "@react-three/drei";
 import {
   ClickEffect,
@@ -127,6 +127,8 @@ export function CustomScroll({
                 styles: obj.styles,
                 pixelDelay: obj.pixelDelay,
                 delay: null,
+                duration: obj.duration,
+                timed: obj.timed,
                 trigger: null,
                 reversable: obj.reversable,
                 id: `scroll-${idx}`,
@@ -138,41 +140,40 @@ export function CustomScroll({
         [breakpoints]
     );
 
-    function handleSetVales(value){
-        setValues(value)
-    }
+    const handleSetValues = useCallback((value) => {
+        setValues(value);
+    }, []); // ✅ Never recreated
 
-    function handleSetOldValues(value){
-        setOldValues(value)
-    }
-
+    const handleSetOldValues = useCallback((value) => {
+        setOldValues(value);
+    }, []); // ✅ Never recreated
 
     const stableValueChangeEffects = useMemo(
         () =>
             valueChangeEffects
-            ? 
-            valueChangeEffects.map((obj, idx) => (
-                    new ValueChangeEffect({
-                        useSpecificProp: useSpecificProp,
-                        propToUse: propToUse,
-                        useOldValue: obj.useOldValue,
-                        customValue: customValue,
-                        values: values,
-                        setValues: (values) =>  handleSetVales(values),
-                        oldValues: oldValues,
-                        setOldValues: (values) =>  handleSetOldValues(values), 
-                        duration: obj.duration,
-                        delay: obj.delay,
-                        easingFunction: obj.easingFunction,
-                        styles: obj.styles,
-                        id: `value-${idx}`,
-                        index: compIndex,
-                        length: length,
-                    })
-                ))
-            : 
-            null,
-        [valueChangeEffects, customValue]
+            ? valueChangeEffects.map((obj, idx) => (
+                new ValueChangeEffect({
+                    useSpecificProp,
+                    propToUse,
+                    useOldValue: obj.useOldValue,
+                    customValue,
+                    values,
+                    setValues: handleSetValues,       // ✅ stable ref
+                    oldValues,
+                    setOldValues: handleSetOldValues, // ✅ stable ref
+                    duration: obj.duration,
+                    delay: obj.delay,
+                    easingFunction: obj.easingFunction,
+                    styles: obj.styles,
+                    id: `value-${idx}`,
+                    index: compIndex,
+                    length,
+                })
+            ))
+            : null,
+        // ✅ handleSetValues/handleSetOldValues are now stable so safe to include
+        // JSON.stringify prevents new object reference from triggering rememo
+        [valueChangeEffects, JSON.stringify(customValue), handleSetValues, handleSetOldValues]
     );
 
     const effects = useMemo(

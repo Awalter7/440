@@ -7,6 +7,7 @@ import { useRef, Component, createRef, useEffect } from "react";
 import { CurvedPath } from '../helpers/helpers';
 import { OrbitControls } from '@react-three/drei';
 import { usePlasmicCanvasContext } from '@plasmicapp/loader-nextjs';
+import { Stars  } from '../objects/planets';
 
 
 class ScrollCamera extends Component{
@@ -173,6 +174,12 @@ function CameraWrapper(){
     return <ScrollCamera camera={camera}/>
 }
 
+function StarsWrapper(){
+    const {camera} = useThree();
+
+    return <Stars camera={camera}/>
+}
+
 
 export function Planets({ className, id }) {
     const canvasRef = useRef(null);   // ← new ref
@@ -214,10 +221,11 @@ export function Planets({ className, id }) {
                         <PlanetGroup />
                     </ComposerProvider>
                     <CameraWrapper/>
+                    {/* <StarsWrapper /> */}
                 </>
             }
-
-            {/* <OrbitControls /> */}
+{/* 
+            <OrbitControls /> */}
 
         </Canvas>
     );

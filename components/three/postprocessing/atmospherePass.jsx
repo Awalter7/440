@@ -16,15 +16,15 @@ export default class AtmospherePass extends Component{
         this._wavelength = {
             r: 550.0,
             g: 497.0, 
-            b: 443.0
+            b: 400.0
         };
-        this._numInScatteringPoints = 20;
-        this._numOpticalDepthPoints = 20;
+        this._numInScatteringPoints = 100;
+        this._numOpticalDepthPoints = 100;
         this._scatteringStrength = 20.3;
         this._densityFallOff = 15;
         this._blendStrength = .55;
         this._brightness = 0;
-        this._reflectiveness = 2;
+        this._reflectiveness = 3;
         this._sunPosition = new THREE.Vector3(10, 10, 5);
         this._sunDistance = .4;
     }
