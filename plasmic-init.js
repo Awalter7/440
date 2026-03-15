@@ -1189,13 +1189,6 @@ PLASMIC.registerComponent(CustomScroll, {
             defaultValue: "down",
             hidden: (props) => props.reversable === true,
           },
-          delay: {
-            type: "number",
-            displayName: "Delay (ms)",
-            description: "How long should this effect wait to animate",
-            defaultValue: 0,
-            hidden: (props) => props.timed !== true,
-          },
           duration: {
             type: "number",
             displayName: "Duration",
