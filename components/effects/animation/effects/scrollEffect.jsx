@@ -6,9 +6,14 @@ export default class ScrollEffect extends Effect{
 
         this._type = "scroll"
         this._scrollPercent = 0;
+
         this._scrollStart = props.scrollStart ?? 0;
         this._scrollEnd = props.scrollEnd ?? 0;
         this._scrollUpStart = props.scrollUpStart ?? 0;
+
+        this._downDuration = props.downDuration ?? 0;
+        this._upDuration = props.upDuration ?? 0;
+
         this._reversable = props.reversable ?? false;
         this._dir = props.dir ?? false
         this.stopOnEnd = false;
@@ -78,7 +83,8 @@ export default class ScrollEffect extends Effect{
             this._exitTimeout = null;
         }
 
-        console.log("here")
+        this.duration = this._downDuration;
+        
         this.start();
     }
 
@@ -86,6 +92,8 @@ export default class ScrollEffect extends Effect{
         if (this._exitTimeout) {
             clearTimeout(this._exitTimeout);
         }
+
+        this.duration = this._upDuration;
 
         if (this._active && this._fullCycle) {
             // Wait for forward animation to finish before reversing

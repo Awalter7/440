@@ -1187,12 +1187,17 @@ PLASMIC.registerComponent(CustomScroll, {
             description: "Offset each characters start by a length in pixels.",
             defaultValue: "down",
           },
-          duration: {
+          downDuration: {
             type: "number",
             displayName: "Duration",
             description: "How long should the animation take to complete?",
-            defaultValue: 0,
-
+            defaultValue: 1000,
+          },
+          upDuration: {
+            type: "number",
+            displayName: "Duration",
+            description: "How long should the animation take to complete?",
+            defaultValue: 1000,
           },
           easingFunction: {
             type: "choice",
