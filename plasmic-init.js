@@ -1172,10 +1172,10 @@ PLASMIC.registerComponent(CustomScroll, {
             description: "Scroll position where this breakpoint begins",
             defaultValue: 0,
           },
-          pixelDelay: {
+          delay: {
             type: "number",
-            displayName: "Delay (px)",
-            description: "Offset each characters start by a length in pixels.",
+            displayName: "Delay (ms)",
+            description: "How long should this effect wait to animate",
             defaultValue: 0,
             hidden: (props) => props.animateChars === false,
           },
