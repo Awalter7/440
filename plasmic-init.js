@@ -1175,7 +1175,7 @@ PLASMIC.registerComponent(CustomScroll, {
           delay: {
             type: "number",
             displayName: "Delay (ms)",
-            description: "How long should this effect wait to animate",
+            description: "How long should this effect wait to animate.",
             defaultValue: 0,
           },
           dir: {
