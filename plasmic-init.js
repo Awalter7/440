@@ -1164,7 +1164,6 @@ PLASMIC.registerComponent(CustomScroll, {
             displayName: "Scroll End (px)",
             description: "Scroll position where this breakpoint ends (interpolation mode)",
             defaultValue: 1000,
-            hidden: (props) => props.timed,
           },
           scrollUpStart: {
             type: "number",
@@ -1187,7 +1186,6 @@ PLASMIC.registerComponent(CustomScroll, {
             displayName: "Dir",
             description: "Offset each characters start by a length in pixels.",
             defaultValue: "down",
-            hidden: (props) => props.reversable === true,
           },
           duration: {
             type: "number",
@@ -1234,7 +1232,6 @@ PLASMIC.registerComponent(CustomScroll, {
             displayName: "Easing Function",
             description: "Timing function for this specific breakpoint",
             defaultValue: "linear",
-            hidden: (props) => props.timed,
           },
           styles: {
             type: "array",
