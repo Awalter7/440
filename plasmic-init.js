@@ -977,10 +977,10 @@ PLASMIC.registerComponent(CustomScroll, {
     },
     cascadeDelay: {
       type: "number",
-      displayName: "Cascading Delay",
+      displayName: "Cascading Delay (ms)",
       description: "Add a delay to offset when each child animation starts.",
       defaultValue: 0,
-      hidden: (props) => props.applyToChildren !== false;
+      hidden: (props) => props.applyToChildren !== false,
     },
     initialStyles: {
       type: "array",
