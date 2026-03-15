@@ -910,20 +910,20 @@ PLASMIC.registerComponent(CustomScroll, {
       description: "Use text instead of elements.",
       defaultValue: "",
     },
-    animateChars: {
-      type: "boolean",
-      displayName: "Animate Characters",
-      description: "Animate each character of the provided text",
-      defaultValue: false,
-      hidden: (props) => props.text === "" && props.animateWords !== true,
-    },
-    animateWords: {
-      type: "boolean",
-      displayName: "Animate Characters",
-      description: "Animate each character of the provided text",
-      defaultValue: false,
-      hidden: (props) => props.text === "" && props.animateChars !== true,
-    },
+    // animateChars: {
+    //   type: "boolean",
+    //   displayName: "Animate Characters",
+    //   description: "Animate each character of the provided text",
+    //   defaultValue: false,
+    //   hidden: (props) => props.text === "" && props.animateWords === true,
+    // },
+    // animateWords: {
+    //   type: "boolean",
+    //   displayName: "Animate Words",
+    //   description: "Animate each character of the provided text",
+    //   defaultValue: false,
+    //   hidden: (props) => props.text === "" && props.animateChars === true,
+    // },
     // characterDelayOffset: {
     //   type: "number",
     //   diplayName: "Character Delay Offset (ms)",
@@ -943,26 +943,6 @@ PLASMIC.registerComponent(CustomScroll, {
       type: "string",
       displayName: "id"
     },
-    // usePropValue: {
-    //   type: "boolean",
-    //   defaultValue: false,
-    //   displayName: "Use Prop Value",
-    //   description: "Should the component replace children with the value passed by the custom code component (requires parent to be custom code component)"
-    // },
-    // useSpecificProp: {
-    //   type: "boolean",
-    //   defaultValue: false,
-    //   displayName: "Use Specific Prop",
-    //   description: "Should the component use only one specific prop provided by the custom code component. (requires parent to be custom code component)",
-    //   hidden: (props) => props.usePropValue !== true,
-    // },
-    // propToUse:{
-    //   type: "string",
-    //   defaultValue: "",
-    //   displayName: "Prop To Use",
-    //   description: "which specific prop will be used. (requires parent to be custom code component)",
-    //   hidden: (props) => props.useSpecificProp !== true,
-    // },
     position: {
       type: "choice",
       options: ["relative", "absolute", "fixed", "sticky"],
