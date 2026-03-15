@@ -1182,6 +1182,7 @@ PLASMIC.registerComponent(CustomScroll, {
             displayName: "Dir",
             description: "Offset each characters start by a length in pixels.",
             defaultValue: "down",
+            hidden: (props) => props.reversable === true,
           },
           delay: {
             type: "number",
