@@ -78,6 +78,7 @@ export default class ScrollEffect extends Effect{
             this._exitTimeout = null;
         }
 
+        console.log("here")
         this.start();
     }
 
@@ -102,18 +103,14 @@ export default class ScrollEffect extends Effect{
 
     handleScroll = () => {
         const y = window.scrollY;
-        const delayedStart = this.scrollStart - 
-            (this._pixelDelay * (this._dir === true 
-                ? this._index 
-                : this._length - this._index));
-        const delayedEnd = this.scrollEnd;
-        const range = delayedEnd - delayedStart;
+
+        const range = this.scrollEnd - this.scrollStart;
         const scrollingUp = y < this.lastY;
 
         if (this.timed) {
             const crossedThreshold = scrollingUp
-                ? (this.lastY > delayedStart && y <= delayedStart)  // crossed going up
-                : (this.lastY < delayedStart && y >= delayedStart); // crossed going down
+                ? (this.lastY > this.scrollStart && y <= this.scrollStart)  // crossed going up
+                : (this.lastY < this.scrollStart && y >= this.scrollStart); // crossed going down
 
             if (crossedThreshold) {
                 // _dir = true means "trigger on up", false means "trigger on down"
@@ -124,10 +121,10 @@ export default class ScrollEffect extends Effect{
                 }
             }
         } else {
-            if (y <= delayedStart) {
+            if (y <= this.scrollStart) {
                 this._progress = 0;
                 this._onProgressChange(0, this, false);
-            } else if (y >= delayedEnd) {
+            } else if (y >= this.scrollEnd) {
                 this._progress = 1;
                 this._onProgressChange(1, this, false);
             } else {

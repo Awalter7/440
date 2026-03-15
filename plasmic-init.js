@@ -1177,7 +1177,6 @@ PLASMIC.registerComponent(CustomScroll, {
             displayName: "Delay (ms)",
             description: "How long should this effect wait to animate",
             defaultValue: 0,
-            hidden: (props) => props.animateChars === false,
           },
           dir: {
             type: "choice",
