@@ -21,19 +21,12 @@ export default class ScrollEffect extends Effect{
         this.timed = props.timed ?? 0;
 
         this.lastY = 0;
-    
-
-        // this.firstProgress = true;
-        
-        // this.reverseEndValue = null;
-
     }
 
     componentDidMount(){
         this.lastY = window.scrollY;
     }
 
-    // type
     get type() {
         return this._type;
     }
@@ -65,17 +58,6 @@ export default class ScrollEffect extends Effect{
     componentWillUnmount() {
         window.removeEventListener("scroll", this.handleScroll);
     }
-
-    // pageHeight(){
-    //     return Math.max(
-    //         document.body.scrollHeight,
-    //         document.documentElement.scrollHeight,
-    //         document.body.offsetHeight,
-    //         document.documentElement.offsetHeight,
-    //         document.body.clientHeight,
-    //         document.documentElement.clientHeight
-    //     );
-    // }
 
     handleEnter = () => {
         if (this._exitTimeout) {

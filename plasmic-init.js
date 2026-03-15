@@ -1171,12 +1171,7 @@ PLASMIC.registerComponent(CustomScroll, {
             description: "Scroll position where this breakpoint begins",
             defaultValue: 0,
           },
-          delay: {
-            type: "number",
-            displayName: "Delay (ms)",
-            description: "How long should this effect wait to animate.",
-            defaultValue: 0,
-          },
+
           dir: {
             type: "choice",
             options: [
@@ -1187,16 +1182,28 @@ PLASMIC.registerComponent(CustomScroll, {
             description: "Offset each characters start by a length in pixels.",
             defaultValue: "down",
           },
+          downDelay: {
+            type: "number",
+            displayName: "Down Delay (ms)",
+            description: "How long should this effect wait to animate when scrolling down?",
+            defaultValue: 0,
+          },
+          upDelay: {
+            type: "number",
+            displayName: "Up Delay (ms)",
+            description: "How long should this effect wait to animate when scrolling up?",
+            defaultValue: 0,
+          },
           downDuration: {
             type: "number",
-            displayName: "Duration",
-            description: "How long should the animation take to complete?",
+            displayName: "Down Duration",
+            description: "How long should the animation take to complete when scrolling down?",
             defaultValue: 1000,
           },
           upDuration: {
             type: "number",
-            displayName: "Duration",
-            description: "How long should the animation take to complete?",
+            displayName: "Up Duration",
+            description: "How long should the animation take to complete? when scrolling up",
             defaultValue: 1000,
           },
           easingFunction: {
