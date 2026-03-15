@@ -123,6 +123,7 @@ export function CustomScroll({
             new ScrollEffect({
                 scrollStart: obj.scrollStart,
                 scrollEnd: obj.scrollEnd,
+                scrollUpStart: obj.scrollUpStart,
                 easingFunction: obj.easingFunction,
                 styles: obj.styles,
                 pixelDelay: obj.pixelDelay,

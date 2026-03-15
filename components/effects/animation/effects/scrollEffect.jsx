@@ -8,6 +8,7 @@ export default class ScrollEffect extends Effect{
         this._scrollPercent = 0;
         this._scrollStart = props.scrollStart ?? 0;
         this._scrollEnd = props.scrollEnd ?? 0;
+        this._scrollUpStart = props.scrollUpStart ?? 0;
         this._pixelDelay = props.pixelDelay ?? 0;
         this._reversable = props.reversable ?? false;
         this._dir = props.dir ?? false
@@ -74,9 +75,10 @@ export default class ScrollEffect extends Effect{
 
     handleEnter = () => {
         if (this._exitTimeout) {
-        clearTimeout(this._exitTimeout);
-        this._exitTimeout = null;
+            clearTimeout(this._exitTimeout);
+            this._exitTimeout = null;
         }
+        
         this.start();
     }
 
