@@ -16,9 +16,6 @@ export default class ScrollEffect extends Effect{
         this.timed = props.timed ?? 0;
 
         this.lastY = 0;
-
-        console.log(this._styles)
-        console.log(this)
     
 
         // this.firstProgress = true;

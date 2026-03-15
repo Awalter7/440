@@ -943,51 +943,44 @@ PLASMIC.registerComponent(CustomScroll, {
       type: "string",
       displayName: "id"
     },
-    usePropValue: {
-      type: "boolean",
-      defaultValue: false,
-      displayName: "Use Prop Value",
-      description: "Should the component replace children with the value passed by the custom code component (requires parent to be custom code component)"
-    },
-    useSpecificProp: {
-      type: "boolean",
-      defaultValue: false,
-      displayName: "Use Specific Prop",
-      description: "Should the component use only one specific prop provided by the custom code component. (requires parent to be custom code component)",
-      hidden: (props) => props.usePropValue !== true,
-    },
-    propToUse:{
-      type: "string",
-      defaultValue: "",
-      displayName: "Prop To Use",
-      description: "which specific prop will be used. (requires parent to be custom code component)",
-      hidden: (props) => props.useSpecificProp !== true,
-    },
+    // usePropValue: {
+    //   type: "boolean",
+    //   defaultValue: false,
+    //   displayName: "Use Prop Value",
+    //   description: "Should the component replace children with the value passed by the custom code component (requires parent to be custom code component)"
+    // },
+    // useSpecificProp: {
+    //   type: "boolean",
+    //   defaultValue: false,
+    //   displayName: "Use Specific Prop",
+    //   description: "Should the component use only one specific prop provided by the custom code component. (requires parent to be custom code component)",
+    //   hidden: (props) => props.usePropValue !== true,
+    // },
+    // propToUse:{
+    //   type: "string",
+    //   defaultValue: "",
+    //   displayName: "Prop To Use",
+    //   description: "which specific prop will be used. (requires parent to be custom code component)",
+    //   hidden: (props) => props.useSpecificProp !== true,
+    // },
     position: {
       type: "choice",
       options: ["relative", "absolute", "fixed", "sticky"],
       defaultValue: "relative",
       displayName: "Position"
     },
-    animationMode: {
-      type: "choice",
-      options: ["interpolation", "duration"],
-      defaultValue: "interpolation",
-      displayName: "Animation Mode",
-      description: "Interpolation: moves with scroll | Duration: animates over time when triggered",
+    applyToChildren: {
+      type: "boolean",
+      displayName: "Apply Animation To Children",
+      description: "Animate children instead of this element",
+      defaultValue: false,
     },
-    duration: {
+    cascadeDelay: {
       type: "number",
-      defaultValue: 1000,
-      displayName: "Duration (ms)",
-      description: "Animation duration in milliseconds (only for duration mode)",
-      hidden: (props) => props.animationMode !== "duration",
-    },
-    triggerId: {
-      type: "string",
-      displayName: "Trigger Element ID",
-      description: "ID of element to click to trigger animation (duration mode only)",
-      hidden: (props) => props.animationMode !== "duration",
+      displayName: "Cascading Delay",
+      description: "Add a delay to offset when each child animation starts.",
+      defaultValue: 0,
+      hidden: (props) => props.applyToChildren !== false;
     },
     initialStyles: {
       type: "array",

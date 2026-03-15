@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import easingFunctions from "../../../utils/easingFunctions"
+import { easingFunctionsJS } from "../../../utils/easingFunctions"
 import { interpolate, parseValue, convertWidthUnit, convertHeightUnit} from "../../../effects/utils"
 
 
@@ -154,12 +154,9 @@ export default class EffectManager extends Component{
         })
     }
 
-    _setAllStartValues(type, property, value){
-
-    }
 
     _onProgressChange(progress, effect, modifyStartValue = true) {
-        const easing = easingFunctions[effect.easingFunction] || easingFunctions.linear;
+        const easing = easingFunctionsJS[effect.easingFunction] || easingFunctionsJS.linear;
 
         const transformProps = [
             "scale", "scaleX", "scaleY", "scaleZ",
@@ -263,23 +260,6 @@ export default class EffectManager extends Component{
                     effect.setStartValue(property, undefined)
                 }
             }
-
-            // if(effect.stopOnEnd === true && !effect.active){
-            //     effect.stop();
-            //     effect.setStartValue(property, undefined)
-            // }else if(effect.stopOnEnd === false && !effect.active){
-            //     effect.stop();
-            //     console.log("here")
-            //     // Reset to original startValue when stopOnEnd is false
-            //     const originalStyle = effect.styles.find(s => s.property === property);
-            //     if (originalStyle && originalStyle.startValue !== undefined) {
-            //         if (transformProps.includes(property)) {
-            //             updatedTransforms[property] = originalStyle.startValue;
-            //         } else {
-            //             newStyles[property] = originalStyle.startValue;
-            //         }
-            //     }
-            // }
         });
         
 
