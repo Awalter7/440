@@ -1155,7 +1155,7 @@ PLASMIC.registerComponent(CustomScroll, {
           },
           scrollStart: {
             type: "number",
-            displayName: "Scroll Start (px)",
+            displayName: "Scroll Down Start (px)",
             description: "Scroll position where this breakpoint begins",
             defaultValue: 0,
           },
@@ -1165,6 +1165,12 @@ PLASMIC.registerComponent(CustomScroll, {
             description: "Scroll position where this breakpoint ends (interpolation mode)",
             defaultValue: 1000,
             hidden: (props) => props.timed,
+          },
+          scrollUpStart: {
+            type: "number",
+            displayName: "Scroll Up Start (px)",
+            description: "Scroll position where this breakpoint begins",
+            defaultValue: 0,
           },
           pixelDelay: {
             type: "number",
