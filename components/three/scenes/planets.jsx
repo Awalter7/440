@@ -52,7 +52,7 @@ class ScrollCamera extends Component{
 
         this.timeoutId = setTimeout(() => {
             this.animate();
-        }, 3000);
+        }, 8000);
     }
 
     componentWillUnmount(){

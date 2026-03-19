@@ -169,13 +169,15 @@ class StarField extends Component {
 
         this.update();
 
+        this.speedVal = .04;
+
         this.timer1 = setTimeout(() => {
-            this.speedVal = .1;
-        }, 2500);
+            this.speedVal = .13;
+        }, 5000);
 
         this.timer2 = setTimeout(() => {
             this.speedVal = 0;
-        }, 4000);
+        }, 8000);
     }
 
     componentWillUnmount() {
@@ -251,7 +253,7 @@ class StarField extends Component {
 
 export default function StarFieldLoader(){
     const inEditor = usePlasmicCanvasContext();
-
+    console.log("starFieldLoader")
     return(
         <>
             {

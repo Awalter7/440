@@ -11,13 +11,16 @@ export default class ScrollEffect extends Effect{
         this._scrollEnd = props.scrollEnd ?? 0;
         this._scrollUpStart = props.scrollUpStart ?? 0;
 
+        
+        this._downDelay = props.downDelay !== 0 ? props.downDelay : 1;
+        this._upDelay = props.upDelay !== 0 ? props.upDelay : 1;
+
         this._downDuration = props.downDuration ?? 0;
         this._upDuration = props.upDuration ?? 0;
 
         this._reversable = props.reversable ?? false;
         this._dir = props.dir ?? false
         this.stopOnEnd = false;
-        this.duration = props.duration ?? 0;
         this.timed = props.timed ?? 0;
 
         this.lastY = 0;
@@ -65,7 +68,8 @@ export default class ScrollEffect extends Effect{
             this._exitTimeout = null;
         }
 
-        this.duration = this._downDuration;
+        this._delay = this._downDelay;
+        this._duration = this._downDuration;
         
         this.start();
     }
@@ -75,7 +79,8 @@ export default class ScrollEffect extends Effect{
             clearTimeout(this._exitTimeout);
         }
 
-        this.duration = this._upDuration;
+        this._delay = this._upDelay;
+        this._duration = this._upDuration;
 
         if (this._active && this._fullCycle) {
             // Wait for forward animation to finish before reversing
@@ -102,12 +107,19 @@ export default class ScrollEffect extends Effect{
                 ? (this.lastY > this.scrollStart && y <= this.scrollStart)  // crossed going up
                 : (this.lastY < this.scrollStart && y >= this.scrollStart); // crossed going down
 
+                
             if (crossedThreshold) {
-                // _dir = true means "trigger on up", false means "trigger on down"
-                if (scrollingUp !== this._dir) {
+
+
+                if(!this._reversable && this._dir === scrollingUp){
                     this.handleEnter();
-                } else {
-                    this.handleLeave();
+                }else if(this._reversable){
+                    // _dir = true means "trigger on up", false means "trigger on down"
+                    if (scrollingUp !== this._dir) {
+                        this.handleLeave();
+                    } else {
+                        this.handleEnter();
+                    }
                 }
             }
         } else {
@@ -118,7 +130,7 @@ export default class ScrollEffect extends Effect{
                 this._progress = 1;
                 this._onProgressChange(1, this, false);
             } else {
-                this._progress = (y - delayedStart) / range;
+                this._progress = (y - this.scrollStart) / range;
                 this._onProgressChange(this._progress, this, false);
             }
         }

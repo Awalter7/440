@@ -910,27 +910,27 @@ PLASMIC.registerComponent(CustomScroll, {
       description: "Use text instead of elements.",
       defaultValue: "",
     },
-    // animateChars: {
-    //   type: "boolean",
-    //   displayName: "Animate Characters",
-    //   description: "Animate each character of the provided text",
-    //   defaultValue: false,
-    //   hidden: (props) => props.text === "" && props.animateWords === true,
-    // },
-    // animateWords: {
-    //   type: "boolean",
-    //   displayName: "Animate Words",
-    //   description: "Animate each character of the provided text",
-    //   defaultValue: false,
-    //   hidden: (props) => props.text === "" && props.animateChars === true,
-    // },
-    // characterDelayOffset: {
-    //   type: "number",
-    //   diplayName: "Character Delay Offset (ms)",
-    //   description: "delay characters to be animated after proceeding character.",
-    //   defaultValue: 0,
-    //   hidden: (props) => props.animateChars === false,
-    // },
+    animateChars: {
+      type: "boolean",
+      displayName: "Animate Characters",
+      description: "Animate each character of the provided text",
+      defaultValue: false,
+      hidden: (props) => props.text === "" && props.animateWords === true,
+    },
+    animateWords: {
+      type: "boolean",
+      displayName: "Animate Words",
+      description: "Animate each character of the provided text",
+      defaultValue: false,
+      hidden: (props) => props.text === "" && props.animateChars === true,
+    },
+    characterDelayOffset: {
+      type: "number",
+      diplayName: "Character Delay Offset (ms)",
+      description: "delay characters to be animated after proceeding character.",
+      defaultValue: 0,
+      hidden: (props) => props.animateChars === false,
+    },
     children: {
       type: "slot",
       defaultValue: {

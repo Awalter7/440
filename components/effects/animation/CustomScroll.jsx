@@ -126,7 +126,9 @@ export function CustomScroll({
                 scrollUpStart: obj.scrollUpStart,
                 easingFunction: obj.easingFunction,
                 styles: obj.styles,
-                delay: obj.delay,
+                downDelay: obj.downDelay,
+                upDelay: obj.upDelay,
+                delay: null,
                 downDuration: obj.downDuration,
                 upDuration: obj.upDuration,
                 duration: null,
@@ -213,10 +215,10 @@ export function CustomScroll({
     return (
         <>
             {
-                // !animateWords
-                //     ?
-                //         !animateChars 
-                //             ?
+                !animateWords
+                    ?
+                        !animateChars 
+                            ?
                                 <EffectManager 
                                     ref={effectManagerRef}
                                     effects={effects}
@@ -229,7 +231,7 @@ export function CustomScroll({
                                         },
                                     }}
                                 >   
-                                    <div className={className} data-attribute-unique-id={uID} id={id} style={{ position: position, transition: "none", transformStyle: "preserve-3d", width: (animateChars || animateWords) ? "max-content" : "auto"}}>
+                                    <div className={className} data-attribute-unique-id={uID} id={id} style={{ position: position, transition: "none", transformStyle: "preserve-3d"}}>
                                         {
                                             usePropValue 
                                                 ?
@@ -243,74 +245,74 @@ export function CustomScroll({
                                         }
                                     </div>
                                 </EffectManager>
-                    //         :
-                    //             text
-                    //             &&
-                    //             text.split('').map((char, idx) => (
-                    //                 <CustomScroll
-                    //                     key={"char-" + idx}
-                    //                     className={className}
-                    //                     id={id}
-                    //                     position={position}
-                    //                     usePropValue={usePropValue}
-                    //                     useSpecificProp={useSpecificProp}
-                    //                     propToUse={propToUse}
+                            :
+                                text
+                                &&
+                                text.split('').map((char, idx) => (
+                                    <CustomScroll
+                                        key={"char-" + idx}
+                                        className={className}
+                                        id={id}
+                                        position={position}
+                                        usePropValue={usePropValue}
+                                        useSpecificProp={useSpecificProp}
+                                        propToUse={propToUse}
 
-                    //                     initialStyles={initialStyles}
+                                        initialStyles={initialStyles}
 
-                    //                     clickEffects={clickEffects}
-                    //                     hoverEffects={hoverEffects}
-                    //                     valueChangeEffects={valueChangeEffects}
-                    //                     breakpoints={breakpoints}
-                    //                     distanceEffects={distanceEffects}
-                    //                     loadEffect={loadEffect}
+                                        clickEffects={clickEffects}
+                                        hoverEffects={hoverEffects}
+                                        valueChangeEffects={valueChangeEffects}
+                                        breakpoints={breakpoints}
+                                        distanceEffects={distanceEffects}
+                                        loadEffect={loadEffect}
 
-                    //                     customValue={customValue}
+                                        customValue={customValue}
 
-                    //                     text={char}
-                    //                     animateChars={false}
-                    //                     characterDelayOffset={characterDelayOffset}
-                    //                     compIndex={idx}
-                    //                     length={text.split('').length}
-                    //                 >
-                    //                     {children}
-                    //                 </CustomScroll>
+                                        text={char}
+                                        animateChars={false}
+                                        characterDelayOffset={characterDelayOffset}
+                                        compIndex={idx}
+                                        length={text.split('').length}
+                                    >
+                                        {children}
+                                    </CustomScroll>
 
-                    //             ))
-                    // :
+                                ))
+                    :
 
-                    //     text
-                    //     &&
-                    //     text.split(' ').map((char, idx) => (
-                    //         <CustomScroll
-                    //             key={"char-" + idx}
-                    //             className={className}
-                    //             id={id}
-                    //             position={position}
-                    //             usePropValue={usePropValue}
-                    //             useSpecificProp={useSpecificProp}
-                    //             propToUse={propToUse}
+                        text
+                        &&
+                        text.split(' ').map((char, idx) => (
+                            <CustomScroll
+                                key={"char-" + idx}
+                                className={className}
+                                id={id}
+                                position={position}
+                                usePropValue={usePropValue}
+                                useSpecificProp={useSpecificProp}
+                                propToUse={propToUse}
 
-                    //             initialStyles={initialStyles}
+                                initialStyles={initialStyles}
 
-                    //             clickEffects={clickEffects}
-                    //             hoverEffects={hoverEffects}
-                    //             valueChangeEffects={valueChangeEffects}
-                    //             breakpoints={breakpoints}
-                    //             distanceEffects={distanceEffects}
-                    //             loadEffect={loadEffect}
+                                clickEffects={clickEffects}
+                                hoverEffects={hoverEffects}
+                                valueChangeEffects={valueChangeEffects}
+                                breakpoints={breakpoints}
+                                distanceEffects={distanceEffects}
+                                loadEffect={loadEffect}
 
-                    //             customValue={customValue}
+                                customValue={customValue}
 
-                    //             text={char}
-                    //             animateChars={false}
-                    //             characterDelayOffset={characterDelayOffset}
-                    //             compIndex={idx}
-                    //             length={text.split(' ').length}
-                    //         >
-                    //             {children}
-                    //         </CustomScroll>
-                    //     ))
+                                text={char}
+                                animateChars={false}
+                                characterDelayOffset={characterDelayOffset}
+                                compIndex={idx}
+                                length={text.split(' ').length}
+                            >
+                                {children}
+                            </CustomScroll>
+                        ))
      
             }
         </>
