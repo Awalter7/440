@@ -12,7 +12,7 @@ import lensFlareShader from "../shaders/lensFlare"
 import { useControls, folder } from 'leva'
 
 
-const lensFlare = ({
+const LensFlare = ({
     position = {x: 0, y: 50, z: 1000},
     blendFunction = BlendFunction.NORMAL,
     glareSize = 0.07,
@@ -240,4 +240,4 @@ const lensFlare = ({
     }, 1)
 }
 
-export default lensFlare;
+export default LensFlare;
