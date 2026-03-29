@@ -16,7 +16,7 @@ export default class LensFlarePass extends Component{
 
     set position(value){
         this._position = value;
-        this.setState({position: value})
+        this.setState({position: value});
     }
 
     render(){
