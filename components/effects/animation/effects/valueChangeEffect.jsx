@@ -74,6 +74,4 @@ export default class ValueChangeEffect extends Effect{
             }
         }
     }
-
-    
 }

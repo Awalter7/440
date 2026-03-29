@@ -28,7 +28,7 @@ const AtmosphereShader = new THREE.ShaderMaterial({
       g: {value: 497.0},
       b: {value: 443.0}
     },
-    vertexShader: `
+    vertexShader: /* glsl */`
       varying vec2 vUv;
       
   
@@ -38,7 +38,7 @@ const AtmosphereShader = new THREE.ShaderMaterial({
         gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
       }
     `,
-    fragmentShader: `
+    fragmentShader: /* glsl */`
       uniform sampler2D tDiffuse;
       uniform sampler2D tDepth;
       uniform sampler2D tOpticalDepthLookup;
@@ -249,17 +249,11 @@ const AtmosphereShader = new THREE.ShaderMaterial({
           bool hitPlanet = planetHitInfo.y > 0.0;
           bool objectBehindAtmosphere = hitSomething && sceneDepth > dstToAtmosphere;
 
-          if(hitPlanet || objectBehindAtmosphere){
-              // Blend: atmosphere over the original pixel color using atmosphere alpha
-              vec3 blended = mix(originalCol.rgb, light.rgb, light.a);
-              gl_FragColor = vec4(blended, 1.0);
-          } else {
-              // Ray passed through atmosphere into space
-              gl_FragColor = vec4(light.rgb, light.a);
-          }
+            vec3 blended = mix(originalCol.rgb, light.rgb, light.a);
+            gl_FragColor = vec4(blended, 1.0);
       } else {
           // No atmosphere hit
-          gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0);
+          gl_FragColor = vec4(originalCol.rgb, 1.0);
       }
   }
     `,

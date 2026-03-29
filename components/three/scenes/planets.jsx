@@ -1,191 +1,106 @@
 "use client"
-import * as THREE from 'three';
+import React, { useRef, useState, useEffect } from "react";
 import { Canvas, useThree } from "@react-three/fiber";
-import PlanetGroup from "../objects/planets"
 import { ComposerProvider } from "../contexts/composerContext";
-import { useRef, Component, createRef, useEffect } from "react";
-import { CurvedPath } from '../helpers/helpers';
+
 import { OrbitControls } from '@react-three/drei';
 import { usePlasmicCanvasContext } from '@plasmicapp/loader-nextjs';
-import { Stars  } from '../objects/planets';
+
+import Earth from '../objects/earth';
+import EarthRotation from '../machanics/earthRotation';
+import SpaceStation from '../objects/spaceStation';
+import LensFlarePass from "../postprocessing/lensFlarePass"
+import CloudSphere from "../objects/cloudSphere"
+import * as THREE from "three"
+import { useFrame } from "@react-three/fiber";
+import { useControls, folder } from 'leva'
 
 
-class ScrollCamera extends Component{
-    constructor(props){
-        super(props)
+const EarthWrapper = () => {
+    const { camera, scene } = useThree();
 
-        this.pathRef = createRef();
-
-        this.camera = props.camera ?? null;
-
-        //load sequence finished
-        this.loaded = false;
-
-        //load sequence time values
-        this.currentLoadT = .01;
-        this.targetLoadT = .01;
-        this.lerp = this.lerpFactor(2000, 60)
-
-        //time values
-        this.currentT = 0;
-        this.targetT = 0;
-
-        //position values
-        this.targetPoint = new THREE.Vector3;
-
-        //rotation values
-        this.targetRotation = new THREE.Quaternion;
-
-        this.handleScroll = this.handleScroll.bind(this);
-
-        this.rafId;
-        this.timeoutId;
-    }
-
-    componentDidMount(){
-        window.addEventListener("scroll", this.handleScroll, { passive: true });
-        this.currentT = 0;
-        this.targetT = 0;
-
-        this.camera.rotation.set(-3.0332631463700075, 0, -Math.PI);
-
-
-        this.timeoutId = setTimeout(() => {
-            this.animate();
-        }, 8000);
-    }
-
-    componentWillUnmount(){
-        window.removeEventListener("scroll", this.handleScroll);
-        if (this.rafId) cancelAnimationFrame(this.rafId);
-        if (this.timeoutId) clearTimeout(this.timeoutId);
-    }
-
-    handleScroll() {
-        const scrollY = window.scrollY;
-        const maxScroll = document.body.scrollHeight - window.innerHeight;
-        // Clamp t to [0, 1] along the path
-        this.targetT = Math.max(0, Math.min(1, scrollY / maxScroll));
-    }
-
-
-    expRamp(t) {
-        // t is 0–1, output is 0–100
-        return (Math.pow(2, t * 7) - 1) / (Math.pow(2, 7) - 1) * 100;
-    }
-
-    lerpFactor(durationMs, fps = 60) {
-        const frames = (durationMs / 1000) * fps;
-        return 1 - Math.pow(0.01, 1 / frames);
-    }
-
-    animate() {
-        this.rafId = requestAnimationFrame(() => this.animate());
-        const path = this.pathRef.current;
-
-        if (!path || !this.camera) return;
-
-        const currentPoint = this.camera.position;
-
-        if(!this.loaded){
-
-            this.currentLoadT += (1 - this.currentLoadT) * this.lerp
-
-            const index = Math.round(this.expRamp(this.currentLoadT))
-
-            this.targetPoint = path.getPoint(index);
-            this.targetRotation = path.getRotation(index);
-
-
-            this.camera.quaternion.slerp(this.targetRotation, 0.08);
-
-            if(index === 100){
-                this.loaded = true;
-            }
-
-            const newPoint = currentPoint.clone().lerp(this.targetPoint, 0.08);
-
-            this.camera.position.copy(newPoint);
-        }else{
-            // Lerp the t value
-            this.currentT += (this.targetT - this.currentT) * 0.08;
-        
-            // Convert 0–1 to an index into the points array (0–300)
-            const index = Math.round((this.currentT * 50) + 100);
-
-            this.targetPoint = path.getPoint(index);
-            this.targetRotation = path.getRotation(index);
-
-            this.camera.quaternion.slerp(this.targetRotation, 0.08);
-
-            const newPoint = currentPoint.clone().lerp(this.targetPoint, 0.08);
-
-            this.camera.position.copy(newPoint);
-        }
-    }
-
-    render(){
-        return(
-            <CurvedPath 
-                posArgs={
-                    [     
-                        {
-                            start: new THREE.Vector3(2, 107, -1000),
-                            end: new THREE.Vector3(2, 20, -180),
-                            path: "stright",
-                            steps: 100,
-                        },
-                        {
-                            start: new THREE.Vector3(2, 20, -180), 
-                            end: new THREE.Vector3(104.6587779486033, 41.61408445716821, -96.94938610680649), 
-                            path: "curved", 
-                            rotation: 120, 
-                            arcHeight: 40, 
-                            arcSharpness: 1, 
-                            steps: 50
-                            
-                        }
-                    ]
-                }
-                rotArgs={
-                    [
-                        {
-                            start: new THREE.Vector3(-3.0332631463700075, 0, -Math.PI),
-                            end: new THREE.Vector3(-3.0332631463700075, 0, -Math.PI),
-                            steps: 100,
-                        },
-                        {
-                            start: new THREE.Vector3(-3.0332631463700075, 0, -Math.PI),
-                            end: new THREE.Vector3(-2.8787066785351962, 0.557873783454524, 3.0000803168483334),
-                            steps: 50,
-                        }
-                    ]
-                }
-                ref={this.pathRef}
-                visible={false}
+    return(
+        camera 
+        &&
+        <EarthRotation>
+            <Earth
+                position={[2, 0, 0]}
+                args={[20, 300, 300]}
+                rotation={[0, 0, Math.PI / 2]}
+                camera={camera}
+                scene={scene}
             />
-        )
-    }
+        </EarthRotation>
+    )
 }
 
-function CameraWrapper(){
-    const {camera} = useThree();
 
-    return <ScrollCamera camera={camera}/>
+const SunWrapper = ({sunPosition = [0, 50, 1000]}) => {
+
+    return(
+        <>
+            <LensFlarePass position={{x: 0, y: 50, z: 1000}}/>
+            <directionalLight
+                position={sunPosition}
+                castShadow
+                intensity={4.0}
+                shadow-mapSize-width={1024}
+                shadow-mapSize-height={1024}
+                shadow-camera-far={50}
+                shadow-camera-left={-10}
+                shadow-camera-right={10}
+                shadow-camera-top={10}
+                shadow-camera-bottom={-10}
+                name={"atmosphere-source"}
+            />
+
+        </>
+        
+    )
 }
 
-function StarsWrapper(){
-    const {camera} = useThree();
+const useMousePosition = () => {
+  const ref = useRef({ x: 0, y: 0 });
 
-    return <Stars camera={camera}/>
+  useEffect(() => {
+    const handler = (e) => {
+      ref.current.x = (e.clientX / window.innerWidth) * 2 - 1;   // -1 → 1
+      ref.current.y = -(e.clientY / window.innerHeight) * 2 + 1;  // -1 → 1 (flipped)
+    };
+    window.addEventListener("mousemove", handler);
+    return () => window.removeEventListener("mousemove", handler);
+  }, []);
+
+  return ref;
+};
+
+function Intro() {
+  const [vec] = useState(() => new THREE.Vector3())
+  const { camera } = useThree()
+  const mouse = useMousePosition()
+
+  useFrame(() => {
+    const { x, y } = mouse.current
+    camera.position.lerp(vec.set(x* 20, 50 + y * 30, -100), 0.05)
+    camera.lookAt(2, 21, 0)
+  }, 1)
 }
-
 
 export function Planets({ className, id }) {
     const canvasRef = useRef(null);   // ← new ref
     const inEditor = usePlasmicCanvasContext();
+    const cameraControls = useControls({
+        Camera: folder(
+            {
+                // Planet Position
+                orbitControlsEnabled: { value: false, step: 1, label: "Orbit Controlls" },
+            },
+            { collapsed: true }
+        ),
+    })
 
-        
+    
+
 
   // useMomentumScroll();
     return (
@@ -193,8 +108,8 @@ export function Planets({ className, id }) {
             ref={canvasRef} 
             shadows
             camera={{
-                fov: 20,
-                position: [2, 200, -2000], // ← starts at -550
+                fov: 10,
+                position: [2, 200, 200], // ← starts at -550
                 rotation: [-3.0332631463700075, 0, -Math.PI],
                 near: 10,
                 far: 10000,
@@ -218,14 +133,31 @@ export function Planets({ className, id }) {
                 &&
                 <>
                     <ComposerProvider>
-                        <PlanetGroup />
+                        <EarthWrapper />
+                        <SunWrapper />
+                        <SpaceStation/>
+
+                        {/* <CloudSphere /> */}
                     </ComposerProvider>
-                    <CameraWrapper/>
+                    <mesh >
+                        <boxGeometry args={[2, 2, 2]}/>
+                        <meshBasicMaterial color={"red"}/>
+                    </mesh>
+
+                    {/* <CameraWrapper/> */}
                     {/* <StarsWrapper /> */}
                 </>
             }
-{/* 
-            <OrbitControls /> */}
+
+            {
+                cameraControls.orbitControlsEnabled
+                ?
+                <OrbitControls />
+                :
+                <Intro />
+            }
+            
+            {/* <OrbitControls /> */}
 
         </Canvas>
     );

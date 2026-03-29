@@ -24,5 +24,4 @@ export default class LoadEffect extends Effect {
   set loaded(value) {
     this._loaded = value;
   }
-
 }

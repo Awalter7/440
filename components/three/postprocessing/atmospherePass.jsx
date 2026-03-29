@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState, Component, createRef } from "react";
 import Atmosphere from "./atmosphere";
 import * as THREE from 'three';
-import Weather from "./weather"
 
 
 export default class AtmospherePass extends Component{
@@ -12,21 +11,19 @@ export default class AtmospherePass extends Component{
         this.state = {meshData: []};
         this.ref = createRef()
 
-        this._scale = .18;
-        this._wavelength = {
-            r: 550.0,
-            g: 497.0, 
-            b: 400.0
-        };
-        this._numInScatteringPoints = 100;
-        this._numOpticalDepthPoints = 100;
-        this._scatteringStrength = 20.3;
-        this._densityFallOff = 15;
-        this._blendStrength = .55;
-        this._brightness = 0;
-        this._reflectiveness = 3;
-        this._sunPosition = new THREE.Vector3(10, 10, 5);
+        this._scale = .05;
+        this._wavelength = {r: 700, g: 530, b: 440 };
+        this._numInScatteringPoints = 13.16;
+        this._numOpticalDepthPoints = 35.85;
+        this._scatteringStrength = 4;
+        this._densityFallOff = 20.087;
+        this._blendStrength = .631;
+        this._brightness = .115;
+        this._reflectiveness = 7.8;
+        this._sunPosition = new THREE.Vector3(0, 50, 100);
         this._sunDistance = .4;
+
+        // this._update = this._update.bind(this);
     }
 
     get scale() {
@@ -126,73 +123,26 @@ export default class AtmospherePass extends Component{
     set sunDistance(value) {
         this._sunDistance = value;
     }
-    
-    animate = () => {
-        this.initalize();
-        
-        requestAnimationFrame(this.animate)
-    }
-
-    componentDidMount() {
-        this.animate();
-    }
-
-
-
-    initalize(){
-        if(this.ref.current === undefined && !this.ref.current.children) return;
-        
-        const groupMesh = this.ref.current.children
-        let arr = [];
-
-        for (let i = 0; i < groupMesh.length; i++) {
-            let mesh = groupMesh[i];
-            if (mesh.isMesh) {
-                arr.push({
-                    id: mesh.id ? mesh.id : `mesh-${i}`,
-                    radius: mesh.geometry.parameters.radius,
-                    position: [
-                        mesh.matrixWorld.elements[12],
-                        mesh.matrixWorld.elements[13],
-                        mesh.matrixWorld.elements[14],
-                    ],
-                });
-            }
-        }
-
-        this.setState({meshData: arr})
-    }
 
     render(){
-    //         this._renderCount = (this._renderCount || 0) + 1
-    // console.log("AtmospherePass render #", this._renderCount)
-    
         return(
-            <group ref={this.ref}>
-                {this.children}
-                {this.state.meshData.length > 0 &&
-                    this.state.meshData.map((data, key) => (
-                        <>
-                            <Atmosphere
-                                scale={this.scale}
-                                wavelengths={this.wavelengths}
-                                numInScatteringPoints={this._numInScatteringPoints}
-                                numOpticalDepthPoints={this._numOpticalDepthPoints}
-                                scatteringStrength={this._scatteringStrength}
-                                densityFallOff={this._densityFallOff}
-                                blendStrength={this._blendStrength}
-                                brightness={this._brightness}
-                                reflectiveness={this._reflectiveness}
-                                sunDistance={this._sunDistance}
-                                sunPosition={this._sunPosition}
-                                {...data}
-                                key={`atmosphere-${key}`}
-                            />
-                        </>
-
-                    ))
-                }
-            </group>
+            <>
+                <Atmosphere
+                    scale={this.scale}
+                    wavelengths={this.wavelengths}
+                    numInScatteringPoints={this._numInScatteringPoints}
+                    numOpticalDepthPoints={this._numOpticalDepthPoints}
+                    scatteringStrength={this._scatteringStrength}
+                    densityFallOff={this._densityFallOff}
+                    blendStrength={this._blendStrength}
+                    brightness={this._brightness}
+                    reflectiveness={this._reflectiveness}
+                    sunDistance={this._sunDistance}
+                    sunPosition={this._sunPosition}
+                    radius={20}
+                    position={[2, 0, 0]}
+                />
+            </>
         )
     }
 

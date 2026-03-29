@@ -1,0 +1,199 @@
+class ScrollCamera extends Component{
+    constructor(props){
+        super(props)
+
+        this.pathRef = createRef();
+
+        this.camera = props.camera ?? null;
+
+        //load sequence finished
+        this.loaded = false;
+
+        //load sequence time values
+        this.currentLoadT = .01;
+        this.targetLoadT = .01;
+        this.lerp = this.lerpFactor(2000, 60)
+
+        //time values
+        this.currentT = 0;
+        this.targetT = 0;
+
+        //position values
+        this.targetPoint = new THREE.Vector3;
+
+        //rotation values
+        this.targetRotation = new THREE.Quaternion;
+
+        this.handleScroll = this.handleScroll.bind(this);
+
+        this.rafId;
+        this.timeoutId;
+    }
+
+    componentDidMount(){
+        window.addEventListener("scroll", this.handleScroll, { passive: true });
+        this.currentT = 0;
+        this.targetT = 0;
+
+        this.camera.rotation.set(-3.0332631463700075, 0, -Math.PI);
+
+
+        this.timeoutId = setTimeout(() => {
+            this.animate();
+        }, 8000);
+    }
+
+    componentWillUnmount(){
+        window.removeEventListener("scroll", this.handleScroll);
+        if (this.rafId) cancelAnimationFrame(this.rafId);
+        if (this.timeoutId) clearTimeout(this.timeoutId);
+    }
+
+    handleScroll() {
+        const scrollY = window.scrollY;
+        const maxScroll = document.body.scrollHeight - window.innerHeight;
+        // Clamp t to [0, 1] along the path
+        this.targetT = Math.max(0, Math.min(1, scrollY / maxScroll));
+    }
+
+
+    expRamp(t) {
+        // t is 0–1, output is 0–100
+        return (Math.pow(2, t * 7) - 1) / (Math.pow(2, 7) - 1) * 100;
+    }
+
+    lerpFactor(durationMs, fps = 60) {
+        const frames = (durationMs / 1000) * fps;
+        return 1 - Math.pow(0.01, 1 / frames);
+    }
+
+    animate() {
+        this.rafId = requestAnimationFrame(() => this.animate());
+        const path = this.pathRef.current;
+
+        if (!path || !this.camera) return;
+
+        const currentPoint = this.camera.position;
+
+        if(!this.loaded){
+
+            this.currentLoadT += (1 - this.currentLoadT) * this.lerp
+
+            const index = Math.round(this.expRamp(this.currentLoadT))
+
+            this.targetPoint = path.getPoint(index);
+            this.targetRotation = path.getRotation(index);
+
+
+            this.camera.quaternion.slerp(this.targetRotation, 0.08);
+
+            if(index === 100){
+                this.loaded = true;
+            }
+
+            const newPoint = currentPoint.clone().lerp(this.targetPoint, 0.08);
+
+            this.camera.position.copy(newPoint);
+        }else{
+            // Lerp the t value
+            this.currentT += (this.targetT - this.currentT) * 0.08;
+        
+            // Convert 0–1 to an index into the points array (0–300)
+            const index = Math.round((this.currentT * 50) + 100);
+
+            this.targetPoint = path.getPoint(index);
+            this.targetRotation = path.getRotation(index);
+
+            this.camera.quaternion.slerp(this.targetRotation, 0.08);
+
+            const newPoint = currentPoint.clone().lerp(this.targetPoint, 0.08);
+
+            this.camera.position.copy(newPoint);
+        }
+    }
+
+    render(){
+        return(
+            <CurvedPath 
+                posArgs={
+                    [     
+                        {
+                            start: new THREE.Vector3(2, 107, -1000),
+                            end: new THREE.Vector3(2, 20, -180),
+                            path: "stright",
+                            steps: 100,
+                        },
+                        {
+                            start: new THREE.Vector3(2, 20, -180), 
+                            end: new THREE.Vector3(104.6587779486033, 41.61408445716821, -96.94938610680649), 
+                            path: "curved", 
+                            rotation: 120, 
+                            arcHeight: 40, 
+                            arcSharpness: 1, 
+                            steps: 50
+                            
+                        }
+                    ]
+                }
+                rotArgs={
+                    [
+                        {
+                            start: new THREE.Vector3(-3.0332631463700075, 0, -Math.PI),
+                            end: new THREE.Vector3(-3.0332631463700075, 0, -Math.PI),
+                            steps: 100,
+                        },
+                        {
+                            start: new THREE.Vector3(-3.0332631463700075, 0, -Math.PI),
+                            end: new THREE.Vector3(-2.8787066785351962, 0.557873783454524, 3.0000803168483334),
+                            steps: 50,
+                        }
+                    ]
+                }
+                ref={this.pathRef}
+                visible={false}
+            />
+        )
+    }
+}
+
+function CameraWrapper(){
+    const {camera} = useThree();
+
+    return <ScrollCamera camera={camera}/>
+}
+
+
+function LockCamera(){
+    const {camera} = useThree();
+
+    return;
+}
+
+const _camPos = new THREE.Vector3();
+const _targetPos = new THREE.Vector3();
+const _offset = new THREE.Vector3(1.5, 0, .3); // tweak to taste
+const _flipY = new THREE.Quaternion().setFromEuler(new THREE.Euler(0, Math.PI / 2.4, Math.PI / 1.1))
+
+export function CameraRig({ orbitPoseRef }) {
+    const { camera } = useThree();
+
+    useFrame(() => {
+        if (!orbitPoseRef.current) return;
+
+        const { pos, rot } = orbitPoseRef.current;
+
+        // Rotate the local offset by the orbit's face-rotation quaternion,
+        // then add the station's world position → that's where the camera goes
+        _camPos.copy(_offset).applyQuaternion(rot).add(pos);
+
+        // Smoothly lerp position and slerp rotation
+        camera.position.lerp(_camPos, 0.08);
+        camera.fov = 10;
+        camera.updateProjectionMatrix()
+
+        const targetRot = rot.clone().multiply(_flipY);
+        camera.quaternion.slerp(targetRot, 0.08);
+    });
+
+    return null;
+}

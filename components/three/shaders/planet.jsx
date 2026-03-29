@@ -3,7 +3,7 @@ import * as THREE from "three";
 export class SolidPlanetMaterial extends THREE.MeshPhysicalMaterial {
   constructor(props) {
 
-    const { cloudMap, cloudBumpMap, lightMap, ...materialOptions } = props;
+    const { cloudMap, cloudBumpMap, lightMap, cameraPosition, highResMap, ...materialOptions } = props;
 
     super(materialOptions);
 
@@ -12,6 +12,8 @@ export class SolidPlanetMaterial extends THREE.MeshPhysicalMaterial {
     this.lightMap = lightMap;
     this.cloudMap = cloudMap;
     this.cloudBumpMap = cloudBumpMap;
+    this.cameraPosition = cameraPosition;
+    this.highResMap = highResMap;
 
     this.initialize();
   }
@@ -21,40 +23,62 @@ export class SolidPlanetMaterial extends THREE.MeshPhysicalMaterial {
       shader.uniforms.uLightMap = { value: this.lightMap };
       shader.uniforms.uCloudMap = { value: this.cloudMap };
       shader.uniforms.uCloudBumpMap = { value: this.cloudBumpMap };
+      shader.uniforms.tHighResMap = {value: this.highResMap};
+      // shader.uniforms.cameraPosition = {  value: this.cameraPosition }
 
       // Inject UV variable declarations in the vertex shader.
       shader.vertexShader = shader.vertexShader.replace(
         "#include <uv_pars_vertex>",
-        `
+        /* glsl */ `
           #include <uv_pars_vertex>
           varying vec2 vUv;
+          varying vec3 vWorldPosition;
         `
       );
 
       // Pass UV coordinates to the fragment shader.
       shader.vertexShader = shader.vertexShader.replace(
         "#include <uv_vertex>",
-        `
+        /* glsl */ `
           #include <uv_vertex>
           vUv = uv;
+          vWorldPosition = (modelMatrix * vec4(position, 1.0)).xyz;
         `
       );
 
       shader.fragmentShader = shader.fragmentShader.replace(
         "#define STANDARD",
-        `
+        /* glsl */ `
           #define STANDARD
           uniform sampler2D uLightMap;
           uniform sampler2D uCloudMap;
           uniform sampler2D uCloudBumpMap;
+          uniform sampler2D tHighResMap;
           varying vec2 vUv;
+          varying vec3 vWorldPosition;
         `
       );
+
+      shader.fragmentShader = shader.fragmentShader.replace(
+        "vec4 diffuseColor = vec4( diffuse, opacity );",
+        /* glsl */ `
+          vec4 diffuseColor = vec4( diffuse, opacity );
+
+          float distToCamera = length(vWorldPosition - cameraPosition);
+
+          float t = smoothstep(100.0, 80.0, distToCamera);
+
+          vec4 highResCol = texture2D(tHighResMap, vUv);
+          diffuseColor = mix(diffuseColor, highResCol, t);
+        `
+      );
+
+
 
       // Inject custom cloud bump mapping code right after the normal mapping chunk.
       shader.fragmentShader = shader.fragmentShader.replace(
         "#include <normal_fragment_maps>",
-        `
+        /* glsl */ `
           #include <normal_fragment_maps>
           
           // // Custom Cloud Bump Mapping:
@@ -75,8 +99,8 @@ export class SolidPlanetMaterial extends THREE.MeshPhysicalMaterial {
 
       // Insert custom code to blend in the cloudMap color and the city lights.
       shader.fragmentShader = shader.fragmentShader.replace(
-        "#include <dithering_fragment>",
-        `
+        "#include <tonemapping_fragment>",
+        /* glsl */ `
           vec4 cityLight = texture2D(uLightMap, vUv);
 
           float r = cityLight.r;
@@ -84,21 +108,26 @@ export class SolidPlanetMaterial extends THREE.MeshPhysicalMaterial {
           float b = cityLight.b;
 
           float yellowness = min(r, g) - b;
-          float isYellow = smoothstep(0.5, .01, yellowness);
+          float isYellow = smoothstep(0.5, 0.01, yellowness);
 
           float lightLuminance = dot(cityLight.rgb, vec3(0.299, 0.587, 0.114));
           float remappedBrightness = clamp((lightLuminance - 0.04) / (0.94 - 0.04), 0.0, 1.0);
 
           float cityAlpha = isYellow * remappedBrightness;
 
-          float luminance = dot(gl_FragColor.rgb, vec3(0.299, 0.587, 0.114));
-          float blendFactor = pow(1.0 - clamp(luminance, 0.0, 1.0), 10.0);
+          // outgoingLight is still in linear space here — luminance thresholds are reliable
+          float luminance = dot(outgoingLight, vec3(0.299, 0.587, 0.114));
+          float nightFactor = smoothstep(0.08, 0.02, luminance);
 
-          gl_FragColor.rgb = min(gl_FragColor.rgb + cityLight.rgb * cityAlpha * blendFactor * 5.0, vec3(1.0));
-          
-          #include <dithering_fragment>
+          outgoingLight = min(
+            outgoingLight + cityLight.rgb * cityAlpha * nightFactor * 5.0,
+            vec3(1.0)
+          );
+
+          #include <tonemapping_fragment>
         `
       );
+    
 
       this.shader = shader;
     };
@@ -121,7 +150,7 @@ export class GasPlanetMaterial extends THREE.MeshPhysicalMaterial {
         // Inject UV and position declarations in the vertex shader.
         shader.vertexShader = shader.vertexShader.replace(
           "#include <uv_pars_vertex>",
-          `
+          /* glsl */ `
             #include <uv_pars_vertex>
             varying vec2 vUv;
             varying vec3 vPosition;
@@ -129,7 +158,7 @@ export class GasPlanetMaterial extends THREE.MeshPhysicalMaterial {
         );
         shader.vertexShader = shader.vertexShader.replace(
           "#include <uv_vertex>",
-          `
+          /* glsl */ `
             #include <uv_vertex>
             vUv = uv;
             vPosition = position;
@@ -139,7 +168,7 @@ export class GasPlanetMaterial extends THREE.MeshPhysicalMaterial {
         // Inject noise functions, time uniform, and noise animation code into the fragment shader.
         shader.fragmentShader = shader.fragmentShader.replace(
           "#define STANDARD",
-          `
+          /* glsl */ `
             #define STANDARD
   
             uniform float uTime;
@@ -228,7 +257,7 @@ export class GasPlanetMaterial extends THREE.MeshPhysicalMaterial {
         // Insert the animated noise and color blending code.
         shader.fragmentShader = shader.fragmentShader.replace(
           "#include <map_fragment>",
-          `
+          /* glsl */ `
             // Generate a warp vector for each channel.
             vec3 warp = vec3(
               fbm(vPosition + vec3(100.0)),
@@ -257,7 +286,6 @@ export class GasPlanetMaterial extends THREE.MeshPhysicalMaterial {
         );
   
         this.shader = shader;
-        console.log(this.shader)
       };
     }
   }
